@@ -8,54 +8,52 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
-import xyz.kaijiieow.kjshopplus.KJShopPlus; // Ensure KJShopPlus is imported
+import xyz.kaijiieow.kjshopplus.KJShopPlus;
 
-import java.util.Collections; // Import Collections
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class ItemBuilder {
 
-    // --- ประกาศซ้ำซ้อนถูกลบออกแล้ว ---
-
     private final ItemStack item;
+    private final ItemMeta meta; // <-- ** FIX: Cache ItemMeta **
 
     public ItemBuilder(Material material) {
         this.item = new ItemStack(material != null ? material : Material.STONE);
+        this.meta = item.getItemMeta(); // <-- ** FIX: Get meta on construction **
     }
 
     public ItemBuilder(ItemStack item) {
         this.item = (item != null) ? item.clone() : new ItemStack(Material.STONE);
+        this.meta = this.item.getItemMeta(); // <-- ** FIX: Get meta from the clone on construction **
     }
 
     public ItemBuilder setName(String name) {
-        try {
-            ItemMeta meta = item.getItemMeta();
-            if (meta != null && name != null) {
+        if (meta != null && name != null) {
+            try {
                 meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
-                item.setItemMeta(meta);
+            } catch (Exception e) {
+                System.err.println("[KJShopPlus ERROR] Failed to set item name for " + item.getType() + ": " + e.getMessage());
             }
-        } catch (Exception e) {
-             System.err.println("[KJShopPlus ERROR] Failed to set item name for " + item.getType() + ": " + e.getMessage());
         }
         return this;
     }
 
     public ItemBuilder setLore(List<String> lore) {
-        try {
-            ItemMeta meta = item.getItemMeta();
-            if (meta != null && lore != null && !lore.isEmpty()) {
-                List<String> coloredLore = lore.stream()
-                        .map(line -> line != null ? ChatColor.translateAlternateColorCodes('&', line) : "")
-                        .collect(Collectors.toList());
-                meta.setLore(coloredLore);
-                item.setItemMeta(meta);
-            } else if (meta != null) {
-                 meta.setLore(Collections.emptyList());
-                 item.setItemMeta(meta);
+        if (meta != null) {
+            try {
+                if (lore != null && !lore.isEmpty()) {
+                    List<String> coloredLore = lore.stream()
+                            .map(line -> line != null ? ChatColor.translateAlternateColorCodes('&', line) : "")
+                            .collect(Collectors.toList());
+                    meta.setLore(coloredLore);
+                } else {
+                    meta.setLore(Collections.emptyList());
+                }
+            } catch (Exception e) {
+                System.err.println("[KJShopPlus ERROR] Failed to set item lore for " + item.getType() + ": " + e.getMessage());
             }
-        } catch (Exception e) {
-            System.err.println("[KJShopPlus ERROR] Failed to set item lore for " + item.getType() + ": " + e.getMessage());
         }
         return this;
     }
@@ -71,14 +69,9 @@ public class ItemBuilder {
     }
 
     public ItemBuilder setPDCAction(String action) {
-        // --- แก้ไปใช้ Key จาก KJShopPlus ---
-        if (action == null || KJShopPlus.PDC_ACTION_KEY == null) return this;
+        if (action == null || KJShopPlus.PDC_ACTION_KEY == null || meta == null) return this;
          try {
-            ItemMeta meta = item.getItemMeta();
-            if (meta != null) {
-                meta.getPersistentDataContainer().set(KJShopPlus.PDC_ACTION_KEY, PersistentDataType.STRING, action);
-                item.setItemMeta(meta);
-            }
+             meta.getPersistentDataContainer().set(KJShopPlus.PDC_ACTION_KEY, PersistentDataType.STRING, action);
          } catch (Exception e) {
              System.err.println("[KJShopPlus ERROR] Failed to set PDC Action for " + item.getType() + ": " + e.getMessage());
          }
@@ -86,14 +79,9 @@ public class ItemBuilder {
     }
 
     public ItemBuilder setPDCValue(String value) {
-        // --- แก้ไปใช้ Key จาก KJShopPlus ---
-        if (value == null || KJShopPlus.PDC_VALUE_KEY == null) return this;
+        if (value == null || KJShopPlus.PDC_VALUE_KEY == null || meta == null) return this;
          try {
-            ItemMeta meta = item.getItemMeta();
-            if (meta != null) {
-                meta.getPersistentDataContainer().set(KJShopPlus.PDC_VALUE_KEY, PersistentDataType.STRING, value);
-                item.setItemMeta(meta);
-            }
+            meta.getPersistentDataContainer().set(KJShopPlus.PDC_VALUE_KEY, PersistentDataType.STRING, value);
          } catch (Exception e) {
              System.err.println("[KJShopPlus ERROR] Failed to set PDC Value for " + item.getType() + ": " + e.getMessage());
          }
@@ -107,28 +95,33 @@ public class ItemBuilder {
     }
 
     public ItemBuilder addGlow() {
-         try {
-            ItemMeta meta = item.getItemMeta();
-            if (meta != null) {
+         if (meta != null) {
+             try {
                 if (Enchantment.UNBREAKING.canEnchantItem(item)) {
                     meta.addEnchant(Enchantment.UNBREAKING, 1, true);
                     meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-                    item.setItemMeta(meta);
                 }
-            }
-         } catch (Exception e) {
-             System.err.println("[KJShopPlus ERROR] Failed to add glow for " + item.getType() + ": " + e.getMessage());
+             } catch (Exception e) {
+                 System.err.println("[KJShopPlus ERROR] Failed to add glow for " + item.getType() + ": " + e.getMessage());
+             }
          }
         return this;
     }
 
     public ItemStack build() {
+        // --- ** FIX: Apply the meta only at the very end ** ---
+        if (meta != null) {
+            try {
+                item.setItemMeta(meta);
+            } catch (Exception e) {
+                 System.err.println("[KJShopPlus ERROR] Failed to apply final ItemMeta for " + item.getType() + ": " + e.getMessage());
+            }
+        }
         return item.clone();
     }
 
-    // --- Static PDC Getters ---
+    // --- Static PDC Getters (These are fine as they only read meta) ---
     public static String getPDCAction(ItemStack item) {
-        // --- แก้ไปใช้ Key จาก KJShopPlus ---
         if (item == null || item.getType() == Material.AIR || KJShopPlus.PDC_ACTION_KEY == null) return null;
          try {
             ItemMeta meta = item.getItemMeta();
@@ -143,7 +136,6 @@ public class ItemBuilder {
     }
 
     public static String getPDCValue(ItemStack item) {
-        // --- แก้ไปใช้ Key จาก KJShopPlus ---
         if (item == null || item.getType() == Material.AIR || KJShopPlus.PDC_VALUE_KEY == null) return null;
          try {
             ItemMeta meta = item.getItemMeta();
@@ -158,7 +150,6 @@ public class ItemBuilder {
     }
 
     public static boolean hasPDCAction(ItemStack item) {
-        // --- แก้ไปใช้ Key จาก KJShopPlus ---
         if (item == null || item.getType() == Material.AIR || KJShopPlus.PDC_ACTION_KEY == null) return false;
          try {
             ItemMeta meta = item.getItemMeta();
@@ -170,4 +161,3 @@ public class ItemBuilder {
          }
     }
 }
-
