@@ -99,12 +99,20 @@ package xyz.kaijiieow.kjshopplus.config;
                  ShopCategory category = new ShopCategory(categoryId, categorySection);
                  shopCategories.put(categoryId, category);
 
-                 category.getShopItems(0).forEach(item -> {
-                     allShopItems.put(item.getGlobalId(), item);
-                     if (item.isAllowSell()) {
-                         itemsByMaterial.computeIfAbsent(item.getMaterial(), key -> new ArrayList<>()).add(item);
-                     }
-                 });
+                 // --- *** START MODIFICATION *** ---
+                 // Loop through all pages defined in the category
+                 for (int page = 1; page <= category.getTotalPages(); page++) {
+                     // Get items for the current page
+                     List<ShopItem> itemsOnPage = category.getShopItems(page);
+                     // Add each item to the global maps
+                     itemsOnPage.forEach(item -> {
+                         allShopItems.put(item.getGlobalId(), item);
+                         if (item.isAllowSell()) {
+                             itemsByMaterial.computeIfAbsent(item.getMaterial(), key -> new ArrayList<>()).add(item);
+                         }
+                     });
+                 }
+                 // --- *** END MODIFICATION *** ---
 
              } catch (Exception e) {
                  plugin.getLogger().severe("Failed to load shop file: " + shopFile.getName());
@@ -151,6 +159,7 @@ package xyz.kaijiieow.kjshopplus.config;
 
          // Set defaults
          newItemSection.set("slot", -1); // Auto-slotting
+         newItemSection.set("page", 1); // Default to page 1
          newItemSection.set("currency", "vault");
          newItemSection.set("buy", 0.0); // Default to 0, admin needs to set price
          newItemSection.set("sell", 0.0); // Default to 0
@@ -179,6 +188,10 @@ package xyz.kaijiieow.kjshopplus.config;
 
          try {
              shopConfig.save(shopFile);
+             // Reload shop manager after adding item to reflect changes immediately in memory
+             // This might cause a brief lag depending on the number of items.
+             // Consider just adding the new item to the in-memory maps instead of full reload.
+             plugin.getShopManager().load(); // Or a lighter reload method if available
              return true;
          } catch (IOException e) {
              plugin.getLogger().severe("Failed to save shop file: " + shopFile.getName());

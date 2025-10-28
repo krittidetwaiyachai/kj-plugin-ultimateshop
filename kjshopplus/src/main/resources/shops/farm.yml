@@ -290,7 +290,7 @@ category:
 
     honeycomb:
       slot: 24
-      page: 1
+      page: 2
       material: HONEYCOMB
       display:
         name: "&6Honeycomb"
@@ -313,7 +313,7 @@ category:
 
     honey_bottle:
       slot: 25
-      page: 1
+      page: 2
       material: HONEY_BOTTLE
       display:
         name: "&6Honey Bottle"

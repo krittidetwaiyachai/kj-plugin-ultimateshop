@@ -17,7 +17,8 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.TimeZone; 
+import java.util.Locale;
+import java.util.TimeZone;
 
 public class DiscordWebhookService {
 
@@ -155,9 +156,14 @@ public class DiscordWebhookService {
     }
 
     private String buildEmbedJson(String title, String description, int color) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        String timestamp = sdf.format(new Date());
+        // For Discord's 'timestamp' field, which must be UTC ISO 8601
+        SimpleDateFormat sdfDiscord = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", java.util.Locale.US);
+        sdfDiscord.setTimeZone(TimeZone.getTimeZone("UTC"));
+        String discordTimestamp = sdfDiscord.format(new Date());
+
+        // For the human-readable footer text, using server's local time and desired format.
+        SimpleDateFormat sdfFooter = new SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US);
+        String footerTimestamp = sdfFooter.format(new Date());
 
         String finalUsername = (this.username == null || this.username.trim().isEmpty()) ? "KJShopPlus Bot" : this.username;
         String finalAvatarUrl = (this.avatarUrl == null) ? "" : this.avatarUrl;
@@ -172,8 +178,8 @@ public class DiscordWebhookService {
                    .append("\"title\": \"").append(escapeJson(title)).append("\",")
                    .append("\"description\": \"").append(escapeJson(description)).append("\",")
                    .append("\"color\": ").append(color).append(",")
-                   .append("\"footer\": {\"text\": \"KJShopPlus Logger\"},")
-                   .append("\"timestamp\": \"").append(timestamp).append("\"")
+                   .append("\"footer\": {\"text\": \"KJShopPlus Logger • ").append(escapeJson(footerTimestamp)).append("\"},")
+                   .append("\"timestamp\": \"").append(discordTimestamp).append("\"")
                    .append("}]")
                    .append("}");
         
@@ -186,7 +192,7 @@ public class DiscordWebhookService {
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
             switch (c) {
-                case '\"': sb.append("\\\""); break;
+                case '"': sb.append("\\\""); break;
                 case '\\': sb.append("\\\\"); break;
                 case '\b': sb.append("\\b"); break;
                 case '\f': sb.append("\\f"); break;
@@ -236,4 +242,3 @@ public class DiscordWebhookService {
         }.runTaskAsynchronously(plugin);
     }
 }
-
