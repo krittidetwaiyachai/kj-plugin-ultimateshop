@@ -6,17 +6,17 @@ category:
   id: "ores" # Must match file name without .yml
   title: "&7&lOres & Ingots &7({page}/{total_pages})" # Added page placeholders
   size: 54
-  fill-item: 
+  fill-item:
     material: GRAY_STAINED_GLASS_PANE
     displayname: " " # Use displayname here
 
   # Layout items (buttons)
   layout:
-    go-back: 
+    go-back:
       slot: 49
       material: BARRIER
       displayname: "&cGo Back to Main Menu"
-      action: "OPEN_CATEGORY" 
+      action: "OPEN_CATEGORY"
       value: "main" # Tells it to open the main menu
     page-prev:
       slot: 48
@@ -54,7 +54,7 @@ category:
         min_price: 15.00
 
     iron_ingot:
-      slot: 12 
+      slot: 12
       material: IRON_INGOT
       display:
         name: "&fIron Ingot"
@@ -70,7 +70,7 @@ category:
         allow_sell: true
       dynamic:
         enabled: true
-        buy_step_percent: 0.5 
+        buy_step_percent: 0.5
         sell_step_percent: 0.2
         max_price: 100.00
         min_price: 5.00
@@ -116,7 +116,7 @@ category:
         enabled: false # Static price example
 
     coal:
-      slot: -1 # Auto-slot example
+      slot: 15 # Auto-slot example
       material: COAL
       display:
         name: "&8Coal"
@@ -138,7 +138,7 @@ category:
         min_price: 1.00
 
     netherite_ingot:
-      slot: -1 # Auto-slot example
+      slot: 16 # Auto-slot example
       material: NETHERITE_INGOT
       display:
         name: "&5Netherite Ingot"
@@ -146,7 +146,7 @@ category:
           - "&7The ultimate material."
           - "&r "
           - "&eClick to trade this item."
-      currency: "gems" 
+      currency: "gems"
       buy: 5000.00
       sell: 2500.00
       trade:

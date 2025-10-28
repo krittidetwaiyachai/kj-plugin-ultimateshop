@@ -1,0 +1,113 @@
+# Shop file for the 'farming' category
+# File: plugins/KJShopPlus/shops/farming.yml
+category:
+  id: "farming" # Match category ID in categories.yml
+  title: "&e&lFarming & Food &7({page}/{total_pages})"
+  size: 54
+  fill-item:
+    material: LIME_STAINED_GLASS_PANE # Different color for theme
+    displayname: " "
+
+  layout:
+    go-back:
+      slot: 49
+      material: BARRIER
+      displayname: "&cGo Back to Main Menu"
+      action: "OPEN_CATEGORY"
+      value: "main"
+    page-prev:
+      slot: 48
+      material: ARROW
+      displayname: "&aPrevious Page"
+      action: "PAGE_PREV"
+    page-next:
+      slot: 50
+      material: ARROW
+      displayname: "&aNext Page"
+      action: "PAGE_NEXT"
+
+  items:
+    wheat:
+      slot: 10
+      material: WHEAT
+      display:
+        name: "&eWheat"
+        lore:
+          - "&7Basic crop for bread."
+          - "&r "
+          - "&eClick to trade."
+      currency: vault
+      buy: 1.00
+      sell: 0.50
+      trade: { allow_buy: true, allow_sell: true }
+      dynamic: { enabled: true, buy_step_percent: 0.2, sell_step_percent: 0.1, max_price: 5.00, min_price: 0.10 }
+
+    carrot:
+      slot: 11
+      material: CARROT
+      display: { name: "&6Carrot", lore: ["&7Good for pigs and potions.", "&r ", "&eClick to trade."] }
+      currency: vault
+      buy: 1.50
+      sell: 0.75
+      trade: { allow_buy: true, allow_sell: true }
+      dynamic: { enabled: true, buy_step_percent: 0.2, sell_step_percent: 0.1, max_price: 6.00, min_price: 0.15 }
+
+    potato:
+      slot: 12
+      material: POTATO
+      display: { name: "&ePotato", lore: ["&7Bake 'em, mash 'em, stick 'em in a stew.", "&r ", "&eClick to trade."] }
+      currency: vault
+      buy: 1.50
+      sell: 0.75
+      trade: { allow_buy: true, allow_sell: true }
+      dynamic: { enabled: true, buy_step_percent: 0.2, sell_step_percent: 0.1, max_price: 6.00, min_price: 0.15 }
+
+    cooked_beef:
+      slot: 14
+      material: COOKED_BEEF
+      display: { name: "&cSteak", lore: ["&7Restores lots of hunger.", "&r ", "&eClick to trade."] }
+      currency: vault
+      buy: 10.00
+      sell: 5.00 # Maybe disable selling?
+      trade: { allow_buy: true, allow_sell: true }
+      dynamic: { enabled: false } # Example static price
+
+    bread:
+      slot: 15
+      material: BREAD
+      display: { name: "&eBread", lore: ["&7Simple and filling.", "&r ", "&eClick to trade."] }
+      currency: vault
+      buy: 3.00
+      sell: 1.50
+      trade: { allow_buy: true, allow_sell: true }
+      dynamic: { enabled: false }
+
+    melon_slice:
+       slot: 16
+       material: MELON_SLICE
+       display: { name: "&aMelon Slice", lore: ["&7Refreshing fruit.", "&r ", "&eClick to trade."] }
+       currency: vault
+       buy: 0.50
+       sell: 0.25
+       trade: { allow_buy: true, allow_sell: true }
+       dynamic: { enabled: true, buy_step_percent: 0.1, sell_step_percent: 0.05, max_price: 2.00, min_price: 0.05 }
+
+    pumpkin:
+       slot: 19 # Next row
+       material: PUMPKIN
+       display: { name: "&6Pumpkin", lore: ["&7For pies and golems.", "&r ", "&eClick to trade."] }
+       currency: vault
+       buy: 5.00
+       sell: 2.50
+       trade: { allow_buy: true, allow_sell: true }
+       dynamic: { enabled: true, buy_step_percent: 0.3, sell_step_percent: 0.15, max_price: 15.00, min_price: 1.00 }
+
+    sugar_cane:
+       slot: 20
+       material: SUGAR_CANE
+       display: { name: "&aSugar Cane", lore: ["&7Sweet!", "&r ", "&eClick to trade."] }
+       currency: vault
+       buy: 1.00
+       sell: 0.50
+       trade: { allow_buy: true, allow_sell: true }
+       dynamic: { enabled: true, buy_step_percent: 0.2, sell_step_percent: 0.1, max_price: 4.00, min_price: 0.10 }

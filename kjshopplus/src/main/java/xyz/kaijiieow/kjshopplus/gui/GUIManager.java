@@ -344,9 +344,16 @@ public class GUIManager {
 
         String action = ItemBuilder.getPDCAction(clickedItem);
         String value = ItemBuilder.getPDCValue(clickedItem); // Can be null (e.g., for SELL_ALL)
+        
+        // --- DEBUG LOG ---
+        System.out.println("[KJShopPlus DEBUG] Click processing: Slot=" + slot
+                + " | Item=" + (clickedItem != null ? clickedItem.getType() : "NULL")
+                + " | PDC Action=" + action + " | PDC Value=" + value);
+        // --- END DEBUG LOG ---
+
 
         if (action == null) {
-             // Likely a fill item or the main display item, do nothing
+             System.out.println("[KJShopPlus DEBUG] Click ignored: No PDC Action found on item.");
              return;
         }
 
@@ -396,11 +403,34 @@ public class GUIManager {
                     }
                 }
                 break;
+            
+            // --- MODIFIED SELL CASE ---
             case "SELL":
-                 if (tradeItem != null && value != null) { // Ensure we are in trade menu and have amount
+                 // Check if tradeItem and value are NOT null
+                 if (tradeItem != null && value != null) {
                     try {
-                        int amount = Integer.parseInt(value);
-                        performTransaction(player, tradeItem, amount, false);
+                        int requestedAmount = Integer.parseInt(value); // This is the amount the button requested (e.g., 16)
+                        if (requestedAmount <= 0) return; // Don't sell 0 or negative
+
+                        // --- NEW LOGIC: Check how many items the player actually has ---
+                        int playerAmount = getAmountInInventory(player, tradeItem.getMaterial()); // Find out the real amount (e.g., 8)
+                        
+                        // Determine the actual amount to sell:
+                        // It's the smaller value between what the button requested (e.g., 16)
+                        // and what the player actually has (e.g., 8)
+                        int amountToSell = Math.min(requestedAmount, playerAmount); // This will be 8
+
+                        if (amountToSell <= 0) {
+                            // Player clicked "Sell 16" but has 0 items
+                            plugin.getMessageManager().sendMessage(player, "not_enough_items");
+                            openTradeMenu(player, tradeItem); // Re-open to refresh Sell All button
+                            return; // Stop here
+                        }
+                        
+                        // Perform the transaction with the *actual* amount they have (e.g., 8)
+                        performTransaction(player, tradeItem, amountToSell, false);
+                        // --- END NEW LOGIC ---
+
                          // Re-open trade menu to show updated Sell All amount
                         openTradeMenu(player, tradeItem);
                     } catch (NumberFormatException e) {
@@ -408,6 +438,8 @@ public class GUIManager {
                     }
                 }
                 break;
+            // --- END MODIFIED SELL CASE ---
+
             case "SELL_ALL":
                 if (tradeItem != null) { // Ensure we are in trade menu
                     performSellAllTransaction(player, tradeItem);
@@ -451,7 +483,6 @@ public class GUIManager {
         double totalPrice = pricePerItem * amount;
 
         // Placeholders for messages
-        // Use a Supplier for placeholders to avoid creating the map unnecessarily if logging is off etc.
         Map<String, String> placeholders = Map.of(
             "amount", String.valueOf(amount),
             "item", item.getMaterial().name(), // Consider using a display name if available
@@ -466,8 +497,7 @@ public class GUIManager {
                 plugin.getMessageManager().sendMessage(player, "not_enough_money", placeholders);
                 return;
             }
-            // Check inventory space (Simplified check: assumes items stack)
-             // Calculate needed slots more accurately
+            // Check inventory space
             int maxStack = item.getMaterial().getMaxStackSize();
             int neededSlots = (int) Math.ceil((double) amount / maxStack);
             if (getEmptySlots(player) < neededSlots && getPartialStackSpace(player, item.getMaterial(), amount) < amount) {
@@ -478,8 +508,7 @@ public class GUIManager {
 
             // Attempt transaction
             if (!plugin.getCurrencyService().removeBalance(player, item.getCurrencyId(), totalPrice)) {
-                // This shouldn't happen if hasBalance passed, but check anyway
-                plugin.getMessageManager().sendMessage(player, "not_enough_money", placeholders); // Or maybe an error message
+                plugin.getMessageManager().sendMessage(player, "not_enough_money", placeholders);
                 return;
             }
 
@@ -497,18 +526,17 @@ public class GUIManager {
 
         } else { // Selling
             // Check if player has enough items
+            // This check is now guaranteed to pass because of the logic in handleClick / performSellAll
             if (!player.getInventory().contains(item.getMaterial(), amount)) {
                 plugin.getMessageManager().sendMessage(player, "not_enough_items", placeholders);
                 return;
             }
 
             // Take items
-            // Important: Remove items BEFORE giving money
             player.getInventory().removeItem(new ItemStack(item.getMaterial(), amount));
 
             // Attempt to give money
             if (!plugin.getCurrencyService().addBalance(player, item.getCurrencyId(), totalPrice)) {
-                // Critical failure: Return items if money couldn't be added
                 plugin.getLogger().severe("CRITICAL: Failed to add balance for " + player.getName() + " after removing items! Returning items.");
                 player.getInventory().addItem(new ItemStack(item.getMaterial(), amount)); // Give items back
                 plugin.getMessageManager().sendMessage(player, "error_occurred"); // Inform player
@@ -567,9 +595,7 @@ public class GUIManager {
 
     // Calculates how many item slots are available, excluding layout slots
     private int calculateItemsPerPage(int guiSize) {
-        // This calculation is a bit simplistic, assumes layout items are always at the bottom 9 slots.
-        // A more robust way would be to count non-null, non-fill items placed *before* filling.
-        if (guiSize <= 9) return 0; // No space if only 1 row or less
+        if (guiSize <= 9) return 0;
         if (guiSize == 18) return 9;
         if (guiSize == 27) return 18;
         if (guiSize == 36) return 27;
