@@ -1,0 +1,133 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>xyz.kaijiieow</groupId>
+  <artifactId>kjshopplus</artifactId>
+  <version>1.0.0</version>
+  <packaging>jar</packaging>
+
+  <name>KJShopPlus</name>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <java.version>17</java.version>
+  </properties>
+
+  <build>
+    <defaultGoal>clean package</defaultGoal>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+        <configuration>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.2.4</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+  </build>
+
+  <repositories>
+    <repository>
+      <id>papermc</id>
+      <url>https://repo.papermc.io/repository/maven-public/</url>
+    </repository>
+    <repository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+    </repository>
+    <repository>
+      <id>geysermc-repo</id>
+      <url>https://repo.geysermc.org/nexus/repository/maven-public/</url>
+    </repository>
+    <repository>
+      <id>opencollab-snapshot</id>
+      <url>https://repo.opencollab.dev/main/</url>
+    </repository>
+    <repository>
+      <id>bukkit-repo</id>
+      <url>http://repo.bukkit.org/content/groups/public/</url>
+    </repository>
+    <repository>
+      <id>nightexpress-releases</id>
+      <url>https://repo.nightexpressdev.com/releases</url>
+    </repository>
+    <repository>
+      <id>scarsz</id>
+      <url>https://nexus.scarsz.me/content/groups/public/</url>
+    </repository>
+  </repositories>
+
+  <dependencies>
+    <!-- API หลัก: Paper 1.21. อันนี้ตัวเดียวพอ, มันรวม Bukkit/Spigot ไว้แล้ว -->
+    <dependency>
+      <groupId>io.papermc.paper</groupId>
+      <artifactId>paper-api</artifactId>
+      <version>1.21-R0.1-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.kyori</groupId>
+      <artifactId>adventure-text-minimessage</artifactId>
+      <version>4.17.0</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!--
+    <dependency>
+      <groupId>org.bukkit</groupId>
+      <artifactId>bukkit</artifactId>
+      <version>1.6.4-R2.0</version>
+      <scope>provided</scope>
+    </dependency>
+    -->
+    <!-- ^^^ กูเอามันออกแล้ว ^^^ -->
+
+    <dependency>
+      <groupId>org.geysermc.floodgate</groupId>
+      <artifactId>api</artifactId>
+      <version>2.2.4-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.github.MilkBowl</groupId>
+      <artifactId>VaultAPI</artifactId>
+      <version>1.7</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geysermc.geyser</groupId>
+      <artifactId>api</artifactId>
+      <version>2.8.3-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>su.nightexpress.coinsengine</groupId>
+      <artifactId>CoinsEngine</artifactId>
+      <version>2.6.0</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+</project>
+

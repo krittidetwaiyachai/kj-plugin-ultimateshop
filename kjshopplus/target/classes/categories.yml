@@ -1,0 +1,59 @@
+# Main category menu configuration
+# File: plugins/KJShopPlus/categories.yml
+main_menu:
+  title: "&x&F&F&D&5&0&0&lKJShopPlus &r&7- &fMain Shop" # Example Title
+  size: 54 # 6 rows
+  fill-item:
+    material: GRAY_STAINED_GLASS_PANE
+    displayname: " "
+
+  # --- Close Button ---
+  close_button:
+    enable: true
+    slot: 49 # Bottom middle
+    material: BARRIER
+    displayname: "&cClose Menu"
+    action: "CLOSE"
+
+  # --- Player Info Item ---
+  player_info_item:
+    enable: true
+    slot: 4 # Top middle
+    material: PLAYER_HEAD
+    displayname: "&e{player_name}'s Balances:" # Added placeholder
+    lore:
+      - "&7---------------------"
+      # Balance lines like "&fVault: &a$100.00" will be added dynamically
+
+  # --- Categories ---
+  # THIS "categories:" KEY IS CRITICAL
+  categorie:
+    ores: # ID must match the shop file name (ores.yml)
+      enable: true
+      slot: 10 # Example slot
+      material: IRON_INGOT
+      displayname: "&7&lOres & Ingots"
+      lore:
+        - "&7Click to browse ores and ingots."
+        - "&7Prices may change based on demand!"
+      # action: OPEN_CATEGORY (default)
+      # value: ores (default)
+
+    farming: # Example of another category
+      enable: true
+      slot: 11
+      material: WHEAT
+      displayname: "&e&lFarming"
+      lore:
+        - "&7Click to browse farmable items."
+        - "&7Sell your crops here!"
+      # Assuming you have a farming.yml in the shops folder
+
+    # blocks:
+    #   enable: true
+    #   slot: 12
+    #   material: GRASS_BLOCK
+    #   displayname: "&2&lBuilding Blocks"
+    #   lore:
+    #     - "&7Buy blocks for your builds."
+

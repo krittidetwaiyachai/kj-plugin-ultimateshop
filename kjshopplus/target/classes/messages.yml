@@ -1,0 +1,49 @@
+# ================================================== #
+#                     KJShopPlus Messages            #
+# ================================================== #
+# Uses legacy color codes (§) supported by Bukkit/Paper API
+# ================================================== #
+
+prefix: "§x§F§F§7§B§0§0§l[§x§F§F§A§E§0§0§lK§x§F§F§D§5§0§0§lJ§x§F§F§E§8§0§0§lS§x§E§8§F§F§0§0§lh§x§C§1§F§F§0§0§lo§x§9§5§F§F§0§0§lp§x§5§C§F§F§0§0§lP§x§2§E§F§F§0§0§ll§x§0§0§F§1§5§C§lu§x§0§0§F§5§C§0§ls§x§0§0§F§A§1§0§l+§r§x§F§F§7§B§0§0§l] "
+
+# ===================== Player Messages ===================== #
+buy_success: "§x§6§F§F§F§0§0§l✓ §x§B§3§F§F§0§0You bought §f{amount}x {item} §x§B§3§F§F§0§0for §x§F§C§F§F§0§0{currency_symbol}{price}§r."
+sell_success: "§x§0§0§F§F§9§D§l✓ §x§8§0§F§F§B§3You sold §f{amount}x {item} §x§8§0§F§F§B§3for §x§F§C§F§F§0§0{currency_symbol}{price}§r."
+
+not_enough_money: "§x§F§F§5§5§5§5§l✖ §x§F§F§8§0§8§0You don't have enough money."
+not_enough_items: "§x§F§F§5§5§5§5§l✖ §x§F§F§8§0§8§0You don't have enough items to sell."
+out_of_stock: "§x§F§F§5§5§5§5§l✖ §x§F§F§8§0§8§0This item is currently out of stock."
+inventory_full: "§x§F§F§5§5§5§5§l✖ §x§F§F§8§0§8§0Your inventory is full."
+shop_disabled: "§x§F§F§5§5§5§5§l✖ §x§F§F§8§0§8§0The shop is currently disabled."
+invalid_amount: "§x§F§F§5§5§5§5§l✖ §x§F§F§8§0§8§0That is not a valid amount."
+error_occurred: "§x§F§F§5§5§5§5§l✖ §x§F§F§8§0§8§0An internal error occurred. Please contact an admin."
+
+# ===================== System Feedback ===================== #
+reload_done: "§x§5§5§F§F§5§5§l✔ §x§9§9§F§F§9§9Configuration reloaded successfully."
+player_not_found: "§x§F§F§4§0§4§0§l⚠ §x§F§F§8§0§8§0Player not found."
+invalid_command: "§x§F§F§4§0§4§0§l⚠ §x§F§F§8§0§8§0Invalid command usage."
+no_permission: "§x§F§F§4§0§4§0§l⚠ §x§F§F§8§0§8§0You don’t have permission to do that."
+syntax_error: "§x§F§F§4§0§4§0§l⚠ §x§F§F§8§0§8§0Invalid syntax. Use §e/{command} help §7for usage."
+price_reset_manual: "§x§5§5§F§F§5§5§l✔ §x§9§9§F§F§9§9Manually reset §e{count} §x§9§9§F§F§9§9dynamic item prices." # <-- ADDED
+
+# ===================== Transaction Info ===================== #
+dynamic_price_increase: "§x§0§0§E§F§F§F§l↑ §x§6§B§F§F§F§FDemand increased! §fBuy price §rnow §x§0§0§F§F§F§F{price}."
+dynamic_price_decrease: "§x§0§0§E§F§F§F§l↓ §x§6§B§F§F§F§FSupply increased! §fSell price §rnow §x§0§0§F§F§F§F{price}."
+price_reset_notice: "§x§0§0§D§0§F§F§l↻ §fMarket prices have been §x§B§3§F§F§F§Freset §rto base values." # Automatic reset notice
+
+# ===================== Discord / Logging ===================== #
+# Note: These are not used for Discord, but for internal messages if needed.
+discord_log_buy: "§x§F§C§F§F§0§0[BUY] §f{player} purchased {amount}x {item} for {currency_symbol}{price}"
+discord_log_sell: "§x§0§0§F§F§9§D[SELL] §f{player} sold {amount}x {item} for {currency_symbol}{price}"
+discord_log_admin: "§x§F§F§B§3§4§7[ADMIN] §f{admin} executed command: {command}"
+discord_log_reset: "§x§0§0§C§3§F§F[RESET] §fPrice reset executed automatically."
+
+# ===================== UI / GUI ===================== #
+gui_error_closed: "§x§F§F§5§5§5§5§l✖ §x§F§F§8§0§8§0This shop GUI is currently closed."
+
+# ===================== System / Technical ===================== #
+task_started: "§x§5§5§F§F§5§5§l✓ §x§9§9§F§F§9§9Price reset task started."
+task_stopped: "§x§F§F§8§0§8§0§l✖ §x§F§F§A§A§A§APrice reset task stopped."
+data_saved: "§x§6§F§F§F§0§0§l✓ §x§B§3§F§F§0§0Data saved successfully."
+data_error: "§x§F§F§8§0§8§0§l✖ §x§F§F§B§3§B§3Error saving data. Check logs."
+
