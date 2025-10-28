@@ -39,28 +39,41 @@ public class MessageManager {
     }
 
     public void sendMessage(CommandSender sender, String key) {
-        // --- FIX for Java 8 ---
-        sendMessage(sender, key, Collections.<String, String>emptyMap());
+        sendMessage(sender, key, Collections.emptyMap());
     }
 
-    // --- NEW METHOD: getMessage (no prefix, for GUI lore etc.) ---
     public String getMessage(String key, Map<String, String> placeholders) {
+        return getMessageInternal(key, placeholders, null);
+    }
+
+    public String getMessage(String key) {
+        return getMessageInternal(key, Collections.emptyMap(), null);
+    }
+
+    public String getMessage(String key, String defaultValue) {
+        return getMessageInternal(key, Collections.emptyMap(), defaultValue);
+    }
+
+    public String getMessage(String key, Map<String, String> placeholders, String defaultValue) {
+        return getMessageInternal(key, placeholders, defaultValue);
+    }
+
+    private String getMessageInternal(String key, Map<String, String> placeholders, String defaultValue) {
         String message = messages.get(key);
         if (message == null) {
-            return ChatColor.RED + "Missing msg: " + key; // Return an error string
+            message = defaultValue;
+        }
+        if (message == null) {
+            return ChatColor.RED + "Missing msg: " + key;
         }
 
-        for (Map.Entry<String, String> entry : placeholders.entrySet()) {
-            message = message.replace("{" + entry.getKey() + "}", entry.getValue());
+        if (placeholders != null && !placeholders.isEmpty()) {
+            for (Map.Entry<String, String> entry : placeholders.entrySet()) {
+                message = message.replace("{" + entry.getKey() + "}", entry.getValue());
+            }
         }
         return ChatColor.translateAlternateColorCodes('&', message);
     }
-    
-    // --- NEW METHOD OVERLOAD ---
-    public String getMessage(String key) {
-        return getMessage(key, Collections.<String, String>emptyMap());
-    }
-    // --- END NEW METHOD ---
 
 
     public void sendMessage(CommandSender sender, String key, Map<String, String> placeholders) {

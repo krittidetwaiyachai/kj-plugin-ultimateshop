@@ -184,10 +184,7 @@ public class GUIManager {
 
         Set<Integer> layoutSlots = new HashSet<>();
         boolean isBedrock = plugin.isBedrockPlayer(player.getUniqueId());
-
-        // --- วัสดุสำหรับปุ่มสลับโหมด ---
-        Material buyMat = mapBedrockMaterial(safeMaterial("EMERALD_BLOCK", Material.LIME_WOOL), player);
-        Material sellMat = mapBedrockMaterial(safeMaterial("REDSTONE_BLOCK", Material.RED_WOOL), player);
+        boolean toggleButtonPlaced = false;
 
 
         // 1. Place layout items (buttons) FIRST and record their slots
@@ -199,21 +196,12 @@ public class GUIManager {
             if (action.equals("PAGE_PREV") && page <= 1) continue;
             if (action.equals("PAGE_NEXT") && page >= totalPages) continue;
 
-            ItemStack item;
             int slot = layoutItem.getSlot();
+            ItemStack item;
 
             // --- ตรวจจับปุ่ม TOGGLE_MODE ---
             if (action.equals("TOGGLE_MODE")) {
-                ItemBuilder builder = new ItemBuilder(isBuyMode ? buyMat : sellMat);
-                if (isBuyMode) {
-                    builder.setName(plugin.getMessageManager().getMessage("gui_buy_mode_button", "&a&lBuy Mode"));
-                    builder.setLore(Collections.singletonList(plugin.getMessageManager().getMessage("gui_buy_mode_lore", "&7Click to switch to Sell Mode")));
-                } else {
-                    builder.setName(plugin.getMessageManager().getMessage("gui_sell_mode_button", "&c&lSell Mode"));
-                    builder.setLore(Collections.singletonList(plugin.getMessageManager().getMessage("gui_sell_mode_lore", "&7Click to switch to Buy Mode")));
-                }
-                builder.setPDCAction("TOGGLE_MODE"); // PDC Action
-                item = builder.build();
+                item = createToggleModeItem(player, isBuyMode);
             } else {
                 // ปุ่มอื่นๆ สร้างตามปกติ
                 item = layoutItem.build(player, isBedrock);
@@ -225,9 +213,22 @@ public class GUIManager {
                  if (slot >= 0 && slot < category.getSize()) {
                      inv.setItem(slot, item);
                      layoutSlots.add(slot); // Record the occupied slot
+                     if ("TOGGLE_MODE".equals(action)) {
+                         toggleButtonPlaced = true;
+                     }
                  } else {
                      plugin.getLogger().warning("Layout item '" + layoutItem.getId() + "' has invalid slot: " + slot + " in category '" + categoryId + "'");
                  }
+            }
+        }
+
+        if (!toggleButtonPlaced) {
+            int toggleSlot = findToggleSlot(inv, layoutSlots);
+            if (toggleSlot != -1) {
+                inv.setItem(toggleSlot, createToggleModeItem(player, isBuyMode));
+                layoutSlots.add(toggleSlot);
+            } else {
+                plugin.getLogger().warning("Unable to place toggle mode button automatically for category '" + categoryId + "'");
             }
         }
 
@@ -331,41 +332,60 @@ public class GUIManager {
                 .build();
         for (int i = 0; i < guiSize; i++) inv.setItem(i, fill);
 
+        final int displaySlot = 22;
+        final int confirmSlot = 37;
+        final int cancelSlot = 43;
+        final int sellAllSlot = 41;
+
+        // --- ปุ่มยืนยัน ---
+        Material confirmMat = mapBedrockMaterial(isBuyMode ? safeMaterial("LIME_CONCRETE", Material.LIME_WOOL)
+                                                           : safeMaterial("RED_CONCRETE", Material.RED_WOOL), player);
+        String confirmMessage = isBuyMode ? plugin.getMessageManager().getMessage("gui_confirm_buy_button", "&a&lConfirm Purchase")
+                                          : plugin.getMessageManager().getMessage("gui_confirm_sell_button", "&c&lConfirm Sale");
+        inv.setItem(confirmSlot, new ItemBuilder(confirmMat)
+            .setName(confirmMessage)
+            .setLore(Collections.singletonList(plugin.getMessageManager().getMessage("gui_confirm_lore", "&7Complete this transaction")))
+            .setPDCAction("CONFIRM_TRANSACTION")
+            .build());
+
         // --- ปุ่มยกเลิก (กลับไปหน้าหมวดหมู่เดิม) ---
-        inv.setItem(40, new ItemBuilder(mapBedrockMaterial(Material.BARRIER, player))
+        inv.setItem(cancelSlot, new ItemBuilder(mapBedrockMaterial(Material.BARRIER, player))
             .setName(plugin.getMessageManager().getMessage("gui_cancel_button", "&c&lCancel"))
             .setLore(Collections.singletonList(plugin.getMessageManager().getMessage("gui_cancel_lore", "&7Return to shop")))
             .setPDCAction("CANCEL_TRANSACTION")
             .build());
 
-        // --- ปุ่มยืนยัน ---
-        Material confirmMat = mapBedrockMaterial(isBuyMode ? safeMaterial("LIME_CONCRETE", Material.LIME_WOOL) : safeMaterial("RED_CONCRETE", Material.RED_WOOL), player);
-        String confirmMessage = isBuyMode ? plugin.getMessageManager().getMessage("gui_confirm_buy_button", "&a&lConfirm Purchase")
-                                          : plugin.getMessageManager().getMessage("gui_confirm_sell_button", "&c&lConfirm Sale");
-        
-        inv.setItem(36, new ItemBuilder(confirmMat)
-            .setName(confirmMessage)
-            .setPDCAction("CONFIRM_TRANSACTION")
-            .build());
-
-        // --- ปุ่ม +, - ---
+        // --- ปุ่ม +, - จัดรูปแบบใหม่รอบไอเทมกลาง ---
         Material addMat = mapBedrockMaterial(safeMaterial("GREEN_STAINED_GLASS_PANE", Material.LIME_STAINED_GLASS_PANE), player);
         Material subMat = mapBedrockMaterial(safeMaterial("RED_STAINED_GLASS_PANE", Material.RED_STAINED_GLASS_PANE), player);
 
-        inv.setItem(10, new ItemBuilder(addMat).setName("&a&l+1").setPDCData("ADD_AMOUNT", "1").build());
-        inv.setItem(11, new ItemBuilder(addMat).setName("&a&l+8").setPDCData("ADD_AMOUNT", "8").build());
-        inv.setItem(12, new ItemBuilder(addMat).setName("&a&l+32").setPDCData("ADD_AMOUNT", "32").build());
-        inv.setItem(13, new ItemBuilder(addMat).setName("&a&l+64").setPDCData("ADD_AMOUNT", "64").build());
+        int[] amountSteps = {1, 8, 32, 64};
+        int[] addSlots = {24, 25, 33, 34};
+        int[] subtractSlots = {20, 19, 29, 28};
 
-        // ปุ่ม - (จะแสดงผลหรือไม่ ขึ้นอยู่กับ currentAmount)
-        if (currentAmount > 1)
-            inv.setItem(19, new ItemBuilder(subMat).setName("&c&l-1").setPDCData("SUB_AMOUNT", "1").build());
-        if (currentAmount >= 8)
-            inv.setItem(20, new ItemBuilder(subMat).setName("&c&l-8").setPDCData("SUB_AMOUNT", "8").build());
-        if (currentAmount >= 32)
-            inv.setItem(21, new ItemBuilder(subMat).setName("&c&l-32").setPDCData("SUB_AMOUNT", "32").build());
-        if (currentAmount >= 64)
-            inv.setItem(22, new ItemBuilder(subMat).setName("&c&l-64").setPDCData("SUB_AMOUNT", "64").build());
+        for (int i = 0; i < amountSteps.length; i++) {
+            int step = amountSteps[i];
+            int stackAmount = Math.max(1, Math.min(step, addMat.getMaxStackSize()));
+            int stackAmountSub = Math.max(1, Math.min(step, subMat.getMaxStackSize()));
+            Map<String, String> placeholders = new HashMap<>();
+            placeholders.put("amount", String.valueOf(step));
+
+            inv.setItem(addSlots[i], new ItemBuilder(addMat)
+                .setName("&a&l+" + step)
+                .setLore(Collections.singletonList(plugin.getMessageManager().getMessage("gui_add_amount_lore", placeholders, "&7Increase by {amount}")))
+                .setAmount(stackAmount)
+                .setPDCData("ADD_AMOUNT", String.valueOf(step))
+                .build());
+
+            if (currentAmount >= step && subtractSlots[i] >= 0) {
+                inv.setItem(subtractSlots[i], new ItemBuilder(subMat)
+                    .setName("&c&l-" + step)
+                    .setLore(Collections.singletonList(plugin.getMessageManager().getMessage("gui_sub_amount_lore", placeholders, "&7Decrease by {amount}")))
+                    .setAmount(stackAmountSub)
+                    .setPDCData("SUB_AMOUNT", String.valueOf(step))
+                    .build());
+            }
+        }
 
         // --- ปุ่ม Sell All (เฉพาะโหมดขาย) ---
         if (!isBuyMode) {
@@ -373,13 +393,18 @@ public class GUIManager {
              double sellPrice = plugin.getDynamicPriceManager().getSellPrice(item);
              String symbol = plugin.getCurrencyService().getCurrencySymbol(item.getCurrencyId());
 
+             Map<String, String> sellAllPlaceholders = new HashMap<>();
+             sellAllPlaceholders.put("amount", String.valueOf(sellAllAmount));
+             sellAllPlaceholders.put("currency_symbol", symbol != null ? symbol : "");
+             sellAllPlaceholders.put("total_price", PriceUtil.format(sellPrice * sellAllAmount));
+
              List<String> sellAllLore = new ArrayList<>();
-             sellAllLore.add(plugin.getMessageManager().getMessage("gui_total_price", "&7Total Price: &a") + symbol + PriceUtil.format(sellPrice * sellAllAmount));
+             sellAllLore.add(plugin.getMessageManager().getMessage("gui_total_price", sellAllPlaceholders, "&7Total Price: &6{currency_symbol}{total_price}"));
              if (sellAllAmount == 0) {
                  sellAllLore.add(plugin.getMessageManager().getMessage("not_enough_items", "&cYou have no items to sell."));
              }
 
-             inv.setItem(31, new ItemBuilder(mapBedrockMaterial(Material.HOPPER, player))
+             inv.setItem(sellAllSlot, new ItemBuilder(mapBedrockMaterial(Material.HOPPER, player))
                  .setName(plugin.getMessageManager().getMessage("gui_sell_all_button", "&c&lSell All") + " &f(" + sellAllAmount + ")")
                  .setLore(sellAllLore)
                  .setPDCAction("SELL_ALL_CART") // Action ใหม่
@@ -388,25 +413,35 @@ public class GUIManager {
 
 
         // --- ไอเทมแสดงผล (ตรงกลาง) ---
-        updateQuantityDisplay(inv, player, item, isBuyMode, currentAmount);
+        updateQuantityDisplay(inv, player, item, isBuyMode, currentAmount, displaySlot);
 
         openMenu(player, inv);
     }
 
     // --- เมธอดใหม่: อัปเดตไอเทมแสดงผลตรงกลาง ---
-    private void updateQuantityDisplay(Inventory inv, Player player, ShopItem item, boolean isBuyMode, int amount) {
+    private void updateQuantityDisplay(Inventory inv, Player player, ShopItem item, boolean isBuyMode, int amount, int displaySlot) {
+        int safeAmount = Math.max(0, amount);
         double pricePerItem = isBuyMode ? plugin.getDynamicPriceManager().getBuyPrice(item)
                                         : plugin.getDynamicPriceManager().getSellPrice(item);
-        double totalPrice = pricePerItem * amount;
+        double totalPrice = pricePerItem * safeAmount;
         String symbol = plugin.getCurrencyService().getCurrencySymbol(item.getCurrencyId());
+        if (symbol == null) {
+            symbol = "";
+        }
 
         String modeName = isBuyMode ? plugin.getMessageManager().getMessage("gui_buying", "&aBuying")
                                    : plugin.getMessageManager().getMessage("gui_selling", "&cSelling");
 
+        Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("amount", String.valueOf(safeAmount));
+        placeholders.put("total_price", PriceUtil.format(totalPrice));
+        placeholders.put("price_per_item", PriceUtil.format(pricePerItem));
+        placeholders.put("currency_symbol", symbol);
+
         List<String> lore = new ArrayList<>();
-        lore.add(plugin.getMessageManager().getMessage("gui_item_price", "&7Price / item: &e") + symbol + PriceUtil.format(pricePerItem));
-        lore.add(" ");
-        lore.add(plugin.getMessageManager().getMessage("gui_total_price", "&7Total Price: &6") + symbol + PriceUtil.format(totalPrice));
+        lore.add(plugin.getMessageManager().getMessage("gui_selected_amount", placeholders, "&7Selected: &b{amount}"));
+        lore.add(plugin.getMessageManager().getMessage("gui_item_price", placeholders, "&7Price / item: &e{currency_symbol}{price_per_item}"));
+        lore.add(plugin.getMessageManager().getMessage("gui_total_price", placeholders, "&7Total Price: &6{currency_symbol}{total_price}"));
         lore.add(" ");
         if (isBuyMode) {
             lore.add(plugin.getMessageManager().getMessage("gui_click_to_confirm_buy", "&aClick confirm (bottom left) to buy."));
@@ -416,15 +451,14 @@ public class GUIManager {
             lore.add(plugin.getMessageManager().getMessage("gui_click_to_confirm_sell", "&cClick confirm (bottom left) to sell."));
         }
 
-
+        String baseName = item.getDisplayName() != null ? item.getDisplayName() : item.getMaterial().name();
         ItemStack displayItem = new ItemBuilder(item.getMaterial())
-            .setName(modeName + " " + item.getMaterial().name())
-            .setAmount(Math.max(1, Math.min(amount, item.getMaterial().getMaxStackSize()))) // Clamp amount 1-64
+            .setName(modeName + " " + ChatColor.translateAlternateColorCodes('&', baseName) + " x" + safeAmount)
+            .setAmount(1)
             .setLore(lore)
-            // No PDC needed for this item, it's just display
             .build();
 
-        inv.setItem(4, displayItem); // Slot กลาง
+        inv.setItem(displaySlot, displayItem);
     }
 
 
@@ -541,8 +575,12 @@ public class GUIManager {
                 break;
             case "SELL_ALL_CART": // ปุ่ม Sell All ในตะกร้า
                 if (tradeItem != null && !isBuyMode && guiData.getGuiType() == GUITYPE.QUANTITY_SELECTOR) {
-                    int playerAmount = getAmountInInventory(player, tradeItem.getMaterial());
-                    openQuantitySelector(player, tradeItem, false, playerAmount, previousPage); // อัปเดตจำนวนเป็นทั้งหมดที่มี
+                    performSellAllTransaction(player, tradeItem);
+                    if (categoryId != null) {
+                        openShopPage(player, categoryId, previousPage, false);
+                    } else {
+                        player.closeInventory();
+                    }
                 }
                 break;
             case "CONFIRM_TRANSACTION":
@@ -707,6 +745,66 @@ public class GUIManager {
         if (guiSize == 45) return 36;
         if (guiSize == 54) return 45; // Max size typically leaves last row for controls
         return Math.max(0, guiSize - 9); // Default guess: subtract bottom row
+    }
+
+    private ItemStack createToggleModeItem(Player player, boolean isBuyMode) {
+        Material baseMaterial = isBuyMode ? safeMaterial("EMERALD_BLOCK", Material.LIME_WOOL)
+                                          : safeMaterial("REDSTONE_BLOCK", Material.RED_WOOL);
+        ItemBuilder builder = new ItemBuilder(mapBedrockMaterial(baseMaterial, player));
+        if (isBuyMode) {
+            builder.setName(plugin.getMessageManager().getMessage("gui_buy_mode_button", "&a&lBuy Mode"));
+            builder.setLore(Collections.singletonList(plugin.getMessageManager().getMessage("gui_buy_mode_lore", "&7Click to switch to Sell Mode")));
+        } else {
+            builder.setName(plugin.getMessageManager().getMessage("gui_sell_mode_button", "&c&lSell Mode"));
+            builder.setLore(Collections.singletonList(plugin.getMessageManager().getMessage("gui_sell_mode_lore", "&7Click to switch to Buy Mode")));
+        }
+        return builder.setPDCAction("TOGGLE_MODE").build();
+    }
+
+    private int findToggleSlot(Inventory inv, Set<Integer> reservedSlots) {
+        List<Integer> candidates = buildPreferredToggleSlots(inv.getSize());
+        for (int slot : candidates) {
+            if (slot < 0 || slot >= inv.getSize()) continue;
+            if (reservedSlots.contains(slot)) continue;
+            ItemStack existing = inv.getItem(slot);
+            if (existing == null || existing.getType() == Material.AIR) {
+                return slot;
+            }
+        }
+        return -1;
+    }
+
+    private List<Integer> buildPreferredToggleSlots(int size) {
+        LinkedHashSet<Integer> ordered = new LinkedHashSet<>();
+        if (size <= 0) return new ArrayList<>();
+
+        int rows = (int) Math.ceil(size / 9.0);
+        if (rows <= 0) rows = 1;
+        int lastRowStart = Math.max(0, (rows - 1) * 9);
+        int lastRowEnd = Math.min(size, lastRowStart + 9);
+        int center = Math.min(size - 1, lastRowStart + 4);
+        ordered.add(center);
+
+        for (int offset = 1; offset < 5; offset++) {
+            int left = center - offset;
+            int right = center + offset;
+            if (left >= lastRowStart) ordered.add(left);
+            if (right < lastRowEnd) ordered.add(right);
+        }
+
+        if (rows > 1) {
+            int previousRowStart = Math.max(0, lastRowStart - 9);
+            int previousRowEnd = Math.min(size, previousRowStart + 9);
+            int previousCenter = Math.min(size - 1, previousRowStart + 4);
+            if (previousCenter >= previousRowStart && previousCenter < previousRowEnd) {
+                ordered.add(previousCenter);
+            }
+        }
+
+        for (int i = 0; i < size; i++) {
+            ordered.add(i);
+        }
+        return new ArrayList<>(ordered);
     }
 
     // Safely gets a Material, returning fallback if invalid

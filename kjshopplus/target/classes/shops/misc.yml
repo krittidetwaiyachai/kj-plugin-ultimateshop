@@ -1,0 +1,95 @@
+# Shop file for the 'misc' category
+# File: plugins/KJShopPlus/shops/misc.yml
+category:
+  id: "misc"
+  title: "&9&lMiscellaneous &7({page}/{total_pages})"
+  size: 54
+  fill-item:
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    displayname: " "
+
+  layout:
+    go-back: { slot: 49, material: BARRIER, displayname: "&cGo Back", action: "OPEN_CATEGORY", value: "main" }
+    page-prev: { slot: 48, material: ARROW, displayname: "&aPrevious Page", action: "PAGE_PREV" }
+    page-next: { slot: 50, material: ARROW, displayname: "&aNext Page", action: "PAGE_NEXT" }
+
+  items:
+    book:
+      slot: 10
+      material: BOOK
+      display: { name: "&fBook", lore: ["&7For enchanting and writing.", "&r ", "&eClick to trade."] }
+      currency: vault
+      buy: 10.00 # Leather + Paper
+      sell: 3.00
+      trade: { allow_buy: true, allow_sell: true }
+      dynamic: { enabled: false }
+
+    paper:
+       slot: 11
+       material: PAPER
+       display: { name: "&fPaper", lore: ["&7From sugar cane.", "&r ", "&eClick to trade."] }
+       currency: vault
+       buy: 0.50 # Based on sugar cane price
+       sell: 0.20
+       trade: { allow_buy: true, allow_sell: true }
+       dynamic: { enabled: false }
+
+    leather:
+       slot: 12
+       material: LEATHER
+       display: { name: "&6Leather", lore: ["&7From cows.", "&r ", "&eClick to trade."] }
+       currency: vault
+       buy: 5.00
+       sell: 2.50
+       trade: { allow_buy: true, allow_sell: true }
+       dynamic: { enabled: true, buy_step_percent: 0.3, sell_step_percent: 0.15, max_price: 15.00, min_price: 1.00 }
+
+    flint:
+       slot: 13
+       material: FLINT
+       display: { name: "&8Flint", lore: ["&7From gravel.", "&r ", "&eClick to trade."] }
+       currency: vault
+       buy: 2.00
+       sell: 0.80
+       trade: { allow_buy: true, allow_sell: true }
+       dynamic: { enabled: false } # Usually depends on gravel luck
+
+    bucket:
+       slot: 15
+       material: BUCKET
+       display: { name: "&7Bucket", lore: ["&7Carry liquids.", "&r ", "&eClick to trade."] }
+       currency: vault
+       buy: 30.00 # 3 Iron
+       sell: 5.00
+       trade: { allow_buy: true, allow_sell: true }
+       dynamic: { enabled: false }
+
+    compass:
+       slot: 16
+       material: COMPASS
+       display: { name: "&cCompass", lore: ["&7Points to world spawn.", "&r ", "&eClick to trade."] }
+       currency: vault
+       buy: 40.00 # Iron + Redstone
+       sell: 8.00
+       trade: { allow_buy: true, allow_sell: true }
+       dynamic: { enabled: false }
+
+    clock:
+       slot: 17
+       material: CLOCK
+       display: { name: "&eClock", lore: ["&7Tells the time of day.", "&r ", "&eClick to trade."] }
+       currency: vault
+       buy: 50.00 # Gold + Redstone
+       sell: 10.00
+       trade: { allow_buy: true, allow_sell: true }
+       dynamic: { enabled: false }
+
+    name_tag:
+       slot: 19
+       material: NAME_TAG
+       display: { name: "&fName Tag", lore: ["&7Name your mobs!", "&r ", "&eClick to trade."] }
+       currency: gems # Example using custom currency
+       buy: 100.00
+       sell: 10.00 # Usually found, not crafted
+       trade: { allow_buy: true, allow_sell: true }
+       dynamic: { enabled: false }

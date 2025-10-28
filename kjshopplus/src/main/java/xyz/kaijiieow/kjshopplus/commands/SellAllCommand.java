@@ -16,7 +16,9 @@ import xyz.kaijiieow.kjshopplus.economy.PriceUtil;
 import xyz.kaijiieow.kjshopplus.pricing.DynamicPriceManager;
 import xyz.kaijiieow.kjshopplus.services.DiscordWebhookService;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SellAllCommand implements CommandExecutor {
@@ -48,8 +50,6 @@ public class SellAllCommand implements CommandExecutor {
 
         // สร้าง Map ของไอเทมที่จะขาย (Material -> จำนวน)
         Map<Material, Integer> itemsToSell = new HashMap<>();
-        // สร้าง Map เพื่ออ้างอิง Material กลับไปที่ ShopItem (เพื่อดึง config)
-        Map<Material, ShopItem> itemConfigs = new HashMap<>();
 
         // วนลูปในช่องเก็บของหลัก (ไม่รวมเกราะและ off-hand)
         for (ItemStack itemStack : player.getInventory().getStorageContents()) {
@@ -58,12 +58,9 @@ public class SellAllCommand implements CommandExecutor {
             }
 
             Material mat = itemStack.getType();
-            ShopItem shopItem = shopManager.getShopItemByMaterial(mat); // ใช้วิธีใหม่ในการดึง ShopItem
-
-            // เช็คว่า: 1. ร้านมีของนี้ 2. ร้านรับซื้อ 3. สกุลเงินเป็น vault
-            if (shopItem != null && shopItem.isAllowSell() && shopItem.getCurrencyId().equalsIgnoreCase("vault")) {
+            List<ShopItem> sellable = shopManager.getSellableItems(mat);
+            if (!sellable.isEmpty()) {
                 itemsToSell.put(mat, itemsToSell.getOrDefault(mat, 0) + itemStack.getAmount());
-                itemConfigs.putIfAbsent(mat, shopItem); // เก็บ config ของไอเทมไว้
             }
         }
 
@@ -72,48 +69,123 @@ public class SellAllCommand implements CommandExecutor {
             return true;
         }
 
-        double totalSellPrice = 0.0;
-        int totalItemsSold = 0;
-
-        // ทำการขาย
+        List<SellRequest> sellRequests = new ArrayList<>();
         for (Map.Entry<Material, Integer> entry : itemsToSell.entrySet()) {
             Material mat = entry.getKey();
             int amount = entry.getValue();
-            ShopItem shopItem = itemConfigs.get(mat); // ดึง config ที่เก็บไว้
-
-            double sellPrice = dynamicPriceManager.getSellPrice(shopItem);
-            double itemTotalPrice = sellPrice * amount;
-
-            totalSellPrice += itemTotalPrice;
-            totalItemsSold += amount;
-
-            // ลบของออกจากตัวผู้เล่น
-            player.getInventory().removeItem(new ItemStack(mat, amount));
-            // บันทึกการขาย (สำหรับ Dynamic Price)
-            dynamicPriceManager.recordSell(shopItem, amount);
-            // ส่ง Log ไป Discord/File
-            discordWebhookService.logSell(player, shopItem, amount, itemTotalPrice);
+            List<ShopItem> candidates = shopManager.getSellableItems(mat);
+            if (candidates.isEmpty() || amount <= 0) {
+                continue;
+            }
+            ShopItem best = selectBestSellCandidate(candidates);
+            if (best == null) {
+                continue;
+            }
+            double unitPrice = dynamicPriceManager.getSellPrice(best);
+            if (unitPrice <= 0) {
+                continue;
+            }
+            sellRequests.add(new SellRequest(mat, amount, best, unitPrice));
         }
 
-        // เพิ่มเงินให้ผู้เล่น
-        if (!currencyService.addBalance(player, "vault", totalSellPrice)) {
-            // คืนของถ้าให้เงินไม่สำเร็จ (ยากที่จะเกิด แต่กันไว้)
-            for (Map.Entry<Material, Integer> entry : itemsToSell.entrySet()) {
-                player.getInventory().addItem(new ItemStack(entry.getKey(), entry.getValue()));
-            }
-            plugin.getLogger().severe("CRITICAL: Failed to add balance for " + player.getName() + " after /sellall! Returning items.");
-            messageManager.sendMessage(player, "error_occurred");
+        if (sellRequests.isEmpty()) {
+            messageManager.sendMessage(player, "sellall_nothing_to_sell");
             return true;
         }
 
-        // ส่งข้อความสำเร็จ
-        Map<String, String> placeholders = new HashMap<>();
-        placeholders.put("amount", String.valueOf(totalItemsSold));
-        placeholders.put("price", PriceUtil.format(totalSellPrice));
-        placeholders.put("currency_symbol", currencyService.getCurrencySymbol("vault"));
+        Map<String, Double> payoutTotals = new HashMap<>();
+        Map<String, Integer> payoutItemCounts = new HashMap<>();
+        for (SellRequest request : sellRequests) {
+            payoutTotals.merge(request.currencyId, request.totalPrice, Double::sum);
+            payoutItemCounts.merge(request.currencyId, request.amount, Integer::sum);
+        }
 
-        messageManager.sendMessage(player, "sellall_success", placeholders);
+        Map<Material, Integer> removedAmounts = new HashMap<>();
+        for (SellRequest request : sellRequests) {
+            ItemStack toRemove = new ItemStack(request.material, request.amount);
+            Map<Integer, ItemStack> leftovers = player.getInventory().removeItem(toRemove);
+            int notRemoved = leftovers.values().stream().mapToInt(ItemStack::getAmount).sum();
+            int removed = request.amount - notRemoved;
+            if (removed > 0) {
+                removedAmounts.merge(request.material, removed, Integer::sum);
+            }
+            if (notRemoved > 0) {
+                rollbackInventory(player, removedAmounts);
+                messageManager.sendMessage(player, "not_enough_items");
+                return true;
+            }
+        }
+
+        for (Map.Entry<String, Double> payout : payoutTotals.entrySet()) {
+            double amount = payout.getValue();
+            if (amount <= 0) continue;
+            if (!currencyService.addBalance(player, payout.getKey(), amount)) {
+                rollbackInventory(player, removedAmounts);
+                plugin.getLogger().severe("CRITICAL: Failed to add balance (" + payout.getKey() + ") for " + player.getName() + " after /sellall! Returning items.");
+                messageManager.sendMessage(player, "error_occurred");
+                return true;
+            }
+        }
+
+        for (SellRequest request : sellRequests) {
+            dynamicPriceManager.recordSell(request.shopItem, request.amount);
+            discordWebhookService.logSell(player, request.shopItem, request.amount, request.totalPrice);
+        }
+
+        for (Map.Entry<String, Double> payout : payoutTotals.entrySet()) {
+            String currencyId = payout.getKey();
+            double totalPrice = payout.getValue();
+            int itemsSold = payoutItemCounts.getOrDefault(currencyId, 0);
+
+            Map<String, String> placeholders = new HashMap<>();
+            placeholders.put("amount", String.valueOf(itemsSold));
+            placeholders.put("price", PriceUtil.format(totalPrice));
+            String symbol = currencyService.getCurrencySymbol(currencyId);
+            placeholders.put("currency_symbol", symbol != null ? symbol : "");
+
+            messageManager.sendMessage(player, "sellall_success", placeholders);
+        }
 
         return true;
+    }
+
+    private void rollbackInventory(Player player, Map<Material, Integer> removed) {
+        removed.forEach((material, amount) -> {
+            if (amount > 0) {
+                player.getInventory().addItem(new ItemStack(material, amount));
+            }
+        });
+    }
+
+    private ShopItem selectBestSellCandidate(List<ShopItem> candidates) {
+        ShopItem best = null;
+        double bestPrice = Double.NEGATIVE_INFINITY;
+        for (ShopItem candidate : candidates) {
+            if (candidate == null || !candidate.isAllowSell()) continue;
+            double price = dynamicPriceManager.getSellPrice(candidate);
+            if (price > bestPrice) {
+                bestPrice = price;
+                best = candidate;
+            }
+        }
+        return best;
+    }
+
+    private static class SellRequest {
+        private final Material material;
+        private final int amount;
+        private final ShopItem shopItem;
+        private final String currencyId;
+        private final double unitPrice;
+        private final double totalPrice;
+
+        SellRequest(Material material, int amount, ShopItem shopItem, double unitPrice) {
+            this.material = material;
+            this.amount = amount;
+            this.shopItem = shopItem;
+            this.currencyId = shopItem.getCurrencyId();
+            this.unitPrice = unitPrice;
+            this.totalPrice = unitPrice * amount;
+        }
     }
 }

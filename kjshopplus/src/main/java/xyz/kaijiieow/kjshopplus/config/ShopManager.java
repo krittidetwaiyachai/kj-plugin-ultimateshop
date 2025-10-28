@@ -1,6 +1,6 @@
 package xyz.kaijiieow.kjshopplus.config;
 
-import org.bukkit.Material; // เพิ่ม Import
+import org.bukkit.Material; // --- เพิ่ม Import ---
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -10,11 +10,12 @@ import xyz.kaijiieow.kjshopplus.config.model.ShopCategory;
 import xyz.kaijiieow.kjshopplus.config.model.ShopItem;
 
 import java.io.File;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.nio.charset.StandardCharsets;
+// ... (imports อื่นๆ) ...
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ShopManager {
@@ -23,8 +24,8 @@ public class ShopManager {
     private MainCategoryMenu mainCategoryMenu;
     private final Map<String, ShopCategory> shopCategories = new HashMap<>();
     private final Map<String, ShopItem> allShopItems = new HashMap<>();
-    // --- เพิ่ม Map ใหม่สำหรับค้นหาด้วย Material ---
-    private final Map<Material, ShopItem> itemsByMaterial = new HashMap<>();
+    private final Map<Material, List<ShopItem>> itemsByMaterial = new HashMap<>();
+
 
     public ShopManager(KJShopPlus plugin) {
         this.plugin = plugin;
@@ -33,8 +34,8 @@ public class ShopManager {
     public void load() {
         shopCategories.clear();
         allShopItems.clear();
-        itemsByMaterial.clear(); // --- เพิ่มบรรทัดนี้ ---
-        mainCategoryMenu = null; // Clear old menu
+        itemsByMaterial.clear();
+        mainCategoryMenu = null; 
 
         // 1. Load categories.yml
         File categoriesFile = new File(plugin.getDataFolder(), "categories.yml");
@@ -46,16 +47,14 @@ public class ShopManager {
         ConfigurationSection mainSection = categoriesConfig.getConfigurationSection("main_menu");
         if (mainSection == null) {
             plugin.getLogger().severe("categories.yml is invalid! Missing 'main_menu:' key.");
-            // Prevent further loading if main menu is broken
             return;
         }
         try {
-            // Ensure MainCategoryMenu constructor is correct (receives ConfigurationSection)
             this.mainCategoryMenu = new MainCategoryMenu(mainSection);
         } catch (Exception e) {
              plugin.getLogger().severe("Failed to load main_menu from categories.yml!");
              e.printStackTrace();
-             return; // Stop if main menu fails
+             return; 
         }
 
 
@@ -63,51 +62,39 @@ public class ShopManager {
         File shopsDir = new File(plugin.getDataFolder(), "shops");
         if (!shopsDir.exists()) {
             shopsDir.mkdirs();
-            // --- แก้ให้ก๊อปไฟล์ Config ทั้งหมดออกมา ---
-            plugin.saveResource("shops/ores.yml", false);
-            plugin.saveResource("shops/farming.yml", false);
-            plugin.saveResource("shops/blocks.yml", false);
-            plugin.saveResource("shops/combat.yml", false);
-            plugin.saveResource("shops/mob_drops.yml", false);
-            plugin.saveResource("shops/brewing.yml", false);
-            plugin.saveResource("shops/redstone.yml", false);
-            plugin.saveResource("shops/misc.yml", false);
-            // --- จบการแก้ไข ---
+            // --- เพิ่มการ save-all-shops (แก้จากรอบที่แล้ว) ---
+            saveDefaultShopConfigs(); 
         }
 
         File[] shopFiles = shopsDir.listFiles((dir, name) -> name.endsWith(".yml"));
         if (shopFiles == null) {
             plugin.getLogger().warning("No shop files found in /shops/ directory.");
-            // Don't return here, main menu might still work
         } else {
              for (File shopFile : shopFiles) {
                  try {
                      FileConfiguration shopConfig = YamlConfiguration.loadConfiguration(shopFile);
-                     // Use filename without .yml as the category ID
                      String categoryId = shopFile.getName().replace(".yml", "");
 
                      ConfigurationSection categorySection = shopConfig.getConfigurationSection("category");
                      if (categorySection == null) {
                          plugin.getLogger().severe("File " + shopFile.getName() + " is invalid! Missing 'category:' key at the top.");
-                         continue; // Skip this broken file
+                         continue; 
                      }
 
-                     // Ensure ShopCategory constructor receives (id, config)
                      ShopCategory category = new ShopCategory(categoryId, categorySection);
                      shopCategories.put(categoryId, category);
 
-                     // Add all items from this category to the global map for easy lookup
+                     // Add all items from this category to the global map
                      category.getShopItems().forEach(item -> {
-                        allShopItems.put(item.getGlobalId(), item);
-                        // --- เพิ่มบรรทัดนี้ ---
-                        // ใส่ใน Map ใหม่ (ถ้ายังไม่มี) เพื่อให้ /sellall หาง่าย
-                        itemsByMaterial.putIfAbsent(item.getMaterial(), item);
-                    });
+                         allShopItems.put(item.getGlobalId(), item);
+                         if (item.isAllowSell()) {
+                             itemsByMaterial.computeIfAbsent(item.getMaterial(), key -> new ArrayList<>()).add(item);
+                         }
+                     });
 
                  } catch (Exception e) {
                      plugin.getLogger().severe("Failed to load shop file: " + shopFile.getName());
                      e.printStackTrace();
-                     // Continue loading other files even if one fails
                  }
              }
         }
@@ -115,7 +102,21 @@ public class ShopManager {
         plugin.getLogger().info("Loaded " + (mainCategoryMenu != null ? mainCategoryMenu.getCategoryItems().size() : 0) + " main categories from categories.yml.");
         plugin.getLogger().info("Loaded " + shopCategories.size() + " shop categories from /shops/ folder.");
         plugin.getLogger().info("Loaded " + allShopItems.size() + " total shop items.");
+        plugin.getLogger().info("Mapped " + itemsByMaterial.size() + " unique materials for /sellall.");
     }
+
+    // --- เมธอดใหม่สำหรับ save-all-shops ---
+    private void saveDefaultShopConfigs() {
+        plugin.saveResource("shops/ores.yml", false);
+        plugin.saveResource("shops/farming.yml", false);
+        plugin.saveResource("shops/blocks.yml", false);
+        plugin.saveResource("shops/combat.yml", false);
+        plugin.saveResource("shops/mob_drops.yml", false);
+        plugin.saveResource("shops/brewing.yml", false);
+        plugin.saveResource("shops/redstone.yml", false);
+        plugin.saveResource("shops/misc.yml", false);
+    }
+    // --- สิ้นสุด ---
 
     public MainCategoryMenu getMainCategoryMenu() {
         return mainCategoryMenu;
@@ -126,19 +127,15 @@ public class ShopManager {
     }
 
     public ShopItem getShopItem(String globalId) {
-        // Global ID is "categoryId:itemId"
         return allShopItems.get(globalId);
     }
 
-    // --- เพิ่มเมธอดใหม่ที่นายเรียกใช้ ---
-    public ShopItem getShopItemByMaterial(Material material) {
-        return itemsByMaterial.get(material);
+    public List<ShopItem> getSellableItems(Material material) {
+        return itemsByMaterial.getOrDefault(material, Collections.emptyList());
     }
-    // --- สิ้นสุดเมธอดใหม่ ---
+
 
     public Collection<ShopItem> getAllShopItems() {
-        // Used by DynamicPriceManager
         return allShopItems.values();
     }
 }
-

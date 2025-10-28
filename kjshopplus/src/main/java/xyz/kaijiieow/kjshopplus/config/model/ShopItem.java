@@ -105,6 +105,10 @@ public class ShopItem {
     }
 
     public ItemStack buildDisplayItem(Player player, boolean isBedrock) {
+        return buildDisplayItem(player, isBedrock, true);
+    }
+
+    public ItemStack buildDisplayItem(Player player, boolean isBedrock, boolean isBuyMode) {
         LoreFormatter formatter = KJShopPlus.getInstance().getLoreFormatter();
         
         ItemBuilder builder;
@@ -124,7 +128,7 @@ public class ShopItem {
 
         // ทั้ง Custom และ Vanilla จะถูก setLore ใหม่ (ที่รวมราคาแล้ว)
         builder.setLore(formatter.formatItemLore(this)) 
-            .setPDCAction("TRADE_ITEM")
+            .setPDCAction(isBuyMode ? "TRADE_ITEM_BUY" : "TRADE_ITEM_SELL")
             .setPDCValue(this.globalId);
         
         // if (isCustom) { builder.addGlow(); } // <--- ลบบรรทัดนี้
