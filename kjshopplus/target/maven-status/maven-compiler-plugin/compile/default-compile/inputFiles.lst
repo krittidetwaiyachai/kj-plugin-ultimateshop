@@ -6,6 +6,7 @@ d:\plugin\KJShopPlus\kjshopplus\src\main\java\xyz\kaijiieow\kjshopplus\commands\
 d:\plugin\KJShopPlus\kjshopplus\src\main\java\xyz\kaijiieow\kjshopplus\config\model\MainCategoryMenu.java
 d:\plugin\KJShopPlus\kjshopplus\src\main\java\xyz\kaijiieow\kjshopplus\economy\PriceUtil.java
 d:\plugin\KJShopPlus\kjshopplus\src\main\java\xyz\kaijiieow\kjshopplus\pricing\DynamicPriceManager.java
+d:\plugin\KJShopPlus\kjshopplus\src\main\java\xyz\kaijiieow\kjshopplus\commands\SellAllCommand.java
 d:\plugin\KJShopPlus\kjshopplus\src\main\java\xyz\kaijiieow\kjshopplus\economy\KJCurrencyService.java
 d:\plugin\KJShopPlus\kjshopplus\src\main\java\xyz\kaijiieow\kjshopplus\config\ShopManager.java
 d:\plugin\KJShopPlus\kjshopplus\src\main\java\xyz\kaijiieow\kjshopplus\gui\util\PlayerTapManager.java
