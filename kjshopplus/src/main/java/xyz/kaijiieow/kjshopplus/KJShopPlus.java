@@ -7,7 +7,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.geysermc.floodgate.api.FloodgateApi;
 import xyz.kaijiieow.kjshopplus.commands.AdminCommand;
-import xyz.kaijiieow.kjshopplus.commands.SellAllCommand;
+import xyz.kaijiieow.kjshopplus.commands.SellAllCommand; // --- เพิ่ม Import ---
 import xyz.kaijiieow.kjshopplus.commands.ShopCommand;
 import xyz.kaijiieow.kjshopplus.config.ConfigManager;
 import xyz.kaijiieow.kjshopplus.config.MessageManager;
@@ -20,11 +20,11 @@ import xyz.kaijiieow.kjshopplus.pricing.DynamicPriceManager;
 import xyz.kaijiieow.kjshopplus.pricing.LoreFormatter;
 import xyz.kaijiieow.kjshopplus.services.DiscordWebhookService;
 
-// --- เพิ่ม Import ---
-import java.io.File; 
-// --- จบ ---
-
+import java.util.logging.FileHandler; // --- เพิ่ม Import ---
 import java.util.logging.Level;
+import java.util.logging.Logger; // --- เพิ่ม Import ---
+import java.util.logging.SimpleFormatter; // --- เพิ่ม Import ---
+import java.io.IOException; // --- เพิ่ม Import ---
 import java.util.Objects;
 import java.util.UUID;
 
@@ -48,12 +48,26 @@ public final class KJShopPlus extends JavaPlugin {
     private GUIManager guiManager;
     private PlayerTapManager playerTapManager;
 
+    // --- เพิ่ม Logger สำหรับไฟล์ ---
+    private static final Logger fileLogger = Logger.getLogger("KJShopPlusFileLogger");
+    // --- สิ้นสุด ---
+
     @Override
     public void onEnable() {
         instance = this;
 
         PDC_ACTION_KEY = new NamespacedKey(this, "kjshop_action");
         PDC_VALUE_KEY = new NamespacedKey(this, "kjshop_value");
+
+        // --- เพิ่มการตั้งค่า File Logger ---
+        try {
+            setupLogFile();
+        } catch (IOException e) {
+            getLogger().severe("Failed to initialize file logger!");
+            e.printStackTrace();
+        }
+        // --- สิ้นสุด ---
+
 
         if (!setupDependencies()) {
             getLogger().severe("Missing critical dependencies (Vault or CoinsEngine). Disabling plugin.");
@@ -72,17 +86,13 @@ public final class KJShopPlus extends JavaPlugin {
         this.guiManager = new GUIManager(this);
         this.playerTapManager = new PlayerTapManager(this);
 
-        // --- เพิ่มการสร้างไฟล์ Log ---
-        setupLogFile();
-        // --- จบ ---
-
         reload(); // โหลด Config ทั้งหมด
 
         getServer().getPluginManager().registerEvents(new GUIListener(this), this);
 
-        Objects.requireNonNull(getCommand("shop")).setExecutor(new ShopCommand(this)); // แก้ kjshop เป็น shop
+        Objects.requireNonNull(getCommand("shop")).setExecutor(new ShopCommand(this));
         Objects.requireNonNull(getCommand("kjshopadmin")).setExecutor(new AdminCommand(this));
-        Objects.requireNonNull(getCommand("sellall")).setExecutor(new SellAllCommand(this));
+        Objects.requireNonNull(getCommand("sellall")).setExecutor(new SellAllCommand(this)); // --- เพิ่มบรรทัดนี้ ---
 
         getLogger().info("KJShopPlus v" + getDescription().getVersion() + " enabled successfully.");
     }
@@ -98,20 +108,19 @@ public final class KJShopPlus extends JavaPlugin {
         getLogger().info("KJShopPlus disabled.");
     }
 
-    // --- เพิ่มเมธอดนี้ ---
-    private void setupLogFile() {
-        File logFile = new File(getDataFolder(), "shop-log.txt");
-        if (!logFile.exists()) {
-            try {
-                if (logFile.createNewFile()) {
-                    getLogger().info("Created shop-log.txt for file logging.");
-                }
-            } catch (java.io.IOException e) {
-                getLogger().warning("Failed to create shop-log.txt: " + e.getMessage());
-            }
+    // --- เพิ่มเมธอดสำหรับตั้งค่า File Logger ---
+    private void setupLogFile() throws IOException {
+        if (!getDataFolder().exists()) {
+            getDataFolder().mkdirs();
         }
+        FileHandler fh = new FileHandler(getDataFolder() + "/shop-log.txt", true); // true = append
+        fh.setFormatter(new SimpleFormatter());
+        fh.setLevel(Level.INFO); // Log เฉพาะ INFO และสูงกว่า
+        fileLogger.addHandler(fh);
+        fileLogger.setUseParentHandlers(false); // ไม่ต้องพิมพ์ใน console
+        fileLogger.info("--- KJShopPlus Log Started ---");
     }
-    // --- จบ ---
+    // --- สิ้นสุด ---
 
     private boolean setupDependencies() {
         if (getServer().getPluginManager().getPlugin("Vault") == null) {
@@ -144,11 +153,9 @@ public final class KJShopPlus extends JavaPlugin {
         }
 
         configManager.load();
-        // --- ADD THIS LINE (Keep webhook config reload) ---
         if (discordWebhookService != null) {
              discordWebhookService.loadConfig(); // สั่งให้โหลด username/avatar ใหม่หลัง reload config
         }
-        // --- END ADD ---
         messageManager.load();
         shopManager.load();
 
@@ -157,11 +164,13 @@ public final class KJShopPlus extends JavaPlugin {
             dynamicPriceManager.loadPrices();
             dynamicPriceManager.startPriceResetTask();
         }
-        getLogger().log(Level.INFO, "KJShopPlus configuration reloaded."); // Log เพิ่มตอน reload สำเร็จ
     }
-    
+
     // Public Getters
     public static KJShopPlus getInstance() { return instance; }
+    // --- เพิ่ม Getter สำหรับ File Logger ---
+    public static Logger getFileLogger() { return fileLogger; }
+    // --- สิ้นสุด ---
     public ConfigManager getConfigManager() { return configManager; }
     public MessageManager getMessageManager() { return messageManager; }
     public ShopManager getShopManager() { return shopManager; }
@@ -171,9 +180,8 @@ public final class KJShopPlus extends JavaPlugin {
     public LoreFormatter getLoreFormatter() { return loreFormatter; }
     public GUIManager getGuiManager() { return guiManager; }
     public PlayerTapManager getPlayerTapManager() { return playerTapManager; }
-    
+
     public boolean isBedrockPlayer(UUID uuid) {
         return floodgateApi != null && floodgateApi.isFloodgatePlayer(uuid);
     }
 }
-
