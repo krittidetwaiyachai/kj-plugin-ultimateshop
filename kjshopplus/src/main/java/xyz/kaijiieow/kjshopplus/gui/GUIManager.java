@@ -149,15 +149,14 @@ public class GUIManager {
             return;
         }
 
-        List<ShopItem> items = category.getShopItems();
-        if (items.isEmpty()) {
-            plugin.getLogger().warning("Opening category '" + categoryId + "' but it has 0 items loaded.");
+        List<ShopItem> items = category.getShopItems(page); // Get items FOR THIS PAGE
+        
+        if (items.isEmpty() && page == 1) { // Only warn if page 1 is empty
+            plugin.getLogger().warning("Opening category '" + categoryId + "' but it has 0 items loaded for page 1.");
         }
 
-        int itemsPerPage = calculateItemsPerPage(category.getSize());
-        int totalPages = (itemsPerPage <= 0) ? 1 : (int) Math.ceil((double) items.size() / itemsPerPage);
+        int totalPages = category.getTotalPages(); // <-- MODIFIED
         if (page < 1) page = 1;
-        if (totalPages == 0) totalPages = 1;
         if (page > totalPages) page = totalPages;
 
         String title = ChatColor.translateAlternateColorCodes('&', category.getTitle(page, totalPages));
@@ -168,90 +167,85 @@ public class GUIManager {
 
         Set<Integer> layoutSlots = new HashSet<>();
         boolean isBedrock = plugin.isBedrockPlayer(player.getUniqueId());
-        boolean toggleButtonPlaced = false;
+        // boolean toggleButtonPlaced = false; // <-- *** REMOVED ***
 
+        // --- *** START MODIFICATION *** ---
+        final int HARDCODED_TOGGLE_SLOT = 4; // Slot 4 (top row, middle)
 
         for (MenuItem layoutItem : category.getLayoutItems().values()) {
             String action = layoutItem.getAction();
             if (action == null) continue;
 
+            // *** SKIP the YML definition of TOGGLE_MODE ***
+            if (action.equals("TOGGLE_MODE")) continue; 
+
             if (action.equals("PAGE_PREV") && page <= 1) continue;
             if (action.equals("PAGE_NEXT") && page >= totalPages) continue;
 
             int slot = layoutItem.getSlot();
-            ItemStack item;
-
-            if (action.equals("TOGGLE_MODE")) {
-                item = createToggleModeItem(player, isBuyMode);
-            } else {
-                item = layoutItem.build(player, isBedrock);
-            }
-
+            ItemStack item = layoutItem.build(player, isBedrock); // No need for 'else'
 
              if (item != null && item.getType() != Material.AIR) {
                  if (slot >= 0 && slot < category.getSize()) {
                      inv.setItem(slot, item);
                      layoutSlots.add(slot);
-                     if ("TOGGLE_MODE".equals(action)) {
-                         toggleButtonPlaced = true;
-                     }
                  } else {
                      plugin.getLogger().warning("Layout item '" + layoutItem.getId() + "' has invalid slot: " + slot + " in category '" + categoryId + "'");
                  }
             }
         }
 
-        if (!toggleButtonPlaced) {
-            int toggleSlot = findToggleSlot(inv, layoutSlots);
-            if (toggleSlot != -1) {
-                inv.setItem(toggleSlot, createToggleModeItem(player, isBuyMode));
-                layoutSlots.add(toggleSlot);
+        // *** REMOVE the automatic placement block ***
+        // if (!toggleButtonPlaced) { ... } // <-- ENTIRE BLOCK REMOVED
+
+        // *** ADD the new hardcoded placement ***
+        if (HARDCODED_TOGGLE_SLOT >= 0 && HARDCODED_TOGGLE_SLOT < category.getSize()) {
+            // Check if slot 4 is already taken by another layout item (e.g., "go-back" if YML is weird)
+            if (layoutSlots.contains(HARDCODED_TOGGLE_SLOT)) {
+                plugin.getLogger().warning("Cannot place hardcoded TOGGLE_MODE button at slot " + HARDCODED_TOGGLE_SLOT + " for category '" + categoryId + "' because it is already occupied by another layout item!");
             } else {
-                plugin.getLogger().warning("Unable to place toggle mode button automatically for category '" + categoryId + "'");
+                inv.setItem(HARDCODED_TOGGLE_SLOT, createToggleModeItem(player, isBuyMode));
+                layoutSlots.add(HARDCODED_TOGGLE_SLOT);
             }
+        } else {
+            plugin.getLogger().warning("Hardcoded toggle slot (" + HARDCODED_TOGGLE_SLOT + ") is outside the GUI size (" + category.getSize() + ") for category '" + categoryId + "'");
         }
+        // --- *** END MODIFICATION *** ---
 
-        int startIndex = (page - 1) * itemsPerPage;
-        int slotIndex = 0;
-        int itemsPlacedThisPage = 0;
+        int slotIndex = 0; 
 
-        if (itemsPerPage > 0) {
-            for (int i = startIndex; i < items.size() && itemsPlacedThisPage < itemsPerPage; i++) {
-                ShopItem shopItem = items.get(i);
+        for (ShopItem shopItem : items) { 
 
-                if (isBuyMode && !shopItem.isAllowBuy()) continue;
-                if (!isBuyMode && !shopItem.isAllowSell()) continue;
+            if (isBuyMode && !shopItem.isAllowBuy()) continue;
+            if (!isBuyMode && !shopItem.isAllowSell()) continue;
 
 
-                int targetSlot = -1;
+            int targetSlot = -1;
 
-                if (shopItem.getSlot() != -1 && shopItem.getSlot() < category.getSize()) {
-                    if (!layoutSlots.contains(shopItem.getSlot())) {
-                        targetSlot = shopItem.getSlot();
-                    } else {
-                        plugin.getLogger().warning("Shop item " + shopItem.getGlobalId() + " defined slot " + shopItem.getSlot() + " is occupied by layout! Trying auto-slot...");
-                    }
-                }
-
-                if (targetSlot == -1) {
-                    while (slotIndex < category.getSize()) {
-                        if (!layoutSlots.contains(slotIndex) && (inv.getItem(slotIndex) == null || inv.getItem(slotIndex).getType() == Material.AIR)) {
-                            targetSlot = slotIndex;
-                            slotIndex++;
-                            break;
-                        }
-                        slotIndex++;
-                    }
-                }
-
-                if (targetSlot != -1 && targetSlot < category.getSize()) {
-                    ItemStack displayItem = shopItem.buildDisplayItem(player, isBedrock, isBuyMode);
-                    inv.setItem(targetSlot, displayItem);
-                    itemsPlacedThisPage++;
+            if (shopItem.getSlot() != -1 && shopItem.getSlot() < category.getSize()) {
+                if (!layoutSlots.contains(shopItem.getSlot())) {
+                    targetSlot = shopItem.getSlot();
                 } else {
-                    plugin.getLogger().warning("Could not find a free slot for shop item " + shopItem.getGlobalId() + " on page " + page + " in category '" + categoryId + "' (Size: " + category.getSize() + ")");
-                    break;
+                    plugin.getLogger().warning("Shop item " + shopItem.getGlobalId() + " (Page " + page + ") defined slot " + shopItem.getSlot() + " is occupied by layout! Trying auto-slot...");
                 }
+            }
+
+            if (targetSlot == -1) {
+                while (slotIndex < category.getSize()) {
+                    if (!layoutSlots.contains(slotIndex) && (inv.getItem(slotIndex) == null || inv.getItem(slotIndex).getType() == Material.AIR)) {
+                        targetSlot = slotIndex;
+                        slotIndex++;
+                        break;
+                    }
+                    slotIndex++;
+                }
+            }
+
+            if (targetSlot != -1 && targetSlot < category.getSize()) {
+                ItemStack displayItem = shopItem.buildDisplayItem(player, isBedrock, isBuyMode);
+                inv.setItem(targetSlot, displayItem);
+            } else {
+                 plugin.getLogger().warning("Could not find a free slot for shop item " + shopItem.getGlobalId() + " on page " + page + " in category '" + categoryId + "' (Size: " + category.getSize() + ")");
             }
         }
 
@@ -354,7 +348,6 @@ public class GUIManager {
         }
 
         if (!isBuyMode) {
-             // *** FIX: Use new helper method ***
              int sellAllAmount = getAmountInInventory(player, item); 
              double sellPrice = plugin.getDynamicPriceManager().getSellPrice(item);
              String symbol = plugin.getCurrencyService().getCurrencySymbol(item.getCurrencyId());
@@ -410,24 +403,22 @@ public class GUIManager {
         if (isBuyMode) {
             lore.add(plugin.getMessageManager().getMessage("gui_click_to_confirm_buy", "&aClick confirm (bottom left) to buy."));
         } else {
-            // *** FIX: Use new helper method ***
             int playerAmount = getAmountInInventory(player, item); 
             lore.add(plugin.getMessageManager().getMessage("gui_you_have", "&7You have: &e") + playerAmount);
             lore.add(plugin.getMessageManager().getMessage("gui_click_to_confirm_sell", "&cClick confirm (bottom left) to sell."));
         }
         
         ItemStack displayItem;
-        String baseName; // FIX: Declare baseName here
+        String baseName; 
 
         if (item.isCustomItem() && item.getCustomItemStack() != null) {
-            // *** FIX: Get name from custom item meta or config override ***
-            baseName = item.getConfigDisplayName(); // Use config override first
+            baseName = item.getConfigDisplayName(); 
             if (baseName == null || baseName.isBlank()) {
                 ItemMeta meta = item.getCustomItemStack().getItemMeta();
                 if (meta != null && meta.hasDisplayName()) {
-                    baseName = meta.getDisplayName(); // Fallback to item's internal name
+                    baseName = meta.getDisplayName(); 
                 } else {
-                    baseName = item.getMaterial().name(); // Fallback to material name
+                    baseName = item.getMaterial().name(); 
                 }
             }
 
@@ -505,7 +496,6 @@ public class GUIManager {
                              plugin.getMessageManager().sendMessage(player, "gui_sell_disabled");
                              return;
                         }
-                        // *** FIX: Use new helper method ***
                         int playerHas = getAmountInInventory(player, itemToSell); 
                         if (playerHas == 0) {
                             plugin.getMessageManager().sendMessage(player, "not_enough_items");
@@ -585,7 +575,6 @@ public class GUIManager {
 
     private void performSellAllTransaction(Player player, ShopItem item) {
         if (item == null || !item.isAllowSell()) return;
-        // *** FIX: Use new helper method ***
         int amount = getAmountInInventory(player, item); 
 
         if (amount <= 0) {
@@ -602,18 +591,17 @@ public class GUIManager {
         double pricePerItem;
         String itemName;
 
-        // *** FIX: Determine item name for messages (using config override first) ***
-        itemName = item.getConfigDisplayName(); // Use config override first
+        itemName = item.getConfigDisplayName(); 
         if (itemName == null || itemName.isBlank()) {
             if (item.isCustomItem() && item.getCustomItemStack() != null) {
                 ItemMeta meta = item.getCustomItemStack().getItemMeta();
                 if (meta != null && meta.hasDisplayName()) {
-                    itemName = meta.getDisplayName(); // Fallback to item's internal name
+                    itemName = meta.getDisplayName(); 
                 } else {
-                    itemName = item.getMaterial().name(); // Fallback to material name
+                    itemName = item.getMaterial().name(); 
                 }
             } else {
-                itemName = item.getMaterial().name(); // Fallback to material name for vanilla
+                itemName = item.getMaterial().name(); 
             }
         }
         itemName = ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', itemName));
@@ -641,8 +629,7 @@ public class GUIManager {
                 return;
             }
             
-            // *** FIX: Check inventory space based on custom/vanilla item ***
-            int maxStack = 64; // Default
+            int maxStack = 64; 
             if (item.isCustomItem() && item.getCustomItemStack() != null) {
                 maxStack = item.getCustomItemStack().getMaxStackSize();
             } else {
@@ -661,10 +648,9 @@ public class GUIManager {
                 return;
             }
 
-            // *** FIX: Give the CORRECT item (custom or vanilla) ***
             if (item.isCustomItem() && item.getCustomItemStack() != null) {
                 ItemStack itemToGive = item.getCustomItemStack().clone();
-                itemToGive.setAmount(amount); // This correctly handles splitting stacks
+                itemToGive.setAmount(amount); 
                 player.getInventory().addItem(itemToGive);
             } else {
                 player.getInventory().addItem(new ItemStack(item.getMaterial(), amount));
@@ -675,7 +661,6 @@ public class GUIManager {
             plugin.getDiscordWebhookService().logBuy(player, item, amount, totalPrice);
 
         } else { // Selling
-            // *** FIX: Use new helper method ***
              int playerAmount = getAmountInInventory(player, item); 
              int amountToSell = Math.min(amount, playerAmount);
 
@@ -688,13 +673,11 @@ public class GUIManager {
              placeholders.put("amount", String.valueOf(amountToSell));
              placeholders.put("price", PriceUtil.format(totalPrice));
 
-            // *** FIX: Remove the CORRECT item (custom or vanilla) ***
             removeItemFromInventory(player, item, amountToSell);
 
             if (!plugin.getCurrencyService().addBalance(player, item.getCurrencyId(), totalPrice)) {
                 plugin.getLogger().severe("CRITICAL: Failed to add balance for " + player.getName() + " after removing items! Returning items.");
                 
-                // *** FIX: Rollback the CORRECT item ***
                 if (item.isCustomItem() && item.getCustomItemStack() != null) {
                     ItemStack itemToReturn = item.getCustomItemStack().clone();
                     itemToReturn.setAmount(amountToSell);
@@ -713,7 +696,6 @@ public class GUIManager {
         }
     }
 
-     // *** FIX: Updated helper to check ShopItem (for custom) ***
      private int getPartialStackSpace(Player player, ShopItem shopItem, int amountNeeded) {
         int space = 0;
         ItemStack[] contents = player.getInventory().getStorageContents();
@@ -722,7 +704,6 @@ public class GUIManager {
             ItemStack customBase = shopItem.getCustomItemStack();
             int maxStack = customBase.getMaxStackSize();
             for (ItemStack item : contents) {
-                // Use isSimilar for NBT check
                 if (item != null && item.isSimilar(customBase) && item.getAmount() < maxStack) {
                     space += maxStack - item.getAmount();
                     if (space >= amountNeeded) return amountNeeded;
@@ -743,13 +724,11 @@ public class GUIManager {
     }
 
 
-    // *** FIX: Renamed/Updated to check ShopItem (for custom) ***
     private int getAmountInInventory(Player player, ShopItem shopItem) {
         int amount = 0;
         ItemStack[] contents = player.getInventory().getStorageContents();
 
         if (shopItem.isCustomItem() && shopItem.getCustomItemStack() != null) {
-            // Custom item: Check similarity (NBT)
             ItemStack customBase = shopItem.getCustomItemStack();
              for (ItemStack item : contents) {
                 if (item != null && item.isSimilar(customBase)) {
@@ -757,11 +736,9 @@ public class GUIManager {
                 }
             }
         } else {
-            // Vanilla item: Check material only
             Material material = shopItem.getMaterial();
             for (ItemStack item : contents) {
-                // Make sure it's NOT a custom item that just happens to share the material
-                if (item != null && item.getType() == material && !item.hasItemMeta()) { // Simple check, might need refinement
+                if (item != null && item.getType() == material && !item.hasItemMeta()) { 
                     amount += item.getAmount();
                 }
             }
@@ -769,36 +746,29 @@ public class GUIManager {
         return amount;
     }
     
-    // *** NEW HELPER: Remove custom or vanilla items ***
     private void removeItemFromInventory(Player player, ShopItem shopItem, int amountToRemove) {
         ItemStack[] contents = player.getInventory().getStorageContents();
         ItemStack customBase = (shopItem.isCustomItem()) ? shopItem.getCustomItemStack() : null;
         Material vanillaMat = (shopItem.isCustomItem()) ? null : shopItem.getMaterial();
 
         for (int i = 0; i < contents.length; i++) {
-            if (amountToRemove <= 0) break; // Stop if we've removed enough
+            if (amountToRemove <= 0) break; 
             ItemStack item = contents[i];
             if (item == null || item.getType() == Material.AIR) continue;
 
             boolean match = false;
             if (customBase != null) {
-                // Custom item check
                 match = item.isSimilar(customBase);
             } else {
-                // Vanilla item check
-                // Make sure it's NOT a custom item
-                match = item.getType() == vanillaMat && !item.getItemMeta().hasCustomModelData() && !item.hasItemMeta(); // Basic check
+                match = item.getType() == vanillaMat && !item.getItemMeta().hasCustomModelData() && !item.hasItemMeta(); 
             }
 
             if (match) {
                 int amountInSlot = item.getAmount();
                 if (amountInSlot > amountToRemove) {
-                    // Remove part of the stack
                     item.setAmount(amountInSlot - amountToRemove);
-                    // No need to setItem, reference is modified
                     amountToRemove = 0;
                 } else {
-                    // Remove the whole stack and continue
                     player.getInventory().setItem(i, null);
                     amountToRemove -= amountInSlot;
                 }
@@ -924,4 +894,3 @@ public class GUIManager {
         openMenus.clear();
     }
 }
-

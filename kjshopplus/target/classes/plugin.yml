@@ -1,0 +1,53 @@
+ name: KJShopPlus
+ version: 1.0.0
+ main: xyz.kaijiieow.kjshopplus.KJShopPlus
+ api-version: '1.21'
+ softdepend: [Vault, CoinsEngine, Geyser-Spigot, floodgate]
+
+ commands:
+   shop:
+     description: "Opens the main KJShopPlus GUI"
+     aliases: [kshop, kjshop]
+     permission: kjshopplus.user.open
+     permission-message: "You don't have permission to use the shop."
+
+   sellall:
+     description: "Sells all sellable items from your inventory."
+     aliases: [sellitems]
+     permission: kjshopplus.user.sellall
+     permission-message: "You don't have permission to use this command."
+
+   kjshopadmin:
+     description: "Admin commands for KJShopPlus"
+     aliases: [sa, kjsa]
+     permission: kjshopplus.admin
+     permission-message: "You don't have permission to use admin commands."
+     usage: "/<command> [reload|resetprices|additem|help]" # Updated usage
+
+ permissions:
+   kjshopplus.user.open:
+     description: Allows players to open the shop GUI using /shop.
+     default: true
+
+   kjshopplus.user.sellall:
+     description: Allows players to use the /sellall command.
+     default: true
+
+   kjshopplus.admin:
+     description: Base permission node for admin commands.
+     default: op
+     children:
+       kjshopplus.admin.reload: true
+       kjshopplus.admin.resetprices: true
+       kjshopplus.admin.additem: true # Added child permission
+       # kjshopplus.admin.edit: true
+
+   kjshopplus.admin.reload:
+     description: Allows reloading the plugin configuration.
+     default: op
+   kjshopplus.admin.resetprices:
+     description: Allows manually resetting dynamic prices.
+     default: op
+   kjshopplus.admin.additem: # Added permission node
+     description: Allows adding the held item to a shop category.
+     default: op

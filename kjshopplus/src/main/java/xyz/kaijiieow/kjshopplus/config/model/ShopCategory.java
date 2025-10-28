@@ -5,6 +5,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import xyz.kaijiieow.kjshopplus.KJShopPlus; // Import KJShopPlus
 
 import java.util.ArrayList;
+import java.util.Collections; // <-- *** ADDED ***
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,11 @@ public class ShopCategory {
     private final int size;
     private final MenuItem fillItem;
     private final Map<String, MenuItem> layoutItems = new HashMap<>();
-    private final List<ShopItem> shopItems = new ArrayList<>();
+    
+    // --- *** MODIFIED *** ---
+    private final Map<Integer, List<ShopItem>> itemsByPage = new HashMap<>();
+    private int maxPage = 1;
+    // --- *** END MODIFIED *** ---
 
     // Ensure constructor accepts (id, config)
     public ShopCategory(String categoryId, ConfigurationSection config) {
@@ -52,8 +57,18 @@ public class ShopCategory {
             for (String key : itemsSection.getKeys(false)) {
                 ConfigurationSection itemConfig = itemsSection.getConfigurationSection(key);
                 if (itemConfig != null) {
+                    
+                    // --- *** MODIFIED *** ---
                     // Ensure ShopItem constructor receives (categoryId, itemId, config)
-                    shopItems.add(new ShopItem(this.id, key, itemConfig));
+                    // shopItems.add(new ShopItem(this.id, key, itemConfig)); // <-- REMOVED
+                    
+                    ShopItem newItem = new ShopItem(this.id, key, itemConfig);
+                    int itemPage = newItem.getPage();
+                    itemsByPage.computeIfAbsent(itemPage, k -> new ArrayList<>()).add(newItem);
+                    if (itemPage > maxPage) {
+                        maxPage = itemPage;
+                    }
+                    // --- *** END MODIFIED *** ---
                 }
             }
         } else {
@@ -77,7 +92,17 @@ public class ShopCategory {
     public int getSize() { return size; }
     public MenuItem getFillItem() { return fillItem; }
     public Map<String, MenuItem> getLayoutItems() { return layoutItems; }
-    public List<ShopItem> getShopItems() { return shopItems; }
     public String getId() { return id; }
-}
 
+    // --- *** MODIFIED *** ---
+    // public List<ShopItem> getShopItems() { return shopItems; } // <-- REMOVED
+    
+    public List<ShopItem> getShopItems(int page) {
+        return itemsByPage.getOrDefault(page, Collections.emptyList());
+    }
+        
+    public int getTotalPages() {
+        return maxPage;
+    }
+    // --- *** END MODIFIED *** ---
+}

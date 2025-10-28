@@ -1,4 +1,4 @@
- package xyz.kaijiieow.kjshopplus.config.model;
+package xyz.kaijiieow.kjshopplus.config.model;
 
  import org.bukkit.ChatColor;
  import org.bukkit.Material;
@@ -20,6 +20,7 @@
      private final String itemId;
      private final String globalId;
      private final int slot;
+     private final int page; // <-- *** ADDED ***
      private final Material material;
      private final boolean allowBuy;
      private final boolean allowSell;
@@ -44,6 +45,7 @@
          this.itemId = itemId;
          this.globalId = categoryId + ":" + itemId;
          this.slot = config.getInt("slot", -1);
+         this.page = config.getInt("page", 1); // <-- *** ADDED (Default to page 1) ***
 
          if (config.isConfigurationSection("itemstack") || config.contains("itemstack")) {
              ItemStack loadedStack = config.getItemStack("itemstack");
@@ -218,5 +220,6 @@
      public double getDynamicSellStep() { return dynamicSellStep; }
      public double getDynamicMaxPrice() { return dynamicMaxPrice; }
      public double getDynamicMinPrice() { return dynamicMinPrice; }
+     
+     public int getPage() { return page; } // <-- *** ADDED ***
  }
-

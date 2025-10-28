@@ -1,0 +1,95 @@
+# Shop file for the 'blocks' category
+# File: plugins/KJShopPlus/shops/blocks.yml
+category:
+  id: "blocks"
+  title: "&2&lBuilding Blocks &7({page}/{total_pages})"
+  size: 54
+  fill-item:
+    material: BROWN_STAINED_GLASS_PANE # Different color for theme
+    displayname: " "
+
+  layout:
+    go-back: { slot: 49, material: BARRIER, displayname: "&cGo Back", action: "OPEN_CATEGORY", value: "main" }
+    page-prev: { slot: 48, material: ARROW, displayname: "&aPrevious Page", action: "PAGE_PREV" }
+    page-next: { slot: 50, material: ARROW, displayname: "&aNext Page", action: "PAGE_NEXT" }
+
+  items:
+    cobblestone:
+      slot: 10
+      material: COBBLESTONE
+      display: { name: "&7Cobblestone", lore: ["&7Basic and abundant.", "&r ", "&eClick to trade."] }
+      currency: vault
+      buy: 0.50
+      sell: 0.10 # Very low sell price
+      trade: { allow_buy: true, allow_sell: true }
+      dynamic: { enabled: true, buy_step_percent: 0.1, sell_step_percent: 0.05, max_price: 2.00, min_price: 0.01 }
+
+    oak_log:
+      slot: 11
+      material: OAK_LOG
+      display: { name: "&6Oak Log", lore: ["&7Fundamental wood.", "&r ", "&eClick to trade."] }
+      currency: vault
+      buy: 2.00
+      sell: 1.00
+      trade: { allow_buy: true, allow_sell: true }
+      dynamic: { enabled: true, buy_step_percent: 0.2, sell_step_percent: 0.1, max_price: 8.00, min_price: 0.50 }
+
+    oak_planks:
+      slot: 12
+      material: OAK_PLANKS
+      display: { name: "&6Oak Planks", lore: ["&7Versatile building material.", "&r ", "&eClick to trade."] }
+      currency: vault
+      buy: 0.50 # Usually 1 log = 4 planks
+      sell: 0.25
+      trade: { allow_buy: true, allow_sell: true }
+      dynamic: { enabled: true, buy_step_percent: 0.1, sell_step_percent: 0.05, max_price: 2.00, min_price: 0.10 }
+
+    glass:
+      slot: 14
+      material: GLASS
+      display: { name: "&fGlass", lore: ["&7See through it!", "&r ", "&eClick to trade."] }
+      currency: vault
+      buy: 1.50
+      sell: 0.50 # Sand is often plentiful
+      trade: { allow_buy: true, allow_sell: true }
+      dynamic: { enabled: false }
+
+    stone_bricks:
+      slot: 15
+      material: STONE_BRICKS
+      display: { name: "&7Stone Bricks", lore: ["&7Classic castle look.", "&r ", "&eClick to trade."] }
+      currency: vault
+      buy: 1.00
+      sell: 0.30
+      trade: { allow_buy: true, allow_sell: true }
+      dynamic: { enabled: false }
+
+    dirt:
+       slot: 16
+       material: DIRT
+       display: { name: "&6Dirt", lore: ["&7Just dirt.", "&r ", "&eClick to trade."] }
+       currency: vault
+       buy: 0.20
+       sell: 0.05
+       trade: { allow_buy: true, allow_sell: true }
+       dynamic: { enabled: false } # Dirt probably shouldn't be dynamic
+
+    sand:
+       slot: 19
+       material: SAND
+       display: { name: "&eSand", lore: ["&7For glass and concrete.", "&r ", "&eClick to trade."] }
+       currency: vault
+       buy: 0.50
+       sell: 0.15
+       trade: { allow_buy: true, allow_sell: true }
+       dynamic: { enabled: false }
+
+    gravel:
+       slot: 20
+       material: GRAVEL
+       display: { name: "&8Gravel", lore: ["&7Might contain flint!", "&r ", "&eClick to trade."] }
+       currency: vault
+       buy: 0.50
+       sell: 0.15
+       trade: { allow_buy: true, allow_sell: true }
+       dynamic: { enabled: false }

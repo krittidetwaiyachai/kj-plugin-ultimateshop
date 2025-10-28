@@ -99,7 +99,7 @@ package xyz.kaijiieow.kjshopplus.config;
                  ShopCategory category = new ShopCategory(categoryId, categorySection);
                  shopCategories.put(categoryId, category);
 
-                 category.getShopItems().forEach(item -> {
+                 category.getShopItems(0).forEach(item -> {
                      allShopItems.put(item.getGlobalId(), item);
                      if (item.isAllowSell()) {
                          itemsByMaterial.computeIfAbsent(item.getMaterial(), key -> new ArrayList<>()).add(item);
