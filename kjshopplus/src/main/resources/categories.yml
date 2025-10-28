@@ -94,7 +94,13 @@ main_menu:
       lore:
         - "&7Other useful items."
       # value: misc (Assuming misc.yml exists)
-
+    item_custom: # Row 3, Slot 7 (Starts at 25)
+      enable: true
+      slot: 34
+      material: BOOK
+      displayname: "&9&litem_custom"
+      lore:
+        - "&7item_custom"
   # --- Close Button (Bottom Middle) ---
   close_button:
     enable: true
