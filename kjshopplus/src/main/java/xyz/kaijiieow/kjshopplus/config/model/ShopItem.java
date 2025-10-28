@@ -113,42 +113,49 @@
          ItemBuilder builder;
 
          if (isCustom && customItemStack != null) {
+             // Start with a clone of the custom item
              builder = new ItemBuilder(customItemStack.clone());
-             ItemMeta meta = builder.build().getItemMeta();
-             if (meta != null) {
-                 if (configDisplayName != null && !configDisplayName.isBlank()) {
-                     builder.setName(ChatColor.translateAlternateColorCodes('&', configDisplayName));
-                 } else if (!meta.hasDisplayName()) {
-                     builder.setName("&f" + this.material.name());
-                 }
-                 
-                 if (configBaseLore != null && !configBaseLore.isEmpty()) {
-                      builder.setLore(formatter.formatItemLore(this)); 
-                 } else if (!meta.hasLore()) {
-                     builder.setLore(formatter.formatItemLore(this));
-                 } else {
-                      List<String> combinedLore = new ArrayList<>(); // <-- Needs ArrayList import
-                      if (meta.getLore() != null) {
-                           combinedLore.addAll(meta.getLore());
-                      }
-                      List<String> priceLore = formatter.formatItemLore(new ShopItem(categoryId, itemId, createEmptyConfigForFormatter())); 
-                      combinedLore.addAll(priceLore);
-                      builder.setLore(combinedLore);
-                 }
+             ItemMeta meta = builder.build().getItemMeta(); // Get meta to check existing values
+             
+             List<String> finalLore = new ArrayList<>();
 
-             } else {
-                  builder.setName(configDisplayName != null ? ChatColor.translateAlternateColorCodes('&', configDisplayName) : "&f" + this.material.name());
-                  builder.setLore(formatter.formatItemLore(this));
+             // 1. Check for lore OVERRIDE from display.lore
+             if (configBaseLore != null && !configBaseLore.isEmpty()) {
+                 // If display.lore exists, it REPLACES the item's lore
+                 finalLore.addAll(configBaseLore.stream()
+                     .map(line -> ChatColor.translateAlternateColorCodes('&', line))
+                     .collect(Collectors.toList()));
+             } 
+             // 2. ELSE, use the item's internal lore
+             else if (meta != null && meta.hasLore()) {
+                 finalLore.addAll(meta.getLore());
              }
 
+             // 3. Add price lore (price/dynamic)
+             finalLore.addAll(formatter.getPriceLore(this)); // Use new method
+
+             // 4. Set the combined lore
+             builder.setLore(finalLore);
+
+             // 5. Handle Name (Prioritize config override)
+             if (configDisplayName != null && !configDisplayName.isBlank()) {
+                 builder.setName(ChatColor.translateAlternateColorCodes('&', configDisplayName));
+             }
+             // If configDisplayName is null, the builder automatically has the item's internal name from the clone.
+
          } else {
+             // Vanilla item: build from material
              Material mat = this.material;
              if (isBedrock) {
                  mat = KJShopPlus.getInstance().getConfigManager().getBedrockMappedMaterial(this.material);
              }
              builder = new ItemBuilder(mat);
-             builder.setName(configDisplayName != null ? ChatColor.translateAlternateColorCodes('&', configDisplayName) : "&f" + this.material.name());
-             builder.setLore(formatter.formatItemLore(this));
+             // Use config display name, fallback to material name
+             String displayName = (configDisplayName != null) ? configDisplayName : "&f" + this.material.name();
+             builder.setName(ChatColor.translateAlternateColorCodes('&', displayName));
+             
+             // Set combined lore (base lore from config + price info)
+             builder.setLore(formatter.formatItemLore(this)); // Use old method that includes base lore
          }
 
          builder.setPDCAction(isBuyMode ? "TRADE_ITEM_BUY" : "TRADE_ITEM_SELL")
@@ -157,6 +164,8 @@
          return builder.build();
      }
 
+     // This helper is no longer needed because LoreFormatter is split
+     @Deprecated
      private ConfigurationSection createEmptyConfigForFormatter() {
           org.bukkit.configuration.file.YamlConfiguration tempConfig = new org.bukkit.configuration.file.YamlConfiguration();
           tempConfig.set("material", this.material.name()); 
@@ -210,3 +219,4 @@
      public double getDynamicMaxPrice() { return dynamicMaxPrice; }
      public double getDynamicMinPrice() { return dynamicMinPrice; }
  }
+

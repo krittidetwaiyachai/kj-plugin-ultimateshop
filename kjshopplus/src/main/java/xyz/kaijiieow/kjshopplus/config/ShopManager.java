@@ -2,10 +2,10 @@
 
  import org.bukkit.Material;
  import org.bukkit.configuration.ConfigurationSection;
- import org.bukkit.configuration.InvalidConfigurationException; // Import
+ import org.bukkit.configuration.InvalidConfigurationException;
  import org.bukkit.configuration.file.FileConfiguration;
  import org.bukkit.configuration.file.YamlConfiguration;
- import org.bukkit.inventory.ItemStack; // Import ItemStack
+ import org.bukkit.inventory.ItemStack;
  import xyz.kaijiieow.kjshopplus.KJShopPlus;
  import xyz.kaijiieow.kjshopplus.config.model.MainCategoryMenu;
  import xyz.kaijiieow.kjshopplus.config.model.ShopCategory;
@@ -13,15 +13,15 @@
  import java.util.ArrayList;
 
  import java.io.File;
- import java.io.IOException; // Import
+ import java.io.IOException;
  import java.util.ArrayList;
  import java.util.Collection;
  import java.util.Collections;
  import java.util.HashMap;
  import java.util.List;
  import java.util.Map;
- import java.util.Set; // Import Set
- import java.util.UUID; // Import UUID
+ import java.util.Set;
+ import java.util.UUID;
 
  public class ShopManager {
 
@@ -29,7 +29,7 @@
      private MainCategoryMenu mainCategoryMenu;
      private final Map<String, ShopCategory> shopCategories = new HashMap<>();
      private final Map<String, ShopItem> allShopItems = new HashMap<>();
-     private final Map<Material, List<ShopItem>> itemsByMaterial = new HashMap<>(); // Used for /sellall
+     private final Map<Material, List<ShopItem>> itemsByMaterial = new HashMap<>();
 
 
      public ShopManager(KJShopPlus plugin) {
@@ -101,7 +101,6 @@
                  category.getShopItems().forEach(item -> {
                      allShopItems.put(item.getGlobalId(), item);
                      if (item.isAllowSell()) {
-                         // Use the item's actual material (could be from custom item)
                          itemsByMaterial.computeIfAbsent(item.getMaterial(), key -> new ArrayList<>()).add(item);
                      }
                  });
@@ -120,7 +119,6 @@
          }
      }
 
-     // --- NEW METHOD ---
      public boolean addItemStackToCategory(String categoryId, ItemStack itemStack) {
          File shopFile = new File(plugin.getDataFolder(), "shops/" + categoryId + ".yml");
          if (!shopFile.exists()) {
@@ -140,9 +138,7 @@
              itemsSection = categorySection.createSection("items");
          }
 
-         // Generate a unique ID (simple approach, might collide rarely but ok for admin command)
          String newItemId = itemStack.getType().name().toLowerCase() + "_" + (System.currentTimeMillis() % 10000);
-         // Ensure uniqueness within this category
          while (itemsSection.contains(newItemId)) {
              newItemId = itemStack.getType().name().toLowerCase() + "_" + UUID.randomUUID().toString().substring(0, 4);
          }
@@ -152,29 +148,21 @@
          // Set defaults
          newItemSection.set("slot", -1);
          newItemSection.set("currency", "vault");
-         newItemSection.set("buy", 0.0); // Default to not buyable
-         newItemSection.set("sell", 0.0); // Default to not sellable
+         newItemSection.set("buy", 0.0);
+         newItemSection.set("sell", 0.0);
          newItemSection.set("trade.allow_buy", false);
          newItemSection.set("trade.allow_sell", false);
          newItemSection.set("dynamic.enabled", false);
-         // Add display name and lore from the item itself, if they exist
-         if (itemStack.hasItemMeta()) {
-             if (itemStack.getItemMeta().hasDisplayName()) {
-                  newItemSection.set("display.name", itemStack.getItemMeta().getDisplayName()); // Note: This saves with section symbols (§)
-             }
-              if (itemStack.getItemMeta().hasLore()) {
-                  newItemSection.set("display.lore", itemStack.getItemMeta().getLore()); // Note: This saves with section symbols (§)
-             }
-         }
+         
+         // --- DO NOT SAVE THE 'display' SECTION ---
+         // We rely on the 'itemstack' section to store display info (NBT)
+         // The user can add a 'display' section MANUALLY later if they want to OVERRIDE the item's NBT.
 
-
-         // **Crucially, save the ItemStack itself**
-         newItemSection.set("itemstack", itemStack); // Bukkit handles serialization here
+         // Save the ItemStack itself
+         newItemSection.set("itemstack", itemStack); 
 
          try {
              shopConfig.save(shopFile);
-             // Optionally, reload just this category or the whole shop manager
-             // For simplicity with an admin command, maybe just inform the admin to reload.
              return true;
          } catch (IOException e) {
              plugin.getLogger().severe("Failed to save shop file: " + shopFile.getName());
@@ -192,7 +180,6 @@
          return shopCategories.get(categoryId);
      }
 
-     // --- NEW ---
      public Set<String> getAllCategoryIds() {
          return shopCategories.keySet();
      }
@@ -211,3 +198,4 @@
          return Collections.unmodifiableCollection(allShopItems.values());
      }
  }
+
