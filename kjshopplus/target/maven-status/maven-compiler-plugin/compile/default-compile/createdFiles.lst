@@ -1,7 +1,6 @@
 xyz\kaijiieow\kjshopplus\config\ConfigManager.class
 xyz\kaijiieow\kjshopplus\pricing\LoreFormatter.class
 xyz\kaijiieow\kjshopplus\pricing\DynamicPriceManager$1.class
-xyz\kaijiieow\kjshopplus\gui\GUIManager$1.class
 xyz\kaijiieow\kjshopplus\gui\util\PlayerTapManager.class
 xyz\kaijiieow\kjshopplus\config\model\ShopCategory.class
 xyz\kaijiieow\kjshopplus\gui\GUIListener.class
