@@ -1,5 +1,6 @@
 package xyz.kaijiieow.kjshopplus.config;
 
+import org.bukkit.Material; // เพิ่ม Import
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -22,6 +23,8 @@ public class ShopManager {
     private MainCategoryMenu mainCategoryMenu;
     private final Map<String, ShopCategory> shopCategories = new HashMap<>();
     private final Map<String, ShopItem> allShopItems = new HashMap<>();
+    // --- เพิ่ม Map ใหม่สำหรับค้นหาด้วย Material ---
+    private final Map<Material, ShopItem> itemsByMaterial = new HashMap<>();
 
     public ShopManager(KJShopPlus plugin) {
         this.plugin = plugin;
@@ -30,6 +33,7 @@ public class ShopManager {
     public void load() {
         shopCategories.clear();
         allShopItems.clear();
+        itemsByMaterial.clear(); // --- เพิ่มบรรทัดนี้ ---
         mainCategoryMenu = null; // Clear old menu
 
         // 1. Load categories.yml
@@ -59,6 +63,7 @@ public class ShopManager {
         File shopsDir = new File(plugin.getDataFolder(), "shops");
         if (!shopsDir.exists()) {
             shopsDir.mkdirs();
+            // --- แก้ให้ก๊อปไฟล์ Config ทั้งหมดออกมา ---
             plugin.saveResource("shops/ores.yml", false);
             plugin.saveResource("shops/farming.yml", false);
             plugin.saveResource("shops/blocks.yml", false);
@@ -67,6 +72,7 @@ public class ShopManager {
             plugin.saveResource("shops/brewing.yml", false);
             plugin.saveResource("shops/redstone.yml", false);
             plugin.saveResource("shops/misc.yml", false);
+            // --- จบการแก้ไข ---
         }
 
         File[] shopFiles = shopsDir.listFiles((dir, name) -> name.endsWith(".yml"));
@@ -91,7 +97,12 @@ public class ShopManager {
                      shopCategories.put(categoryId, category);
 
                      // Add all items from this category to the global map for easy lookup
-                     category.getShopItems().forEach(item -> allShopItems.put(item.getGlobalId(), item));
+                     category.getShopItems().forEach(item -> {
+                        allShopItems.put(item.getGlobalId(), item);
+                        // --- เพิ่มบรรทัดนี้ ---
+                        // ใส่ใน Map ใหม่ (ถ้ายังไม่มี) เพื่อให้ /sellall หาง่าย
+                        itemsByMaterial.putIfAbsent(item.getMaterial(), item);
+                    });
 
                  } catch (Exception e) {
                      plugin.getLogger().severe("Failed to load shop file: " + shopFile.getName());
@@ -118,6 +129,12 @@ public class ShopManager {
         // Global ID is "categoryId:itemId"
         return allShopItems.get(globalId);
     }
+
+    // --- เพิ่มเมธอดใหม่ที่นายเรียกใช้ ---
+    public ShopItem getShopItemByMaterial(Material material) {
+        return itemsByMaterial.get(material);
+    }
+    // --- สิ้นสุดเมธอดใหม่ ---
 
     public Collection<ShopItem> getAllShopItems() {
         // Used by DynamicPriceManager

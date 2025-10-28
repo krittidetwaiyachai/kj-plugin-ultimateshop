@@ -53,3 +53,5 @@ task_stopped: "§x§F§F§8§0§8§0§l✖ §x§F§F§A§A§A§APrice reset task
 data_saved: "§x§6§F§F§F§0§0§l✓ §x§B§3§F§F§0§0Data saved successfully."
 data_error: "§x§F§F§8§0§8§0§l✖ §x§F§F§B§3§B§3Error saving data. Check logs."
 
+
+

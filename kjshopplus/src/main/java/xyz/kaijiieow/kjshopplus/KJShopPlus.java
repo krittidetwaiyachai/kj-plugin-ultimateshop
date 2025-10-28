@@ -7,6 +7,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.geysermc.floodgate.api.FloodgateApi;
 import xyz.kaijiieow.kjshopplus.commands.AdminCommand;
+import xyz.kaijiieow.kjshopplus.commands.SellAllCommand;
 import xyz.kaijiieow.kjshopplus.commands.ShopCommand;
 import xyz.kaijiieow.kjshopplus.config.ConfigManager;
 import xyz.kaijiieow.kjshopplus.config.MessageManager;
@@ -81,6 +82,7 @@ public final class KJShopPlus extends JavaPlugin {
 
         Objects.requireNonNull(getCommand("shop")).setExecutor(new ShopCommand(this)); // แก้ kjshop เป็น shop
         Objects.requireNonNull(getCommand("kjshopadmin")).setExecutor(new AdminCommand(this));
+        Objects.requireNonNull(getCommand("sellall")).setExecutor(new SellAllCommand(this));
 
         getLogger().info("KJShopPlus v" + getDescription().getVersion() + " enabled successfully.");
     }

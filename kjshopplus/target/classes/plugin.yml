@@ -20,6 +20,12 @@ commands:
     permission-message: "You don't have permission to use admin commands."
     usage: "/<command> [reload|resetprices|help]" # Basic usage info
 
+  sellall:
+    description: "Sells all sellable items from your inventory."
+    aliases: [sellitems] # ใช้อันนี้แทน 'sa' เพราะมันซ้ำกับแอดมิน
+    permission: kjshopplus.user.sellall
+    permission-message: "You don't have permission to use this command."
+
 permissions:
   kjshopplus.user.open:
     description: Allows players to open the shop GUI using /shop.
@@ -39,3 +45,6 @@ permissions:
     description: Allows manually resetting dynamic prices.
     default: op
 
+  kjshopplus.user.sellall:
+    description: Allows players to use the /sellall command.
+    default: true
