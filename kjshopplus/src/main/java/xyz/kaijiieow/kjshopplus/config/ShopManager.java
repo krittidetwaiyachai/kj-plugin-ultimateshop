@@ -60,6 +60,13 @@ public class ShopManager {
         if (!shopsDir.exists()) {
             shopsDir.mkdirs();
             plugin.saveResource("shops/ores.yml", false);
+            plugin.saveResource("shops/farming.yml", false);
+            plugin.saveResource("shops/blocks.yml", false);
+            plugin.saveResource("shops/combat.yml", false);
+            plugin.saveResource("shops/mob_drops.yml", false);
+            plugin.saveResource("shops/brewing.yml", false);
+            plugin.saveResource("shops/redstone.yml", false);
+            plugin.saveResource("shops/misc.yml", false);
         }
 
         File[] shopFiles = shopsDir.listFiles((dir, name) -> name.endsWith(".yml"));

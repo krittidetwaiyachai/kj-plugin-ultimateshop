@@ -24,11 +24,10 @@ public class GUIManager {
     private final KJShopPlus plugin;
     private final Set<UUID> openMenus = new HashSet<>();
 
-    // --- เพิ่ม GUITYPE ใหม่ ---
     public enum GUITYPE {
-        CATEGORY_MAIN, SHOP_PAGE, QUANTITY_SELECTOR // เปลี่ยน TRADE_CONFIRM เป็น QUANTITY_SELECTOR
+        CATEGORY_MAIN, SHOP_PAGE,
+        QUANTITY_SELECTOR // หน้าเลือกจำนวน
     }
-    // --- จบ ---
 
     public GUIManager(KJShopPlus plugin) {
         this.plugin = plugin;
@@ -208,25 +207,14 @@ public class GUIManager {
         int itemsPlacedThisPage = 0;
 
         if (itemsPerPage > 0) { // Only try to place items if there's space
-            // --- แก้ไข: วนลูป items ---
-            for (int i = 0; i < items.size(); i++) {
-                if (i < startIndex || itemsPlacedThisPage >= itemsPerPage) {
-                    continue; // ข้ามไอเทมหน้าก่อนๆ หรือถ้าหน้านี้เต็มแล้ว
-                }
-
+            for (int i = startIndex; i < items.size() && itemsPlacedThisPage < itemsPerPage; i++) {
                 ShopItem shopItem = items.get(i);
-                // --- จบ ---
                 int targetSlot = -1;
 
                 // Check if a specific slot is defined and VALID and NOT occupied by layout
                 if (shopItem.getSlot() != -1 && shopItem.getSlot() < category.getSize()) {
                     if (!layoutSlots.contains(shopItem.getSlot())) {
-                         // --- แก้ไข: เช็คช่องว่างใน inv ---
-                        ItemStack currentItemInSlot = inv.getItem(shopItem.getSlot());
-                        if (currentItemInSlot == null || currentItemInSlot.getType() == Material.AIR) {
-                            targetSlot = shopItem.getSlot();
-                        }
-                        // --- จบ ---
+                        targetSlot = shopItem.getSlot();
                     } else {
                         plugin.getLogger().warning("Shop item " + shopItem.getGlobalId() + " defined slot " + shopItem.getSlot() + " is occupied by layout! Trying auto-slot...");
                         // Fall through to auto-slotting
@@ -236,9 +224,7 @@ public class GUIManager {
                 // If no valid specific slot, find the next available auto-slot
                 if (targetSlot == -1) {
                     while (slotIndex < category.getSize()) {
-                        // --- แก้ไข: เช็คช่องว่างใน inv และ layoutSlots ---
                         if (!layoutSlots.contains(slotIndex) && (inv.getItem(slotIndex) == null || inv.getItem(slotIndex).getType() == Material.AIR)) {
-                        // --- จบ ---
                             targetSlot = slotIndex;
                             slotIndex++; // Move to next potential slot for the NEXT item
                             break;
@@ -252,10 +238,10 @@ public class GUIManager {
                     ItemStack displayItem = shopItem.buildDisplayItem(player, isBedrock);
                     inv.setItem(targetSlot, displayItem);
                     itemsPlacedThisPage++;
-                } else if (targetSlot >= category.getSize()) { // --- เพิ่ม else if ---
-                    // No more GUI slots left to check
+                } else {
                     plugin.getLogger().warning("Could not find a free slot for shop item " + shopItem.getGlobalId() + " on page " + page + " in category '" + categoryId + "' (Size: " + category.getSize() + ")");
-                    break; // Stop trying for this page
+                    // If even auto-slotting fails, stop trying for this page
+                    break;
                 }
             }
         }
@@ -276,163 +262,120 @@ public class GUIManager {
     }
 
 
-    // --- เปลี่ยนชื่อเมธอด openTradeMenu เป็น openQuantitySelectorMenu และแก้ไข GUI ---
-    public void openQuantitySelectorMenu(Player player, ShopItem item, boolean isBuying, int currentQuantity) {
+    // --- MODIFIED: openQuantitySelector (ระบบตะกร้า) ---
+    /**
+     * Opens the GUI for selecting item quantity.
+     * @param player The player
+     * @param item The item to trade
+     * @param currentAmount The current amount in the "cart"
+     * @param isBuy True if buying, false if selling
+     * @param previousPage The shop page number the player came from
+     */
+    public void openQuantitySelector(Player player, ShopItem item, int currentAmount, boolean isBuy, int previousPage) {
         if (item == null) {
             player.closeInventory();
             return;
         }
 
-        // --- แก้ไข: ตรวจสอบจำนวนที่มีในตัว (กรณีขาย) ---
-        int playerAmount = getAmountInInventory(player, item.getMaterial());
-        // --- จบ ---
+        String mode = isBuy ? "&a&lBUYING" : "&c&lSELLING";
+        String title = ChatColor.translateAlternateColorCodes('&', mode + " " + item.getMaterial().name());
+        int guiSize = 45; // 5 rows
 
-        // ทำให้จำนวนไม่ติดลบ
-        if (currentQuantity < 0) currentQuantity = 0;
+        // Store all necessary data in the KJGUIData
+        KJGUIData guiData = new KJGUIData(null, GUIManager.GUITYPE.QUANTITY_SELECTOR, item.getCategoryId(), previousPage);
+        guiData.setTradeItem(item);
+        guiData.setCurrentAmount(currentAmount);
+        guiData.setBuyMode(isBuy);
 
-        // --- แก้ไข: ถ้าเป็นการขาย จำกัดจำนวนที่เลือกไม่ให้เกินที่มี ---
-        if (!isBuying) {
-            if (playerAmount == 0) {
-                 plugin.getMessageManager().sendMessage(player, "not_enough_items"); // แจ้งเตือนถ้าไม่มีของเลย
-                 openShopPage(player, item.getCategoryId(), 1); // กลับไปหน้าหมวดหมู่
-                 return;
-            }
-            if (currentQuantity > playerAmount) {
-                currentQuantity = playerAmount; // ปรับจำนวนให้เท่ากับที่มี
-            }
-             if (currentQuantity == 0 && playerAmount > 0) {
-                 currentQuantity = 1; // ถ้ามีของ แต่ดันเลือก 0 ให้เป็น 1
-             }
-        }
-        // --- จบ ---
-
-
-        // ดึงราคาปัจจุบัน
-        double pricePerItem = isBuying
-                ? plugin.getDynamicPriceManager().getBuyPrice(item)
-                : plugin.getDynamicPriceManager().getSellPrice(item);
-        double totalPrice = pricePerItem * currentQuantity;
-        String symbol = plugin.getCurrencyService().getCurrencySymbol(item.getCurrencyId());
-
-        String title = ChatColor.translateAlternateColorCodes('&',
-                isBuying ? "&aBuy: " + item.getMaterial().name() : "&cSell: " + item.getMaterial().name());
-        int guiSize = 45; // 5 แถว
-
-        // สร้าง KJGUIData สำหรับหน้าเลือกจำนวน
-        KJGUIData guiData = new KJGUIData(null, GUIManager.GUITYPE.QUANTITY_SELECTOR, item.getCategoryId(), 1); // Page ไม่สำคัญ
         Inventory inv = Bukkit.createInventory(guiData, guiSize, title);
         guiData.setInventory(inv);
-        guiData.setTradeItem(item); // เก็บไอเทมที่กำลังจะซื้อ/ขาย
-        guiData.setIsBuying(isBuying); // เก็บสถานะว่ากำลังซื้อหรือขาย
-        guiData.setCartQuantity(currentQuantity); // เก็บจำนวนปัจจุบัน
 
         boolean isBedrock = plugin.isBedrockPlayer(player.getUniqueId());
-
-        // --- Layout ใหม่ ---
-
-        // เติมพื้นหลัง
-        ItemStack fill = new ItemBuilder(mapBedrockMaterial(safeMaterial("GRAY_STAINED_GLASS_PANE", Material.STONE), player))
-                .setName(" ")
-                .build();
+        Material fillMat = mapBedrockMaterial(Material.GRAY_STAINED_GLASS_PANE, player);
+        ItemStack fill = new ItemBuilder(fillMat).setName(" ").build();
         for (int i = 0; i < guiSize; i++) inv.setItem(i, fill);
 
-        // ไอเทมแสดงผล (ช่อง 4)
+        // Prices and Currency
+        double buyPrice = plugin.getDynamicPriceManager().getBuyPrice(item);
+        double sellPrice = plugin.getDynamicPriceManager().getSellPrice(item);
+        double pricePerItem = isBuy ? buyPrice : sellPrice;
+        double totalPrice = pricePerItem * currentAmount;
+        String symbol = plugin.getCurrencyService().getCurrencySymbol(item.getCurrencyId());
+
+        // --- Row 0: Item Display ---
         inv.setItem(4, item.buildDisplayItem(player, isBedrock));
 
-        // ปุ่มลดจำนวน (-)
-        // ปุ่ม -1 (ช่อง 19)
-        if (currentQuantity >= 1) { // แสดงปุ่มต่อเมื่อจำนวน >= 1
-            inv.setItem(19, new ItemBuilder(mapBedrockMaterial(safeMaterial("RED_CONCRETE", Material.RED_WOOL), player))
-                    .setName("&c-1")
-                    .setLore(List.of("&7Click to decrease quantity by 1"))
-                    .setPDCData("REMOVE_QUANTITY", "1")
-                    .build());
+        // --- Row 1: Mode Display ---
+        Material modeMat = isBuy ? mapBedrockMaterial(Material.LIME_STAINED_GLASS_PANE, player) : mapBedrockMaterial(Material.RED_STAINED_GLASS_PANE, player);
+        inv.setItem(13, new ItemBuilder(modeMat).setName(mode).build()); // Slot 13 (Row 1, Middle)
+
+        // --- Row 2: Controls & Info ---
+        // Decrease Buttons
+        if (currentAmount >= 1) {
+            inv.setItem(21, new ItemBuilder(Material.RED_WOOL).setName("&c-1").setAmount(1).setPDCAction("ADJUST_QUANTITY").setPDCValue("-1").build());
         }
-        // ปุ่ม -32 (ช่อง 20)
-        if (currentQuantity >= 32) { // แสดงปุ่มต่อเมื่อจำนวน >= 32
-             inv.setItem(20, new ItemBuilder(mapBedrockMaterial(safeMaterial("RED_CONCRETE", Material.RED_WOOL), player))
-                    .setAmount(32) // Set amount for visual cue
-                    .setName("&c-32")
-                    .setLore(List.of("&7Click to decrease quantity by 32"))
-                    .setPDCData("REMOVE_QUANTITY", "32")
-                    .build());
+        if (currentAmount >= 32) {
+            inv.setItem(20, new ItemBuilder(Material.RED_WOOL).setName("&c-32").setAmount(32).setPDCAction("ADJUST_QUANTITY").setPDCValue("-32").build());
         }
-        // ปุ่ม -64 (ช่อง 21)
-         if (currentQuantity >= 64) { // แสดงปุ่มต่อเมื่อจำนวน >= 64
-             inv.setItem(21, new ItemBuilder(mapBedrockMaterial(safeMaterial("RED_CONCRETE", Material.RED_WOOL), player))
-                    .setAmount(64) // Set amount for visual cue
-                    .setName("&c-64")
-                    .setLore(List.of("&7Click to decrease quantity by 64"))
-                    .setPDCData("REMOVE_QUANTITY", "64")
-                    .build());
+        if (currentAmount >= 64) {
+            inv.setItem(19, new ItemBuilder(Material.RED_WOOL).setName("&c-64").setAmount(64).setPDCAction("ADJUST_QUANTITY").setPDCValue("-64").build());
         }
 
+        // Info Item (Slot 22)
+        // (ใช้ Java 8 Map creation)
+        Map<String, String> pricePlaceholders = new HashMap<>();
+        pricePlaceholders.put("price", PriceUtil.format(totalPrice));
+        pricePlaceholders.put("symbol", symbol);
 
-        // ไอเทมแสดงจำนวนและราคา (ช่อง 22)
-        inv.setItem(22, new ItemBuilder(Material.PAPER)
-                .setName("&eQuantity: &f" + currentQuantity)
+        ItemStack infoItem = new ItemBuilder(item.getMaterial())
+                .setName(isBuy ? "&aConfirm Buy" : "&cConfirm Sell")
+                .setAmount(Math.max(1, Math.min(currentAmount, item.getMaterial().getMaxStackSize()))) // Clamp amount 1-maxStack
                 .setLore(Arrays.asList(
-                        "&7Price per item: &f" + symbol + PriceUtil.format(pricePerItem),
-                        "&r",
-                        "&bTotal Price: &6" + symbol + PriceUtil.format(totalPrice),
-                        (!isBuying ? "&7You have: &f" + playerAmount : "") // แสดงจำนวนที่มีถ้าเป็นการขาย
-                 ))
-                .build()); // ไม่มี Action
+                        "&7Amount: &e" + currentAmount,
+                        plugin.getMessageManager().getMessage("gui_total_price", pricePlaceholders)
+                ))
+                .build();
+        inv.setItem(22, infoItem);
 
-        // ปุ่มเพิ่มจำนวน (+)
-        // ปุ่ม +1 (ช่อง 23)
-        inv.setItem(23, new ItemBuilder(mapBedrockMaterial(safeMaterial("LIME_CONCRETE", Material.LIME_WOOL), player))
-                .setName("&a+1")
-                .setLore(List.of("&7Click to increase quantity by 1"))
-                .setPDCData("ADD_QUANTITY", "1")
-                .build());
-        // ปุ่ม +32 (ช่อง 24)
-        inv.setItem(24, new ItemBuilder(mapBedrockMaterial(safeMaterial("LIME_CONCRETE", Material.LIME_WOOL), player))
-                .setAmount(32) // Set amount for visual cue
-                .setName("&a+32")
-                .setLore(List.of("&7Click to increase quantity by 32"))
-                .setPDCData("ADD_QUANTITY", "32")
-                .build());
-        // ปุ่ม +64 (ช่อง 25)
-         inv.setItem(25, new ItemBuilder(mapBedrockMaterial(safeMaterial("LIME_CONCRETE", Material.LIME_WOOL), player))
-                .setAmount(64) // Set amount for visual cue
-                .setName("&a+64")
-                .setLore(List.of("&7Click to increase quantity by 64"))
-                .setPDCData("ADD_QUANTITY", "64")
-                .build());
+        // Increase Buttons
+        inv.setItem(23, new ItemBuilder(Material.GREEN_WOOL).setName("&a+1").setAmount(1).setPDCAction("ADJUST_QUANTITY").setPDCValue("1").build());
+        inv.setItem(24, new ItemBuilder(Material.GREEN_WOOL).setName("&a+32").setAmount(32).setPDCAction("ADJUST_QUANTITY").setPDCValue("32").build());
+        inv.setItem(25, new ItemBuilder(Material.GREEN_WOOL).setName("&a+64").setAmount(64).setPDCAction("ADJUST_QUANTITY").setPDCValue("64").build());
 
-        // --- เพิ่มปุ่ม Buy/Sell Mode (ถ้าทำได้ทั้งคู่) ---
-        if (item.isAllowBuy() && item.isAllowSell()) {
-            inv.setItem(38, new ItemBuilder(isBuying ? Material.REDSTONE_TORCH : Material.LEVER)
-                    .setName(isBuying ? "&eMode: &aBUYING" : "&eMode: &cSELLING")
-                    .setLore(List.of("&7Click to switch to " + (isBuying ? "&cSELLING" : "&aBUYING")))
-                    .setPDCAction("SWITCH_MODE")
-                    .build());
+
+        // --- Row 3: Sell All (NEW) ---
+        if (!isBuy) {
+            int playerAmount = getAmountInInventory(player, item.getMaterial());
+            double totalSellAllPrice = sellPrice * playerAmount;
+            
+            // (ใช้ Java 8 Map creation)
+            Map<String, String> sellAllAmountMap = new HashMap<>();
+            sellAllAmountMap.put("amount", String.valueOf(playerAmount));
+            
+            Map<String, String> sellAllPriceMap = new HashMap<>();
+            sellAllPriceMap.put("price", PriceUtil.format(totalSellAllPrice));
+            sellAllPriceMap.put("symbol", symbol);
+
+            ItemStack sellAllItem = new ItemBuilder(mapBedrockMaterial(Material.HOPPER, player))
+                    .setName(plugin.getMessageManager().getMessage("gui_sell_all_button", sellAllAmountMap))
+                    .setLore(Arrays.asList(
+                            plugin.getMessageManager().getMessage("gui_total_price", sellAllPriceMap)
+                    ))
+                    .setPDCAction("SELL_ALL_CART") // New action
+                    .build();
+            inv.setItem(31, sellAllItem); // Slot 31 (middle of 4th row)
         }
-        
-        // ปุ่มยืนยัน (ช่อง 40 - กลาง)
-        inv.setItem(40, new ItemBuilder(mapBedrockMaterial(safeMaterial("LIME_WOOL", Material.GREEN_WOOL), player)) // ใช้วัสดุที่ต่างกัน
-                .setName(isBuying ? "&a&lConfirm Purchase" : "&a&lConfirm Sale")
-                .setLore(List.of(
-                        "&7Amount: &f" + currentQuantity,
-                        "&7Total: &6" + symbol + PriceUtil.format(totalPrice),
-                        "&r",
-                        "&aClick to confirm."
-                        ))
-                .setPDCAction("CONFIRM_TRANSACTION") // Action ใหม่
-                .addGlow()
-                .build());
 
-        // ปุ่มยกเลิก (ช่อง 44 - ล่างขวา)
-        inv.setItem(44, new ItemBuilder(mapBedrockMaterial(safeMaterial("RED_WOOL", Material.RED_WOOL), player))
-                .setName("&c&lCancel")
-                .setLore(List.of("&7Click to cancel and go back."))
-                .setPDCAction("CANCEL_TRANSACTION") // Action ใหม่
-                .build());
+
+        // --- Row 4: Confirm/Cancel ---
+        // Slot 39 & 41 (ห่างกัน 1 ช่อง)
+        inv.setItem(39, new ItemBuilder(Material.BARRIER).setName("&cCancel Transaction").setPDCAction("CANCEL_TRANSACTION").build());
+        inv.setItem(41, new ItemBuilder(Material.LIME_CONCRETE).setName("&aConfirm Transaction").setPDCAction("CONFIRM_TRANSACTION").build());
+
 
         openMenu(player, inv);
     }
-    // --- จบเมธอด openQuantitySelectorMenu ---
+    // --- END MODIFIED METHOD ---
 
 
     private void openMenu(Player player, Inventory inv) {
@@ -446,13 +389,11 @@ public class GUIManager {
         if (clickedItem == null || clickedItem.getType() == Material.AIR) return;
 
         String action = ItemBuilder.getPDCAction(clickedItem);
-        String value = ItemBuilder.getPDCValue(clickedItem); // Can be null (e.g., for SELL_ALL)
+        String value = ItemBuilder.getPDCValue(clickedItem);
         
-        // --- DEBUG LOG ---
         System.out.println("[KJShopPlus DEBUG] Click processing: Slot=" + slot
                 + " | Item=" + (clickedItem != null ? clickedItem.getType() : "NULL")
                 + " | PDC Action=" + action + " | PDC Value=" + value);
-        // --- END DEBUG LOG ---
 
 
         if (action == null) {
@@ -460,259 +401,207 @@ public class GUIManager {
              return;
         }
 
-        ShopItem tradeItem = guiData.getTradeItem(); // Item associated with QUANTITY_SELECTOR GUI
-        String categoryId = guiData.getCategoryId(); // Category ID for SHOP_PAGE or QUANTITY_SELECTOR
-        int currentPage = guiData.getPage();        // Page number for SHOP_PAGE
-        // --- ดึงข้อมูลจาก KJGUIData ---
-        int currentQuantity = guiData.getCartQuantity();
-        boolean isBuying = guiData.isBuying();
-        // --- จบ ---
+        ShopItem tradeItem = guiData.getTradeItem();
+        String categoryId = guiData.getCategoryId();
+        int currentPage = guiData.getPage();
+        // --- ADDED ---
+        boolean isBuy = guiData.isBuyMode();
+        int currentAmount = guiData.getCurrentAmount();
+        // --- END ---
 
         switch (action) {
             case "OPEN_CATEGORY":
                 if (value != null && value.equals("main")) {
                     openCategoryMenu(player);
                 } else if (value != null) {
-                    // Could be from main menu (value=category ID) or trade menu (value=category ID)
                     openShopPage(player, value, 1);
                 }
                 break;
+            
             case "TRADE_ITEM": // Clicked on an item in SHOP_PAGE
-                if (value != null) { // Value should be the globalId (category:item)
+                if (value != null) {
                     ShopItem itemToTrade = plugin.getShopManager().getShopItem(value);
                     if (itemToTrade != null) {
-                        // --- เปิดหน้าเลือกจำนวนแทน ---
-                        int startQuantity = 1;
-                        boolean startBuying = itemToTrade.isAllowBuy(); 
-                        
-                        if (!startBuying && itemToTrade.isAllowSell()){
-                            startBuying = false; 
-                            // --- แก้ไข: กลับไปใช้ Material ---
-                             startQuantity = getAmountInInventory(player, itemToTrade.getMaterial()); 
-                             if(startQuantity == 0) {
-                                 // ถ้าจะขายแต่ไม่มีของเลย ก็เด้งกลับ
-                                 plugin.getMessageManager().sendMessage(player, "not_enough_items");
-                                 return; 
+                        // --- FIX: Pass the current page number (guiData.getPage()) ---
+                        if (player.isSneaking()) { // Use shift-click for sell
+                             if (itemToTrade.isAllowSell()) {
+                                // เปิดหน้าเลือกจำนวน (Sell) โดยเริ่มที่ 1 ชิ้น
+                                openQuantitySelector(player, itemToTrade, 1, false, guiData.getPage());
                              }
-                             // ให้เริ่มที่ 1 ชิ้นก่อน แม้จะมีเยอะ
-                             startQuantity = 1; 
-                        } else if (!itemToTrade.isAllowBuy() && !itemToTrade.isAllowSell()) {
-                             return; // ถ้าของชิ้นนี้ห้ามซื้อและห้ามขาย ก็ไม่ต้องทำอะไร
+                        } else { // Normal click for buy
+                             if (itemToTrade.isAllowBuy()) {
+                                // เปิดหน้าเลือกจำนวน (Buy) โดยเริ่มที่ 1 ชิ้น
+                                openQuantitySelector(player, itemToTrade, 1, true, guiData.getPage());
+                             }
                         }
-                        
-                        openQuantitySelectorMenu(player, itemToTrade, startBuying, startQuantity);
-                        // --- จบ ---
                     } else {
                         plugin.getLogger().warning("TRADE_ITEM action received invalid globalId: " + value);
                         player.closeInventory();
                     }
                 }
                 break;
+            
             case "PAGE_NEXT":
-                if (categoryId != null && guiData.getGuiType() == GUITYPE.SHOP_PAGE) {
+                if (categoryId != null && guiData.getGuiType() == GUIManager.GUITYPE.SHOP_PAGE) {
                     openShopPage(player, categoryId, currentPage + 1);
                 }
                 break;
+            
             case "PAGE_PREV":
-                if (categoryId != null && guiData.getGuiType() == GUITYPE.SHOP_PAGE) {
+                if (categoryId != null && guiData.getGuiType() == GUIManager.GUITYPE.SHOP_PAGE) {
                     openShopPage(player, categoryId, currentPage - 1);
                 }
                 break;
-
-             // --- ลบ case BUY, SELL, SELL_ALL ---
-
-            // --- เคสใหม่สำหรับปุ่ม +/- ---
-            case "ADD_QUANTITY":
-                if (tradeItem != null && value != null) {
+            
+            // --- NEW CASES FOR QUANTITY SELECTOR ---
+            case "ADJUST_QUANTITY":
+                if (tradeItem != null && value != null && guiData.getGuiType() == GUIManager.GUITYPE.QUANTITY_SELECTOR) {
                     try {
-                        int amountToAdd = Integer.parseInt(value);
-                        int newQuantity = currentQuantity + amountToAdd;
+                        int amountChange = Integer.parseInt(value);
+                        int newAmount = Math.max(0, currentAmount + amountChange); // Don't go below 0
                         
-                        // --- แก้ไข: ถ้าขาย ห้ามบวกเกินจำนวนที่มี ---
-                        if(!isBuying) {
+                        // If selling, check against max player has
+                        if (!isBuy) {
                             int playerAmount = getAmountInInventory(player, tradeItem.getMaterial());
-                            if (newQuantity > playerAmount) {
-                                newQuantity = playerAmount;
-                            }
+                            newAmount = Math.min(newAmount, playerAmount); // Don't go above what player has
                         }
-                        // --- จบ ---
-
-                        openQuantitySelectorMenu(player, tradeItem, isBuying, newQuantity);
+                        
+                        // Re-open the GUI with the new amount, pass previous page (currentPage)
+                        openQuantitySelector(player, tradeItem, newAmount, isBuy, currentPage);
                     } catch (NumberFormatException e) {
-                         plugin.getLogger().warning("Invalid ADD_QUANTITY value: " + value);
+                        plugin.getLogger().warning("Invalid ADJUST_QUANTITY value: " + value);
                     }
                 }
                 break;
-            case "REMOVE_QUANTITY":
-                if (tradeItem != null && value != null) {
-                    try {
-                        int amountToRemove = Integer.parseInt(value);
-                        int newQuantity = currentQuantity - amountToRemove;
-                        if (newQuantity < 0) newQuantity = 0; // กันติดลบ
-                        openQuantitySelectorMenu(player, tradeItem, isBuying, newQuantity);
-                    } catch (NumberFormatException e) {
-                         plugin.getLogger().warning("Invalid REMOVE_QUANTITY value: " + value);
-                    }
-                }
-                break;
-            // --- จบเคส +/- ---
 
-            // --- เคสใหม่สำหรับปุ่มสลับโหมด ---
-            case "SWITCH_MODE":
-                if (tradeItem != null) {
-                    boolean newIsBuying = !isBuying; // สลับโหมด
-                    int newQuantity = 1; // กลับไปเริ่มที่ 1
-                    if (!newIsBuying) { // ถ้าเพิ่งสลับไปโหมดขาย
-                        // --- แก้ไข: กลับไปใช้ Material ---
-                        newQuantity = getAmountInInventory(player, tradeItem.getMaterial());
-                        if (newQuantity == 0) {
-                            plugin.getMessageManager().sendMessage(player, "not_enough_items");
-                            // ไม่เปลี่ยนโหมดถ้าไม่มีของขาย
-                            // openQuantitySelectorMenu(player, tradeItem, isBuying, currentQuantity); // <-- รีเฟรชหน้าเดิม
-                            return; 
-                        }
-                         // ให้เริ่มที่ 1 ชิ้นก่อน แม้จะมีเยอะ
-                         newQuantity = 1;
-                    }
-                    openQuantitySelectorMenu(player, tradeItem, newIsBuying, newQuantity);
-                }
-                break;
-            // --- จบ ---
-
-            // --- เคสใหม่สำหรับปุ่มยืนยัน / ยกเลิก ---
             case "CONFIRM_TRANSACTION":
-                 if (tradeItem != null && currentQuantity > 0) {
-                     performTransaction(player, tradeItem, currentQuantity, isBuying);
-                     // ทำเสร็จแล้ว กลับไปหน้าหมวดหมู่เดิม
-                     openShopPage(player, categoryId, 1); // อาจจะต้องจำ page เดิมไว้? ตอนนี้กลับไปหน้า 1 ก่อน
-                 } else if (tradeItem != null && currentQuantity <= 0){
-                     // ถ้ากด Confirm ตอนจำนวนเป็น 0 ก็แค่กลับไปหน้าหมวดหมู่
-                     openShopPage(player, categoryId, 1);
-                 }
-                 break;
-            case "CANCEL_TRANSACTION":
-                // กลับไปหน้าหมวดหมู่
-                openShopPage(player, categoryId, 1);
+                if (tradeItem != null && guiData.getGuiType() == GUIManager.GUITYPE.QUANTITY_SELECTOR && currentAmount > 0) {
+                    performTransaction(player, tradeItem, currentAmount, isBuy);
+                    // Go back to the shop page, using the stored page number
+                    openShopPage(player, tradeItem.getCategoryId(), currentPage); // currentPage is previousPage
+                }
                 break;
-            // --- จบ ---
+
+            case "CANCEL_TRANSACTION":
+                if (tradeItem != null && guiData.getGuiType() == GUIManager.GUITYPE.QUANTITY_SELECTOR) {
+                    // Go back to the shop page, using the stored page number
+                    openShopPage(player, tradeItem.getCategoryId(), currentPage); // currentPage is previousPage
+                }
+                break;
+
+            // --- NEW CASE FOR SELL ALL IN CART ---
+            case "SELL_ALL_CART":
+                if (tradeItem != null && !isBuy && guiData.getGuiType() == GUIManager.GUITYPE.QUANTITY_SELECTOR) {
+                    int playerAmount = getAmountInInventory(player, tradeItem.getMaterial());
+                    if (playerAmount <= 0) {
+                        plugin.getMessageManager().sendMessage(player, "not_enough_items");
+                        // Re-open selector, still at 0, passing the previous page
+                        openQuantitySelector(player, tradeItem, 0, false, currentPage);
+                    } else {
+                        performTransaction(player, tradeItem, playerAmount, false);
+                        // Sell all done, go back to shop page
+                        openShopPage(player, tradeItem.getCategoryId(), currentPage);
+                    }
+                }
+                break;
+            // --- END NEW CASES ---
 
             case "CLOSE":
                 player.closeInventory();
                 break;
+            
             default:
                  plugin.getLogger().warning("Unknown GUI action clicked: " + action);
                  break;
         }
     }
 
-    // --- ลบ performSellAllTransaction ---
+    private void performSellAllTransaction(Player player, ShopItem item) {
+        // This method is no longer called by SELL_ALL button, but keep for legacy?
+        // Or refactor: SELL_ALL_CART logic is now the main way
+        if (item == null || !item.isAllowSell()) return;
+        int amount = getAmountInInventory(player, item.getMaterial());
+
+        if (amount <= 0) {
+            plugin.getMessageManager().sendMessage(player, "not_enough_items");
+            return;
+        }
+
+        performTransaction(player, item, amount, false);
+    }
 
     private void performTransaction(Player player, ShopItem item, int amount, boolean isBuy) {
         if (item == null || amount <= 0) return;
 
         double pricePerItem;
         if (isBuy) {
-            if (!item.isAllowBuy()) return; // Double check if allowed
+            if (!item.isAllowBuy()) return;
             pricePerItem = plugin.getDynamicPriceManager().getBuyPrice(item);
         } else {
-            if (!item.isAllowSell()) return; // Double check if allowed
+            if (!item.isAllowSell()) return;
             pricePerItem = plugin.getDynamicPriceManager().getSellPrice(item);
         }
         double totalPrice = pricePerItem * amount;
 
-        // Placeholders for messages
-        // --- แก้ไข: กลับไปใช้ Material.name() หรือ DisplayName ---
-        String itemName = (item.getDisplayName() != null && !item.getDisplayName().isBlank() && !item.getDisplayName().equals(" "))
-                ? ChatColor.translateAlternateColorCodes('&', item.getDisplayName()) // ใช้ชื่อที่ตั้ง ถ้ามีและไม่ใช่แค่ช่องว่าง
-                : item.getMaterial().name();
-        Map<String, String> placeholders = Map.of(
-            "amount", String.valueOf(amount),
-            "item", ChatColor.stripColor(itemName), // เอาสีออกก่อนส่ง message
-            "price", PriceUtil.format(totalPrice),
-            "currency_symbol", plugin.getCurrencyService().getCurrencySymbol(item.getCurrencyId())
-        );
-        // --- จบ ---
+        // --- FIX for Java 8 ---
+        Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("amount", String.valueOf(amount));
+        placeholders.put("item", item.getMaterial().name());
+        placeholders.put("price", PriceUtil.format(totalPrice));
+        placeholders.put("currency_symbol", plugin.getCurrencyService().getCurrencySymbol(item.getCurrencyId()));
+        // --- END FIX ---
 
 
         if (isBuy) {
-            // Check balance
             if (!plugin.getCurrencyService().hasBalance(player, item.getCurrencyId(), totalPrice)) {
                 plugin.getMessageManager().sendMessage(player, "not_enough_money", placeholders);
                 return;
             }
-            // Check inventory space
             int maxStack = item.getMaterial().getMaxStackSize();
             int neededSlots = (int) Math.ceil((double) amount / maxStack);
-            // --- แก้ไข: กลับไปใช้ Material ---
             if (getEmptySlots(player) < neededSlots && getPartialStackSpace(player, item.getMaterial(), amount) < amount) {
                  plugin.getMessageManager().sendMessage(player, "inventory_full", placeholders);
                  return;
             }
-            // --- จบ ---
 
-
-            // Attempt transaction
             if (!plugin.getCurrencyService().removeBalance(player, item.getCurrencyId(), totalPrice)) {
                 plugin.getMessageManager().sendMessage(player, "not_enough_money", placeholders);
                 return;
             }
 
-            // --- แก้ไข: ให้ไอเทมแบบ Vanilla ---
             player.getInventory().addItem(new ItemStack(item.getMaterial(), amount));
-            // --- จบ ---
-
-            // Record for dynamic pricing
             plugin.getDynamicPriceManager().recordBuy(item, amount);
-
-            // Send success message
             plugin.getMessageManager().sendMessage(player, "buy_success", placeholders);
-
-            // Log to Discord
             plugin.getDiscordWebhookService().logBuy(player, item, amount, totalPrice);
 
         } else { // Selling
-            // Check if player has enough items (amount should already be capped)
-            // --- แก้ไข: กลับไปใช้ Material ---
-            int playerAmount = getAmountInInventory(player, item.getMaterial());
-            if (playerAmount < amount) { // เช็คอีกรอบ เผื่อมีอะไรผิดพลาด
+            
+            // We already checked the amount in handleClick (SELL and SELL_ALL_CART)
+            // So 'amount' here is guaranteed to be <= player's total amount
+            if (!player.getInventory().contains(item.getMaterial(), amount)) {
+                // This check is now redundant due to logic in handleClick, but keep as fallback
                 plugin.getMessageManager().sendMessage(player, "not_enough_items", placeholders);
                 return;
             }
-            // --- จบ ---
 
-            // Take items
-            // --- แก้ไข: ลบไอเทมแบบ Vanilla ---
             player.getInventory().removeItem(new ItemStack(item.getMaterial(), amount));
-            // --- จบ ---
-
-            // Attempt to give money
             if (!plugin.getCurrencyService().addBalance(player, item.getCurrencyId(), totalPrice)) {
-                // Critical failure: Return items
                 plugin.getLogger().severe("CRITICAL: Failed to add balance for " + player.getName() + " after removing items! Returning items.");
-                // --- แก้ไข: คืนไอเทมแบบ Vanilla ---
                 player.getInventory().addItem(new ItemStack(item.getMaterial(), amount)); // Give items back
-                // --- จบ ---
-                plugin.getMessageManager().sendMessage(player, "error_occurred"); // Inform player
+                plugin.getMessageManager().sendMessage(player, "error_occurred");
                 return;
             }
-
-            // Record for dynamic pricing
             plugin.getDynamicPriceManager().recordSell(item, amount);
-
-            // Send success message
             plugin.getMessageManager().sendMessage(player, "sell_success", placeholders);
-
-            // Log to Discord
             plugin.getDiscordWebhookService().logSell(player, item, amount, totalPrice);
         }
     }
      // Helper to check space in partially filled stacks
-    // --- แก้ไข: กลับไปใช้ Material ---
     private int getPartialStackSpace(Player player, Material material, int amountNeeded) {
         int space = 0;
         int maxStack = material.getMaxStackSize();
         for (ItemStack item : player.getInventory().getStorageContents()) { // Use getStorageContents to exclude armor/offhand
-            if (item != null && item.getType() == material && item.getAmount() < maxStack) { // <--- เช็คแค่ Material
+            if (item != null && item.getType() == material && item.getAmount() < maxStack) {
                 space += maxStack - item.getAmount();
                 if (space >= amountNeeded) {
                     return amountNeeded; // Found enough space
@@ -721,22 +610,19 @@ public class GUIManager {
         }
         return space;
     }
-    // --- จบ ---
 
 
     // Counts items in player's main inventory slots (0-35)
-    // --- แก้ไข: กลับไปใช้ Material ---
     private int getAmountInInventory(Player player, Material material) {
         int amount = 0;
         ItemStack[] contents = player.getInventory().getStorageContents(); // Includes hotbar + main inv
         for (ItemStack item : contents) {
-            if (item != null && item.getType() == material) { // <--- เช็คแค่ Material
+            if (item != null && item.getType() == material) {
                 amount += item.getAmount();
             }
         }
         return amount;
     }
-    // --- จบ ---
 
     // Counts empty slots in player's main inventory (0-35)
     private int getEmptySlots(Player player) {
@@ -775,7 +661,6 @@ public class GUIManager {
     // Maps Material for Bedrock players if compatibility is enabled
     public Material mapBedrockMaterial(Material javaMaterial, Player player) {
         if (javaMaterial == null) return Material.STONE; // Fallback for null input
-        // Check if player UUID is actually a bedrock player AND if compat is enabled
         if (plugin.isBedrockPlayer(player.getUniqueId()) && plugin.getConfigManager().isBedrockCompatEnabled()) {
             return plugin.getConfigManager().getBedrockMappedMaterial(javaMaterial);
         }
@@ -790,19 +675,17 @@ public class GUIManager {
 
     // Closes all currently open KJShopPlus GUIs (e.g., on reload/disable)
     public void closeAllMenus() {
-        // Use an iterator to safely remove while iterating
         Iterator<UUID> iterator = openMenus.iterator();
         while (iterator.hasNext()) {
             UUID uuid = iterator.next();
-            Player player = Bukkit.getPlayer(uuid); // Get player associated with the UUID
-            if (player != null && player.getOpenInventory().getTopInventory().getHolder() instanceof KJGUIData) {
-                // Check if they still have our GUI open before closing
-                player.closeInventory();
+            Player player = Bukkit.getPlayer(uuid);
+            if (player != null) {
+                 if (player.getOpenInventory().getTopInventory().getHolder() instanceof KJGUIData) {
+                    player.closeInventory();
+                 }
             }
-            iterator.remove(); // Remove UUID from the set
+            iterator.remove();
         }
-         // Clear the set completely just in case
-        openMenus.clear();
     }
 }
 

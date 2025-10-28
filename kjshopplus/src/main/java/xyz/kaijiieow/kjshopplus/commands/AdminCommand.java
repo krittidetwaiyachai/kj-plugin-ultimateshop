@@ -9,8 +9,10 @@ import xyz.kaijiieow.kjshopplus.KJShopPlus;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections; // <-- IMPORT เพิ่ม
 import java.util.List;
-import java.util.Map; // <-- IMPORT MISSING CLASS
+import java.util.Map;
+import java.util.stream.Collectors; // <-- IMPORT เพิ่ม
 
 public class AdminCommand implements CommandExecutor, TabCompleter {
 
@@ -48,8 +50,8 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                      return true;
                 }
                 int count = plugin.getDynamicPriceManager().resetAllPricesNow();
-                // Use Map.of() to create placeholders
-                plugin.getMessageManager().sendMessage(sender, "price_reset_manual", Map.of("count", String.valueOf(count)));
+                // --- FIX: เปลี่ยน Map.of (Java 9+) เป็น Collections.singletonMap (Java 8) ---
+                plugin.getMessageManager().sendMessage(sender, "price_reset_manual", Collections.singletonMap("count", String.valueOf(count)));
                 if (sender instanceof Player) {
                      plugin.getDiscordWebhookService().logAdmin((Player) sender, "Manually reset " + count + " dynamic prices");
                 }
@@ -73,13 +75,12 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         if (args.length == 1) {
             List<String> subCommands = new ArrayList<>(Arrays.asList("reload", "resetprices", "help"));
             subCommands.removeIf(sub -> !sender.hasPermission("kjshopplus.admin." + sub));
-            // Use stream().filter().toList() for modern Java
+            // --- FIX: เปลี่ยน .toList() (Java 16+) เป็น .collect(Collectors.toList()) (Java 8) ---
             return subCommands.stream()
                     .filter(sub -> sub.startsWith(args[0].toLowerCase()))
-                    .toList();
+                    .collect(Collectors.toList());
         }
-        // Return empty list for subsequent arguments
-        return List.of();
+        // --- FIX: เปลี่ยน List.of() (Java 9+) เป็น Collections.emptyList() (Java 8) ---
+        return Collections.emptyList();
     }
 }
-
