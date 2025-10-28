@@ -44,9 +44,24 @@ discord_log_reset: "§x§0§0§C§3§F§F[RESET] §fPrice reset executed automat
 # ===================== UI / GUI ===================== #
 gui_error_closed: "§x§F§F§5§5§5§5§l✖ §x§F§F§8§0§8§0This shop GUI is currently closed."
 # --- ADD THESE ---
-gui_total_price: "&7Total: &a{symbol}{price}"
-gui_sell_all_button: "&c&lSell All ({amount})"
-
+gui_buy_mode_button: "&a&lBuy Mode"
+gui_buy_mode_lore: "&7Click to switch to Sell Mode"
+gui_sell_mode_button: "&c&lSell Mode"
+gui_sell_mode_lore: "&7Click to switch to Buy Mode"
+gui_buy_disabled: "§cYou cannot buy this item."
+gui_sell_disabled: "§cYou cannot sell this item."
+gui_buying: "&aBuying"
+gui_selling: "&cSelling"
+gui_item_price: "&7Price / item: &e"
+gui_total_price: "&7Total Price: &6"
+gui_you_have: "&7You have: &e"
+gui_click_to_confirm_buy: "&aClick confirm (bottom left) to buy."
+gui_click_to_confirm_sell: "&cClick confirm (bottom left) to sell."
+gui_cancel_button: "&c&lCancel"
+gui_cancel_lore: "&7Return to shop"
+gui_confirm_buy_button: "&a&lConfirm Purchase"
+gui_confirm_sell_button: "&c&lConfirm Sale"
+gui_sell_all_button: "&c&lSell All"
 # ===================== System / Technical ===================== #
 task_started: "§x§5§5§F§F§5§5§l✓ §x§9§9§F§F§9§9Price reset task started."
 task_stopped: "§x§F§F§8§0§8§0§l✖ §x§F§F§A§A§A§APrice reset task stopped."

@@ -15,21 +15,21 @@ public class KJGUIData implements InventoryHolder {
     private final GUITYPE guiType;
     private final String categoryId; // e.g., "ores", "main"
     private final int page;
-    private ShopItem tradeItem; // Only used for TRADE_CONFIRM type
+    private ShopItem tradeItem; // Only used for QUANTITY_SELECTOR type
 
-    // --- FIELDS FOR CART/QUANTITY SELECTOR ---
-    private int currentAmount;
-    private boolean isBuyMode;
-    // --- END NEW FIELDS ---
+    // --- เพิ่ม field ใหม่ ---
+    private final boolean isBuyMode; // ใช้ทั้งใน SHOP_PAGE และ QUANTITY_SELECTOR
+    private final int currentAmount; // ใช้ใน QUANTITY_SELECTOR
+    private final int previousPage;  // หน้าที่จากมา (สำหรับปุ่ม cancel/confirm)
 
-    // Constructor updated to only need essential info
-    public KJGUIData(InventoryHolder holder, GUITYPE type, String categoryId, int page) {
-        // We don't actually use the holder argument, but Bukkit needs it for createInventory
+    // --- แก้ Constructor ---
+    public KJGUIData(InventoryHolder holder, GUITYPE type, String categoryId, int page, boolean isBuyMode, int currentAmount, int previousPage) {
         this.guiType = type;
         this.categoryId = categoryId;
-        this.page = page;
-        this.currentAmount = 0; // Default amount
-        this.isBuyMode = true; // Default to buy
+        this.page = page; // page นี้อาจจะหมายถึง 'currentPage' ของ SHOP_PAGE
+        this.isBuyMode = isBuyMode;
+        this.currentAmount = currentAmount;
+        this.previousPage = previousPage; // หน้าที่ควรกลับไป
     }
 
     @Override
@@ -62,21 +62,17 @@ public class KJGUIData implements InventoryHolder {
         this.tradeItem = tradeItem;
     }
 
-    // --- GETTERS/SETTERS FOR CART ---
-    public int getCurrentAmount() {
-        return currentAmount;
-    }
-
-    public void setCurrentAmount(int currentAmount) {
-        this.currentAmount = currentAmount;
-    }
-
+    // --- เพิ่ม Getter ใหม่ ---
     public boolean isBuyMode() {
         return isBuyMode;
     }
 
-    public void setBuyMode(boolean isBuyMode) {
-        this.isBuyMode = isBuyMode;
+    public int getCurrentAmount() {
+        return currentAmount;
     }
-    // --- END GETTERS/SETTERS ---
+
+    public int getPreviousPage() {
+        return previousPage;
+    }
 }
+
