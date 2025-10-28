@@ -1,0 +1,219 @@
+# KJShopPlus Configuration File
+
+# Economy System
+# Default currency symbol (Vault)
+vault_display_symbol: "$"
+
+# Custom currencies (CoinsEngine)
+# The key (e.g., 'gems') MUST match the CoinsEngine currency ID.
+custom_currencies:
+  gems:
+    display_name: "Gems "
+  tokens:
+    display_name: "Tokens "
+  points:
+    display_name: "Points "
+# Shop file for the 'ores' category
+# File: plugins/KJShopPlus/shops/ores.yml
+
+# --- THIS STRUCTURE IS CRITICAL ---
+category:
+  id: "ores" # Must match file name without .yml
+  title: "&7&lOres & Ingots &7({page}/{total_pages})" # Added page placeholders
+  size: 54
+  fill-item:
+    material: GRAY_STAINED_GLASS_PANE
+    displayname: " " # Use displayname here
+
+  # Layout items (buttons)
+  layout:
+    go-back:
+      slot: 49
+      material: BARRIER
+      displayname: "&cGo Back to Main Menu"
+      action: "OPEN_CATEGORY"
+      value: "main" # Tells it to open the main menu
+    page-prev:
+      slot: 48
+      material: ARROW
+      displayname: "&aPrevious Page"
+      action: "PAGE_PREV"
+    page-next:
+      slot: 50
+      material: ARROW
+      displayname: "&aNext Page"
+      action: "PAGE_NEXT"
+
+  # --- "items:" MUST BE INSIDE "category:" ---
+  items:
+    gold_ingot:
+      slot: 11 # You can use specific slots
+      material: GOLD_INGOT
+      display: # Optional display section
+        name: "&6Gold Ingot"
+        lore:
+          - "&7Valuable for trading."
+          - "&r "
+          - "&eClick to trade this item."
+      currency: vault
+      buy: 60.00
+      sell: 30.00
+      trade:
+        allow_buy: true
+        allow_sell: true
+      dynamic:
+        enabled: true
+        buy_step_percent: 1.5 # 1.5% increase per buy
+        sell_step_percent: 1.0 # 1.0% decrease per sell
+        max_price: 200.00
+        min_price: 15.00
+
+    iron_ingot:
+      slot: 12
+      material: IRON_INGOT
+      display:
+        name: "&fIron Ingot"
+        lore:
+          - "&7Common building material."
+          - "&r "
+          - "&eClick to trade this item."
+      currency: vault
+      buy: 20.00
+      sell: 10.00
+      trade:
+        allow_buy: true
+        allow_sell: true
+      dynamic:
+        enabled: true
+        buy_step_percent: 0.5
+        sell_step_percent: 0.2
+        max_price: 100.00
+        min_price: 5.00
+
+    diamond:
+      slot: 13
+      material: DIAMOND
+      display:
+        name: "&bDiamond"
+        lore:
+          - "&7Used for top-tier gear."
+          - "&r "
+          - "&eClick to trade this item."
+      currency: vault
+      buy: 250.00
+      sell: 120.00
+      trade:
+        allow_buy: true
+        allow_sell: true
+      dynamic:
+        enabled: true
+        buy_step_percent: 1.5
+        sell_step_percent: 0.75
+        max_price: 1000.00
+        min_price: 50.00
+
+    emerald:
+      slot: 14
+      material: EMERALD
+      display:
+        name: "&aEmerald"
+        lore:
+          - "&7Villager's favorite."
+          - "&r "
+          - "&eClick to trade this item."
+      currency: vault
+      buy: 180.00
+      sell: 90.00
+      trade:
+        allow_buy: true
+        allow_sell: true
+      dynamic:
+        enabled: false # Static price example
+
+    coal:
+      slot: -1 # Auto-slot example
+      material: COAL
+      display:
+        name: "&8Coal"
+        lore:
+          - "&7Fuel for your furnaces."
+          - "&r "
+          - "&eClick to trade this item."
+      currency: vault
+      buy: 5.00
+      sell: 2.50
+      trade:
+        allow_buy: true
+        allow_sell: true
+      dynamic:
+        enabled: true
+        buy_step_percent: 0.2
+        sell_step_percent: 0.1
+        max_price: 20.00
+        min_price: 1.00
+
+    netherite_ingot:
+      slot: -1 # Auto-slot example
+      material: NETHERITE_INGOT
+      display:
+        name: "&5Netherite Ingot"
+        lore:
+          - "&7The ultimate material."
+          - "&r "
+          - "&eClick to trade this item."
+      currency: "gems"
+      buy: 5000.00
+      sell: 2500.00
+      trade:
+        allow_buy: true
+        allow_sell: false # Cannot sell example
+      dynamic:
+        enabled: true
+        buy_step_percent: 1.0
+        sell_step_percent: 0.5
+        max_price: 99999.00
+        min_price: 1000.00
+
+
+
+# Dynamic Pricing
+dynamic:
+  enabled: true
+  # How long before prices reset to base (in seconds)
+  reset_interval_seconds: 3600 # 1 hour
+  # Default formulas (can be overridden per-item)
+  buy_formula: "default" # "default" = +1% per item
+  sell_formula: "flat"  # "flat" = -0.1 per item
+
+# Input Control (for Bedrock/Mobile support)
+input_mode:
+  left_tap_only: true
+  disable_right_click: true
+  disable_shift_click: true
+  disable_inventory_drag: true
+  tap_debounce_ms: 200
+
+# Bedrock Compatibility (Geyser/Floodgate)
+bedrock_compat:
+  enabled: true
+  force_button_actions: true
+  material_map:
+    PLAYER_HEAD: PAPER
+    LIGHT: GLASS
+    GRAY_STAINED_GLASS_PANE: BLACK_STAINED_GLASS_PANE
+    LIME_WOOL: LIME_CONCRETE
+    RED_WOOL: RED_CONCRETE
+
+# Discord Webhook Logging
+discord_logging:
+  enabled: true
+  webhooks:
+    buy: "https://discord.com/api/webhooks/1431900825311248486/SMB-O4gweSqd7mZ0RypELhyxua5IoifPQRmzgWfAxrUAfEWGgd9V0GRfpvlIgozzHnhk"
+    sell: "https://discord.com/api/webhooks/1431900925571895471/D5unj0SbjvWjQCBECkY-5w-KIXqfZENSAbiQk4WGPv-mbKD1SpNuwkD-BnmgvSBbjelS"
+    admin: "https://discord.com/api/webhooks/1431900997340495943/NQuOfa2hvKSnAUNwQKPNenLzfmWG9m25Qp_9xTORGlphVVfwF2mm45YFKTQVRGq6DPbL"
+    price_reset: "https://discord.com/api/webhooks/1431901057868632185/VHObQCRkPXxDhsrwRkeVKCQd9yxq4mHn_UtBGBmWpS-tfUKN9yAnm3OPYutsKACsr-LA"
+  username: "KJShopPlus Bot"
+  avatar_url: "https://cdn.discordapp.com/attachments/906913902267334698/1432420114195681452/download.jpg?ex=6900fcb0&is=68ffab30&hm=6f70d59af745156f10ef9eabe4647d761026576939905a69f4e432569bf3f8f7&"
+
+
+

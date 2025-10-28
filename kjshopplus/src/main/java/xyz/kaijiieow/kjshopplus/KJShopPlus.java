@@ -19,6 +19,10 @@ import xyz.kaijiieow.kjshopplus.pricing.DynamicPriceManager;
 import xyz.kaijiieow.kjshopplus.pricing.LoreFormatter;
 import xyz.kaijiieow.kjshopplus.services.DiscordWebhookService;
 
+// --- เพิ่ม Import ---
+import java.io.File; 
+// --- จบ ---
+
 import java.util.logging.Level;
 import java.util.Objects;
 import java.util.UUID;
@@ -67,6 +71,10 @@ public final class KJShopPlus extends JavaPlugin {
         this.guiManager = new GUIManager(this);
         this.playerTapManager = new PlayerTapManager(this);
 
+        // --- เพิ่มการสร้างไฟล์ Log ---
+        setupLogFile();
+        // --- จบ ---
+
         reload(); // โหลด Config ทั้งหมด
 
         getServer().getPluginManager().registerEvents(new GUIListener(this), this);
@@ -87,6 +95,21 @@ public final class KJShopPlus extends JavaPlugin {
         }
         getLogger().info("KJShopPlus disabled.");
     }
+
+    // --- เพิ่มเมธอดนี้ ---
+    private void setupLogFile() {
+        File logFile = new File(getDataFolder(), "shop-log.txt");
+        if (!logFile.exists()) {
+            try {
+                if (logFile.createNewFile()) {
+                    getLogger().info("Created shop-log.txt for file logging.");
+                }
+            } catch (java.io.IOException e) {
+                getLogger().warning("Failed to create shop-log.txt: " + e.getMessage());
+            }
+        }
+    }
+    // --- จบ ---
 
     private boolean setupDependencies() {
         if (getServer().getPluginManager().getPlugin("Vault") == null) {
@@ -119,7 +142,7 @@ public final class KJShopPlus extends JavaPlugin {
         }
 
         configManager.load();
-        // --- ADD THIS LINE ---
+        // --- ADD THIS LINE (Keep webhook config reload) ---
         if (discordWebhookService != null) {
              discordWebhookService.loadConfig(); // สั่งให้โหลด username/avatar ใหม่หลัง reload config
         }

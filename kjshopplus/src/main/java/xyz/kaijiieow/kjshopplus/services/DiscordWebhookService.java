@@ -5,7 +5,13 @@ import org.bukkit.scheduler.BukkitRunnable;
 import xyz.kaijiieow.kjshopplus.KJShopPlus;
 import xyz.kaijiieow.kjshopplus.config.model.ShopItem;
 import xyz.kaijiieow.kjshopplus.economy.PriceUtil;
-// Removed Colorizer import
+// --- เพิ่ม Imports ---
+import org.bukkit.ChatColor;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+// --- จบ ---
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.OutputStream;
@@ -13,36 +19,93 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.TimeZone; // Import TimeZone for UTC
+import java.util.TimeZone; 
 
 public class DiscordWebhookService {
 
     private final KJShopPlus plugin;
-    private String username;
-    private String avatarUrl;
+    // --- แก้ไข: เพิ่ม Default value และ Formatter ---
+    private String username = "KJShopPlus Bot";
+    private String avatarUrl = "";
+    private final SimpleDateFormat fileTimestampFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    // --- จบ ---
 
     public DiscordWebhookService(KJShopPlus plugin) {
         this.plugin = plugin;
-        loadConfig();
+        // --- ลบ loadConfig() ออกจากที่นี่ ---
+        // loadConfig();
     }
 
     // Method to reload webhook username/avatar if config changes
     public void loadConfig() {
+        // --- เพิ่ม Safety checks ---
+        if (plugin.getConfigManager() == null) {
+            plugin.getLogger().warning("DiscordWebhookService#loadConfig called before ConfigManager was initialized!");
+            return;
+        }
+        // --- จบ ---
         this.username = plugin.getConfigManager().getWebhookUsername();
         this.avatarUrl = plugin.getConfigManager().getWebhookAvatarUrl();
+
+        // --- เพิ่ม Fallback ---
+        if (this.username == null || this.username.trim().isEmpty()) {
+            plugin.getLogger().warning("Discord webhook username is empty in config.yml! Using default 'KJShopPlus Bot'.");
+            this.username = "KJShopPlus Bot";
+        }
+        // --- จบ ---
     }
 
+    // --- เมธอดใหม่สำหรับ Log ลงไฟล์ ---
+    private void logToFile(String message) {
+        String timestamp = fileTimestampFormatter.format(new Date());
+        // เอา Code สีออกจาก message ก่อนเซฟ
+        String strippedMessage = ChatColor.stripColor(message);
+        String logEntry = String.format("[%s] %s", timestamp, strippedMessage);
+
+        File logFile = new File(plugin.getDataFolder(), "shop-log.txt");
+        try (FileWriter fw = new FileWriter(logFile, true); // true = append
+             BufferedWriter bw = new BufferedWriter(fw)) {
+            bw.write(logEntry);
+            bw.newLine();
+        } catch (IOException e) {
+            plugin.getLogger().warning("Failed to write to shop-log.txt: " + e.getMessage());
+        }
+    }
+    // --- จบเมธอดใหม่ ---
+
+    // --- Helper เมธอดใหม่สำหรับ escape markdown ---
+    private String escapeMarkdown(String text) {
+        if (text == null) return "";
+        return text.replace("*", "\\*")
+                   .replace("_", "\\_")
+                   .replace("`", "\\`")
+                   .replace("~", "\\~")
+                   .replace(">", "\\>");
+    }
+    // --- จบ ---
+
     public void logBuy(Player player, ShopItem item, int amount, double totalPrice) {
+        // --- แก้ไข: ใช้ DisplayName ถ้ามี, ถ้าไม่มีใช้ Material ---
+        String itemName = (item.getDisplayName() != null && !item.getDisplayName().isBlank())
+                ? ChatColor.stripColor(item.getDisplayName()) // เอาสีออก
+                : item.getMaterial().name();
+        
+        // --- เพิ่ม File Log ---
+        String logMsg = String.format("BUY: %s bought %dx %s for %.2f %s",
+                player.getName(), amount, itemName, totalPrice, item.getCurrencyId());
+        logToFile(logMsg);
+        // --- จบ ---
+
         if (!plugin.getConfigManager().isDiscordLoggingEnabled()) return;
         String url = plugin.getConfigManager().getWebhookUrl("buy");
-        if (url == null || url.isEmpty()) return;
+        if (url == null || url.isEmpty()) return; // Check if URL specifically is missing
 
         String title = "Player Purchase";
         String description = String.format("**%s** bought **%dx %s** for **%s %s**.",
                 player.getName(),
                 amount,
-                item.getMaterial().name(),
-                item.getCurrencyId(), // Using ID is simpler than symbol here
+                escapeMarkdown(itemName), // ใช้ itemName ที่ strip สี + escape
+                plugin.getCurrencyService().getCurrencySymbol(item.getCurrencyId()), // ใชสัญลักษณ์
                 PriceUtil.format(totalPrice));
 
         String json = buildEmbedJson(title, description, 5763719); // Green
@@ -50,6 +113,17 @@ public class DiscordWebhookService {
     }
 
     public void logSell(Player player, ShopItem item, int amount, double totalPrice) {
+        // --- แก้ไข: ใช้ DisplayName ถ้ามี, ถ้าไม่มีใช้ Material ---
+        String itemName = (item.getDisplayName() != null && !item.getDisplayName().isBlank())
+                ? ChatColor.stripColor(item.getDisplayName()) // เอาสีออก
+                : item.getMaterial().name();
+
+        // --- เพิ่ม File Log ---
+        String logMsg = String.format("SELL: %s sold %dx %s for %.2f %s",
+                player.getName(), amount, itemName, totalPrice, item.getCurrencyId());
+        logToFile(logMsg);
+        // --- จบ ---
+
         if (!plugin.getConfigManager().isDiscordLoggingEnabled()) return;
         String url = plugin.getConfigManager().getWebhookUrl("sell");
         if (url == null || url.isEmpty()) return;
@@ -58,8 +132,8 @@ public class DiscordWebhookService {
         String description = String.format("**%s** sold **%dx %s** for **%s %s**.",
                 player.getName(),
                 amount,
-                item.getMaterial().name(),
-                item.getCurrencyId(),
+                escapeMarkdown(itemName), // ใช้ itemName ที่ strip สี + escape
+                plugin.getCurrencyService().getCurrencySymbol(item.getCurrencyId()), // ใชสัญลักษณ์
                 PriceUtil.format(totalPrice));
 
         String json = buildEmbedJson(title, description, 15548997); // Red
@@ -67,13 +141,17 @@ public class DiscordWebhookService {
     }
 
     public void logAdmin(Player player, String action) {
+        // --- เพิ่ม File Log ---
+        String logMsg = String.format("ADMIN: %s executed: %s", player.getName(), action);
+        logToFile(logMsg);
+        // --- จบ ---
+
         if (!plugin.getConfigManager().isDiscordLoggingEnabled()) return;
         String url = plugin.getConfigManager().getWebhookUrl("admin");
         if (url == null || url.isEmpty()) return;
 
         String title = "Admin Action";
-        // Escape markdown in action to prevent formatting issues
-        String safeAction = action.replace("*", "\\*").replace("_", "\\_").replace("`", "\\`");
+        String safeAction = escapeMarkdown(action); // Use helper
         String description = String.format("Admin **%s** performed action: `%s`",
                 player.getName(),
                 safeAction);
@@ -83,6 +161,10 @@ public class DiscordWebhookService {
     }
 
     public void logPriceReset(int itemsReset) {
+        // --- เพิ่ม File Log ---
+        logToFile("SYSTEM: Dynamic prices reset for " + itemsReset + " items.");
+        // --- จบ ---
+
         if (!plugin.getConfigManager().isDiscordLoggingEnabled()) return;
         String url = plugin.getConfigManager().getWebhookUrl("price_reset");
         if (url == null || url.isEmpty()) return;
@@ -95,97 +177,89 @@ public class DiscordWebhookService {
     }
 
     private String buildEmbedJson(String title, String description, int color) {
-        // Ensure timestamp is in ISO 8601 format (UTC)
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         String timestamp = sdf.format(new Date());
 
-        // Basic JSON structure for a Discord embed
-        return "{"
-                + "\"username\": \"" + escapeJson(username) + "\","
-                + "\"avatar_url\": \"" + escapeJson(avatarUrl) + "\","
-                + "\"embeds\": [{"
-                + "\"title\": \"" + escapeJson(title) + "\","
-                + "\"description\": \"" + escapeJson(description) + "\","
-                + "\"color\": " + color + ","
-                + "\"footer\": {\"text\": \"KJShopPlus Logger\"},"
-                + "\"timestamp\": \"" + timestamp + "\"" // ISO 8601 timestamp
-                + "}]"
-                + "}";
-    }
+        // --- แก้ไข: ใช้ Default value และเช็คค่าว่าง ---
+        String finalUsername = (this.username == null || this.username.trim().isEmpty()) ? "KJShopPlus Bot" : this.username;
+        String finalAvatarUrl = (this.avatarUrl == null) ? "" : this.avatarUrl;
 
-    private void sendAsync(String urlString, String jsonPayload) {
-        // Basic validation for URL format
-        if (urlString == null || urlString.isEmpty() || !urlString.startsWith("https://discord.com/api/webhooks/")) {
-            plugin.getLogger().warning("Discord webhook URL is invalid or empty. Cannot send log. URL: " + urlString);
-            return;
+        // Build JSON (ensure avatar_url is only included if not empty)
+        StringBuilder jsonBuilder = new StringBuilder();
+        jsonBuilder.append("{")
+                   .append("\"username\": \"").append(escapeJson(finalUsername)).append("\",");
+        if (!finalAvatarUrl.isEmpty()) {
+             jsonBuilder.append("\"avatar_url\": \"").append(escapeJson(finalAvatarUrl)).append("\",");
         }
+        jsonBuilder.append("\"embeds\": [{")
+                   .append("\"title\": \"").append(escapeJson(title)).append("\",")
+                   .append("\"description\": \"").append(escapeJson(description)).append("\",")
+                   .append("\"color\": ").append(color).append(",")
+                   .append("\"footer\": {\"text\": \"KJShopPlus Logger\"},")
+                   .append("\"timestamp\": \"").append(timestamp).append("\"") // ISO 8601 timestamp
+                   .append("}]")
+                   .append("}");
+        
+        return jsonBuilder.toString();
+        // --- จบ ---
+    }
 
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                HttpsURLConnection connection = null;
-                try {
-                    URL url = new URL(urlString);
-                    connection = (HttpsURLConnection) url.openConnection();
-                    connection.setRequestMethod("POST");
-                    connection.setRequestProperty("Content-Type", "application/json; utf-8"); // Specify UTF-8
-                    connection.setRequestProperty("User-Agent", "KJShopPlus-Webhook/1.0"); // Standard User-Agent
-                    connection.setDoOutput(true);
-                    connection.setConnectTimeout(5000); // 5 second connect timeout
-                    connection.setReadTimeout(5000);    // 5 second read timeout
-
-                    // Write JSON payload
-                    try (OutputStream os = connection.getOutputStream()) {
-                        byte[] input = jsonPayload.getBytes(StandardCharsets.UTF_8);
-                        os.write(input, 0, input.length);
+    // Helper to escape strings for JSON values
+    private String escapeJson(String s) {
+        if (s == null) return "";
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            switch (c) {
+                case '\"': sb.append("\\\""); break;
+                case '\\': sb.append("\\\\"); break;
+                case '\b': sb.append("\\b"); break;
+                case '\f': sb.append("\\f"); break;
+                case '\n': sb.append("\\n"); break;
+                case '\r': sb.append("\\r"); break;
+                case '\t': sb.append("\\t"); break;
+                default:
+                    if (c < 0x20 || c > 0x7E) {
+                        sb.append(String.format("\\u%04x", (int) c));
+                    } else {
+                        sb.append(c);
                     }
-
-                    // Check response code
-                    int responseCode = connection.getResponseCode();
-                    if (responseCode < 200 || responseCode >= 300) { // Check for non-2xx codes
-                        String errorResponse = "";
-                        // Try reading error stream
-                        try (java.io.InputStream errorStream = connection.getErrorStream()) {
-                            if (errorStream != null) {
-                                errorResponse = new String(errorStream.readAllBytes(), StandardCharsets.UTF_8);
-                            } else {
-                                // Sometimes error stream is null, try input stream
-                                try (java.io.InputStream inputStream = connection.getInputStream()) {
-                                     if (inputStream != null) {
-                                         errorResponse = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
-                                     }
-                                } catch (Exception ignored) {} // Ignore if input stream also fails
-                            }
-                        } catch (Exception readEx) {
-                             plugin.getLogger().warning("Failed to read error stream from Discord webhook: " + readEx.getMessage());
-                        }
-                        plugin.getLogger().warning("Discord webhook failed with code: " + responseCode + ". Response: " + errorResponse);
-                    }
-                } catch (java.net.SocketTimeoutException e) {
-                     plugin.getLogger().warning("Failed to send Discord webhook: Connection timed out.");
-                } catch (Exception e) {
-                    plugin.getLogger().severe("Failed to send Discord webhook due to an unexpected error: " + e.getMessage());
-                    e.printStackTrace(); // Print stack trace for debugging
-                } finally {
-                    if (connection != null) {
-                        connection.disconnect();
-                    }
-                }
             }
-        }.runTaskAsynchronously(plugin);
+        }
+        return sb.toString();
     }
 
-    // Improved JSON escaping
-    private String escapeJson(String text) {
-        if (text == null) return "";
-        return text.replace("\\", "\\\\") // Escape backslashes first
-                   .replace("\"", "\\\"") // Escape double quotes
-                   .replace("\n", "\\n")  // Escape newlines
-                   .replace("\r", "\\r")  // Escape carriage returns
-                   .replace("\t", "\\t")  // Escape tabs
-                   .replace("\b", "\\b")  // Escape backspaces
-                   .replace("\f", "\\f"); // Escape form feeds
+private void sendAsync(String urlString, String jsonPayload) {
+    // Basic validation for URL format
+    if (urlString == null || urlString.isEmpty()) {
+        plugin.getLogger().warning("Discord webhook URL is empty or null!");
+        return;
     }
+
+    new BukkitRunnable() {
+        @Override
+        public void run() {
+            try {
+                URL url = new URL(urlString);
+                HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+                connection.setRequestMethod("POST");
+                connection.setRequestProperty("Content-Type", "application/json");
+                connection.setDoOutput(true);
+
+                try (OutputStream os = connection.getOutputStream()) {
+                    byte[] input = jsonPayload.getBytes(StandardCharsets.UTF_8);
+                    os.write(input, 0, input.length);
+                }
+
+                int responseCode = connection.getResponseCode();
+                if (responseCode != 204) {
+                    plugin.getLogger().warning("Discord webhook request failed with code: " + responseCode);
+                }
+            } catch (Exception e) {
+                plugin.getLogger().warning("Failed to send Discord webhook: " + e.getMessage());
+            }
+        }
+    }.runTaskAsynchronously(plugin);
 }
-
+}
