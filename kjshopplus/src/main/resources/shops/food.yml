@@ -1,0 +1,287 @@
+# ตัวอย่างไฟล์ shop สำหรับหมวดหมู่ 'foods'
+# ไฟล์: plugins/KJShopPlus/shops/foods.yml
+category:
+  id: "foods" # ID ต้องตรงกับชื่อไฟล์ (ไม่รวม .yml) และตรงกับ value ใน categories.yml
+  title: "&e&lFoods &7({page}/{total_pages})" # ชื่อ GUI (ใช้ {page} และ {total_pages} ได้)
+  size: 54 # ขนาด GUI (ต้องหาร 9 ลงตัว, สูงสุด 54)
+  fill-item: # ไอเท็มสำหรับเติมช่องว่าง (ไม่จำเป็น)
+    material: YELLOW_STAINED_GLASS_PANE
+    displayname: " "
+
+  # Layout items: ปุ่มต่างๆ ที่จะแสดงในทุกหน้าของหมวดหมู่นี้
+  layout:
+    go-back: # ID ของปุ่ม (ตั้งชื่อเองได้)
+      slot: 49 # ตำแหน่งช่อง (0-53 สำหรับ size 54)
+      material: BARRIER
+      displayname: "&cGo Back"
+      action: "OPEN_CATEGORY" # Action เมื่อคลิก
+      value: "main" # ค่าที่ส่งไปกับ Action (ในที่นี้คือเปิดหน้า main)
+    page-prev:
+      slot: 48 # แนะนำตำแหน่งนี้สำหรับปุ่มก่อนหน้า
+      material: ARROW
+      displayname: "&aPrevious Page"
+      action: "PAGE_PREV" # Action สำหรับไปหน้าก่อนหน้า
+    page-next:
+      slot: 50 # แนะนำตำแหน่งนี้สำหรับปุ่มถัดไป
+      material: ARROW
+      displayname: "&aNext Page"
+      action: "PAGE_NEXT" # Action สำหรับไปหน้าถัดไป
+    # คุณสามารถเพิ่ม layout item อื่นๆ ได้ตามต้องการ เช่น ปุ่ม toggle mode
+
+  # items: รายการไอเท็มที่จะขาย/ซื้อในหมวดหมู่นี้
+  # ปลั๊กอินจะจัดเรียงไอเท็มใส่ช่องว่างโดยอัตโนมัติ (ยกเว้นช่องที่ layout จองไว้)
+  # ถ้าอยากกำหนดช่องเอง ให้ใส่ slot: <เลขช่อง> (แต่ต้องระวังไม่ให้ชนกับ layout)
+  items:
+    # --- หน้า 1 (ไอเท็มที่ 1-45 ถ้า slot เป็น -1) ---
+    apple:
+      slot: -1 # ใช้ -1 เพื่อให้ปลั๊กอินหาช่องว่างใส่ให้เอง
+      material: APPLE
+      display: { name: "&cApple", lore: ["&7A juicy red apple."] }
+      currency: vault
+      buy: 1.00
+      sell: 0.50
+      trade: { allow_buy: true, allow_sell: true }
+      dynamic: { enabled: true }
+    bread:
+      slot: -1
+      material: BREAD
+      display: { name: "&eBread", lore: ["&7Simple and filling."] }
+      currency: vault
+      buy: 3.00
+      sell: 1.50
+      trade: { allow_buy: true, allow_sell: true }
+      dynamic: { enabled: false }
+    cooked_beef:
+      slot: -1
+      material: COOKED_BEEF
+      display: { name: "&cSteak" } # ไม่มี lore ก็ได้
+      currency: vault
+      buy: 10.00
+      sell: 5.00
+      trade: { allow_buy: true, allow_sell: true }
+      dynamic: { enabled: false }
+    cooked_porkchop:
+      slot: -1
+      material: COOKED_PORKCHOP
+      display: { name: "&dCooked Porkchop" }
+      currency: vault
+      buy: 9.00
+      sell: 4.50
+      trade: { allow_buy: true, allow_sell: true }
+      dynamic: { enabled: false }
+    cooked_chicken:
+      slot: -1
+      material: COOKED_CHICKEN
+      display: { name: "&fCooked Chicken" }
+      currency: vault
+      buy: 8.00
+      sell: 4.00
+      trade: { allow_buy: true, allow_sell: true }
+      dynamic: { enabled: false }
+    cooked_mutton:
+      slot: -1
+      material: COOKED_MUTTON
+      display: { name: "&7Cooked Mutton" }
+      currency: vault
+      buy: 8.00
+      sell: 4.00
+      trade: { allow_buy: true, allow_sell: true }
+      dynamic: { enabled: false }
+    cooked_rabbit:
+      slot: -1
+      material: COOKED_RABBIT
+      display: { name: "&eCooked Rabbit" }
+      currency: vault
+      buy: 7.00
+      sell: 3.50
+      trade: { allow_buy: true, allow_sell: true }
+      dynamic: { enabled: false }
+    cooked_salmon:
+      slot: -1
+      material: COOKED_SALMON
+      display: { name: "&cCooked Salmon" }
+      currency: vault
+      buy: 6.00
+      sell: 3.00
+      trade: { allow_buy: true, allow_sell: true }
+      dynamic: { enabled: false }
+    cooked_cod:
+      slot: -1
+      material: COOKED_COD
+      display: { name: "&bCooked Cod" }
+      currency: vault
+      buy: 5.00
+      sell: 2.50
+      trade: { allow_buy: true, allow_sell: true }
+      dynamic: { enabled: false }
+    baked_potato:
+      slot: -1
+      material: BAKED_POTATO
+      display: { name: "&6Baked Potato" }
+      currency: vault
+      buy: 2.00
+      sell: 1.00
+      trade: { allow_buy: true, allow_sell: true }
+      dynamic: { enabled: false }
+    carrot:
+      slot: -1
+      material: CARROT
+      display: { name: "&6Carrot" }
+      currency: vault
+      buy: 1.50
+      sell: 0.75
+      trade: { allow_buy: true, allow_sell: true }
+      dynamic: { enabled: true, buy_step_percent: 0.2, sell_step_percent: 0.1, max_price: 6.00, min_price: 0.15 }
+    potato:
+      slot: -1
+      material: POTATO
+      display: { name: "&ePotato" }
+      currency: vault
+      buy: 1.50
+      sell: 0.75
+      trade: { allow_buy: true, allow_sell: true }
+      dynamic: { enabled: true, buy_step_percent: 0.2, sell_step_percent: 0.1, max_price: 6.00, min_price: 0.15 }
+    beetroot:
+      slot: -1
+      material: BEETROOT
+      display: { name: "&cBeetroot" }
+      currency: vault
+      buy: 1.00
+      sell: 0.50
+      trade: { allow_buy: true, allow_sell: true }
+      dynamic: { enabled: true, buy_step_percent: 0.1, sell_step_percent: 0.05, max_price: 4.00, min_price: 0.10 }
+    melon_slice:
+      slot: -1
+      material: MELON_SLICE
+      display: { name: "&aMelon Slice" }
+      currency: vault
+      buy: 0.50
+      sell: 0.25
+      trade: { allow_buy: true, allow_sell: true }
+      dynamic: { enabled: true, buy_step_percent: 0.1, sell_step_percent: 0.05, max_price: 2.00, min_price: 0.05 }
+    pumpkin_pie:
+      slot: -1
+      material: PUMPKIN_PIE
+      display: { name: "&6Pumpkin Pie" }
+      currency: vault
+      buy: 8.00
+      sell: 4.00
+      trade: { allow_buy: true, allow_sell: true }
+      dynamic: { enabled: false }
+    cookie:
+      slot: -1
+      material: COOKIE
+      display: { name: "&eCookie" }
+      currency: vault
+      buy: 0.80
+      sell: 0.40
+      trade: { allow_buy: true, allow_sell: true }
+      dynamic: { enabled: false }
+    mushroom_stew:
+      slot: -1
+      material: MUSHROOM_STEW
+      display: { name: "&7Mushroom Stew" }
+      currency: vault
+      buy: 6.00
+      sell: 3.00
+      trade: { allow_buy: true, allow_sell: true }
+      dynamic: { enabled: false }
+    rabbit_stew:
+      slot: -1
+      material: RABBIT_STEW
+      display: { name: "&cRabbit Stew" }
+      currency: vault
+      buy: 12.00
+      sell: 6.00
+      trade: { allow_buy: true, allow_sell: true }
+      dynamic: { enabled: false }
+    beetroot_soup:
+      slot: -1
+      material: BEETROOT_SOUP
+      display: { name: "&cBeetroot Soup" }
+      currency: vault
+      buy: 5.00
+      sell: 2.50
+      trade: { allow_buy: true, allow_sell: true }
+      dynamic: { enabled: false }
+    suspicious_stew:
+      slot: -1
+      material: SUSPICIOUS_STEW
+      display: { name: "&dSuspicious Stew" }
+      currency: vault
+      buy: 15.00 # อาจจะแพงเพราะ effect สุ่ม
+      sell: 5.00
+      trade: { allow_buy: true, allow_sell: false } # อาจจะไม่ให้ขายคืน
+      dynamic: { enabled: false }
+    golden_apple:
+      slot: -1
+      material: GOLDEN_APPLE
+      display: { name: "&6Golden Apple" }
+      currency: vault
+      buy: 300.00
+      sell: 50.00
+      trade: { allow_buy: true, allow_sell: true }
+      dynamic: { enabled: false }
+    enchanted_golden_apple:
+      slot: -1
+      material: ENCHANTED_GOLDEN_APPLE
+      display: { name: "&dEnchanted Golden Apple" }
+      currency: gems # ลองใช้เงินอื่น
+      buy: 1000.00
+      sell: 200.00
+      trade: { allow_buy: true, allow_sell: false }
+      dynamic: { enabled: false }
+    honey_bottle:
+      slot: -1
+      material: HONEY_BOTTLE
+      display: { name: "&eHoney Bottle" }
+      currency: vault
+      buy: 5.00
+      sell: 2.00
+      trade: { allow_buy: true, allow_sell: true }
+      dynamic: { enabled: false }
+    glow_berries:
+      slot: -1
+      material: GLOW_BERRIES
+      display: { name: "&eGlow Berries" }
+      currency: vault
+      buy: 10.00
+      sell: 3.00
+      trade: { allow_buy: true, allow_sell: true }
+      dynamic: { enabled: false }
+    sweet_berries:
+      slot: -1
+      material: SWEET_BERRIES
+      display: { name: "&cSweet Berries" }
+      currency: vault
+      buy: 1.00
+      sell: 0.30
+      trade: { allow_buy: true, allow_sell: true }
+      dynamic: { enabled: true, buy_step_percent: 0.1, sell_step_percent: 0.05, max_price: 3.00, min_price: 0.05 }
+    # --- เพิ่มไอเท็มไปเรื่อยๆ จนครบ 45 ---
+    item_27: { slot: -1, material: CAKE, display: {name: "&dCake"}, currency: vault, buy: 20.0, sell: 8.0, trade: {allow_buy: true, allow_sell: true}, dynamic: {enabled: false} }
+    item_28: { slot: -1, material: MILK_BUCKET, display: {name: "&fMilk Bucket"}, currency: vault, buy: 10.0, sell: 3.0, trade: {allow_buy: true, allow_sell: false}, dynamic: {enabled: false} }
+    item_29: { slot: -1, material: SUGAR, display: {name: "&fSugar"}, currency: vault, buy: 0.75, sell: 0.25, trade: {allow_buy: true, allow_sell: true}, dynamic: {enabled: false} }
+    item_30: { slot: -1, material: EGG, display: {name: "&fEgg"}, currency: vault, buy: 0.50, sell: 0.10, trade: {allow_buy: true, allow_sell: true}, dynamic: {enabled: false} }
+    item_31: { slot: -1, material: COCOA_BEANS, display: {name: "&6Cocoa Beans"}, currency: vault, buy: 1.20, sell: 0.60, trade: {allow_buy: true, allow_sell: true}, dynamic: {enabled: false} }
+    item_32: { slot: -1, material: WHEAT_SEEDS, display: {name: "&aWheat Seeds"}, currency: vault, buy: 0.20, sell: 0.05, trade: {allow_buy: true, allow_sell: true}, dynamic: {enabled: false} }
+    item_33: { slot: -1, material: PUMPKIN_SEEDS, display: {name: "&6Pumpkin Seeds"}, currency: vault, buy: 0.30, sell: 0.10, trade: {allow_buy: true, allow_sell: true}, dynamic: {enabled: false} }
+    item_34: { slot: -1, material: MELON_SEEDS, display: {name: "&aMelon Seeds"}, currency: vault, buy: 0.30, sell: 0.10, trade: {allow_buy: true, allow_sell: true}, dynamic: {enabled: false} }
+    item_35: { slot: -1, material: BEETROOT_SEEDS, display: {name: "&cBeetroot Seeds"}, currency: vault, buy: 0.25, sell: 0.08, trade: {allow_buy: true, allow_sell: true}, dynamic: {enabled: false} }
+    item_36: { slot: -1, material: NETHER_WART, display: {name: "&4Nether Wart"}, currency: vault, buy: 10.0, sell: 3.0, trade: {allow_buy: true, allow_sell: true}, dynamic: {enabled: true, buy_step_percent: 0.5, sell_step_percent: 0.2, max_price: 30.0, min_price: 1.0} }
+    item_37: { slot: -1, material: BROWN_MUSHROOM, display: {name: "&6Brown Mushroom"}, currency: vault, buy: 2.0, sell: 0.8, trade: {allow_buy: true, allow_sell: true}, dynamic: {enabled: false} }
+    item_38: { slot: -1, material: RED_MUSHROOM, display: {name: "&cRed Mushroom"}, currency: vault, buy: 2.0, sell: 0.8, trade: {allow_buy: true, allow_sell: true}, dynamic: {enabled: false} }
+    item_39: { slot: -1, material: CHORUS_FRUIT, display: {name: "&5Chorus Fruit"}, currency: vault, buy: 5.0, sell: 1.5, trade: {allow_buy: true, allow_sell: true}, dynamic: {enabled: false} }
+    item_40: { slot: -1, material: POISONOUS_POTATO, display: {name: "&2Poisonous Potato"}, currency: vault, buy: 0.1, sell: 0.01, trade: {allow_buy: true, allow_sell: true}, dynamic: {enabled: false} }
+    item_41: { slot: -1, material: ROTTEN_FLESH, display: {name: "&2Rotten Flesh"}, currency: vault, buy: 0.5, sell: 0.25, trade: {allow_buy: true, allow_sell: true}, dynamic: {enabled: true, buy_step_percent: 0.1, sell_step_percent: 0.05, max_price: 1.5, min_price: 0.05} }
+    item_42: { slot: -1, material: SPIDER_EYE, display: {name: "&4Spider Eye"}, currency: vault, buy: 3.0, sell: 1.5, trade: {allow_buy: true, allow_sell: true}, dynamic: {enabled: true, buy_step_percent: 0.2, sell_step_percent: 0.1, max_price: 10.0, min_price: 0.5} }
+    item_43: { slot: -1, material: TROPICAL_FISH, display: {name: "&bTropical Fish"}, currency: vault, buy: 10.0, sell: 3.0, trade: {allow_buy: true, allow_sell: true}, dynamic: {enabled: false} }
+    item_44: { slot: -1, material: PUFFERFISH, display: {name: "&ePufferfish"}, currency: vault, buy: 12.0, sell: 4.0, trade: {allow_buy: true, allow_sell: true}, dynamic: {enabled: false} }
+    item_45: { slot: -1, material: DRIED_KELP, display: {name: "&2Dried Kelp"}, currency: vault, buy: 0.40, sell: 0.15, trade: {allow_buy: true, allow_sell: true}, dynamic: {enabled: false} }
+
+    # --- หน้า 2 (ไอเท็มที่ 46 เป็นต้นไป) ---
+    item_46: { slot: -1, material: KELP, display: {name: "&aKelp"}, currency: vault, buy: 0.20, sell: 0.05, trade: {allow_buy: true, allow_sell: true}, dynamic: {enabled: false} }
+    item_47: { slot: -1, material: SEA_PICKLE, display: {name: "&aSea Pickle"}, currency: vault, buy: 1.50, sell: 0.50, trade: {allow_buy: true, allow_sell: true}, dynamic: {enabled: false} }
+    item_48: { slot: -1, material: CHICKEN, display: {name: "&fRaw Chicken"}, currency: vault, buy: 3.0, sell: 1.0, trade: {allow_buy: true, allow_sell: true}, dynamic: {enabled: false} }
+    item_49: { slot: -1, material: BEEF, display: {name: "&cRaw Beef"}, currency: vault, buy: 4.0, sell: 1.5, trade: {allow_buy: true, allow_sell: true}, dynamic: {enabled: false} }
+    item_50: { slot: -1, material: PORKCHOP, display: {name: "&dRaw Porkchop"}, currency: vault, buy: 3.5, sell: 1.2, trade: {allow_buy: true, allow_sell: true}, dynamic: {enabled: false} }
