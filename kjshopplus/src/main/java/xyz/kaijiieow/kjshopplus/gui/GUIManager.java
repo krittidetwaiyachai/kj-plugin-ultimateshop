@@ -15,6 +15,7 @@ import xyz.kaijiieow.kjshopplus.config.model.ShopCategory;
 import xyz.kaijiieow.kjshopplus.config.model.ShopItem;
 import xyz.kaijiieow.kjshopplus.economy.PriceUtil;
 import xyz.kaijiieow.kjshopplus.gui.util.ItemBuilder;
+import java.util.ArrayList;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -451,7 +452,7 @@ public class GUIManager {
             lore.add(plugin.getMessageManager().getMessage("gui_click_to_confirm_sell", "&cClick confirm (bottom left) to sell."));
         }
 
-        String baseName = item.getDisplayName() != null ? item.getDisplayName() : item.getMaterial().name();
+        String baseName = item.getConfigDisplayName() != null ? item.getConfigDisplayName() : item.getMaterial().name();
         ItemStack displayItem = new ItemBuilder(item.getMaterial())
             .setName(modeName + " " + ChatColor.translateAlternateColorCodes('&', baseName) + " x" + safeAmount)
             .setAmount(1)

@@ -9,6 +9,7 @@
  import xyz.kaijiieow.kjshopplus.KJShopPlus;
  import xyz.kaijiieow.kjshopplus.gui.util.ItemBuilder;
  import xyz.kaijiieow.kjshopplus.pricing.LoreFormatter;
+ import java.util.ArrayList;
 
  import java.util.Collections;
  import java.util.List;

@@ -26,8 +26,8 @@ public class LoreFormatter {
         List<String> lore = new ArrayList<>();
         
         // 1. Add base lore (translated)
-        if (item.getBaseLore() != null) {
-            lore.addAll(item.getBaseLore().stream()
+        if (item.getConfigBaseLore() != null) {
+            lore.addAll(item.getConfigBaseLore().stream()
                     .map(this::translateColors) // <-- Use translator
                     .collect(Collectors.toList()));
         }

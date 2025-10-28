@@ -10,6 +10,7 @@
  import xyz.kaijiieow.kjshopplus.config.model.MainCategoryMenu;
  import xyz.kaijiieow.kjshopplus.config.model.ShopCategory;
  import xyz.kaijiieow.kjshopplus.config.model.ShopItem;
+ import java.util.ArrayList;
 
  import java.io.File;
  import java.io.IOException; // Import

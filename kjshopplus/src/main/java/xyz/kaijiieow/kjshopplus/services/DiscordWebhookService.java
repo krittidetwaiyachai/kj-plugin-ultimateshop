@@ -86,8 +86,8 @@ public class DiscordWebhookService {
 
     public void logBuy(Player player, ShopItem item, int amount, double totalPrice) {
         // --- แก้ไข: ใช้ DisplayName ถ้ามี, ถ้าไม่มีใช้ Material ---
-        String itemName = (item.getDisplayName() != null && !item.getDisplayName().isBlank())
-                ? ChatColor.stripColor(item.getDisplayName()) // เอาสีออก
+        String itemName = (item.getConfigDisplayName() != null && !item.getConfigDisplayName().isBlank())
+                ? ChatColor.stripColor(item.getConfigDisplayName()) // เอาสีออก
                 : item.getMaterial().name();
         
         // --- เพิ่ม File Log ---
@@ -114,8 +114,8 @@ public class DiscordWebhookService {
 
     public void logSell(Player player, ShopItem item, int amount, double totalPrice) {
         // --- แก้ไข: ใช้ DisplayName ถ้ามี, ถ้าไม่มีใช้ Material ---
-        String itemName = (item.getDisplayName() != null && !item.getDisplayName().isBlank())
-                ? ChatColor.stripColor(item.getDisplayName()) // เอาสีออก
+        String itemName = (item.getConfigDisplayName() != null && !item.getConfigDisplayName().isBlank())
+                ? ChatColor.stripColor(item.getConfigDisplayName()) // เอาสีออก
                 : item.getMaterial().name();
 
         // --- เพิ่ม File Log ---

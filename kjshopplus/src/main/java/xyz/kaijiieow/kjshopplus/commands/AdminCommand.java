@@ -9,6 +9,7 @@
  import org.bukkit.inventory.ItemStack; // Import ItemStack
  import xyz.kaijiieow.kjshopplus.KJShopPlus;
  import xyz.kaijiieow.kjshopplus.config.model.ShopCategory; // Import ShopCategory
+ import java.util.ArrayList;
 
  import java.util.ArrayList;
  import java.util.Arrays;
