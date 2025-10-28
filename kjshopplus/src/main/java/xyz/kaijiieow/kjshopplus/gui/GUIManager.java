@@ -18,7 +18,7 @@ import xyz.kaijiieow.kjshopplus.gui.util.ItemBuilder;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.ArrayList; // Import ที่จำเป็น
+import java.util.ArrayList;
 
 public class GUIManager {
 
@@ -255,6 +255,7 @@ public class GUIManager {
             }
         }
 
+
         if (category.getFillItem() != null) {
             ItemStack fill = category.getFillItem().build(player, false);
             for (int i = 0; i < category.getSize(); i++) {
@@ -353,7 +354,8 @@ public class GUIManager {
         }
 
         if (!isBuyMode) {
-             int sellAllAmount = getAmountInInventory(player, item.getMaterial());
+             // *** FIX: Use new helper method ***
+             int sellAllAmount = getAmountInInventory(player, item); 
              double sellPrice = plugin.getDynamicPriceManager().getSellPrice(item);
              String symbol = plugin.getCurrencyService().getCurrencySymbol(item.getCurrencyId());
 
@@ -408,18 +410,29 @@ public class GUIManager {
         if (isBuyMode) {
             lore.add(plugin.getMessageManager().getMessage("gui_click_to_confirm_buy", "&aClick confirm (bottom left) to buy."));
         } else {
-            int playerAmount = getAmountInInventory(player, item.getMaterial());
+            // *** FIX: Use new helper method ***
+            int playerAmount = getAmountInInventory(player, item); 
             lore.add(plugin.getMessageManager().getMessage("gui_you_have", "&7You have: &e") + playerAmount);
             lore.add(plugin.getMessageManager().getMessage("gui_click_to_confirm_sell", "&cClick confirm (bottom left) to sell."));
         }
-
-        // *** FIX: Use getConfigDisplayName() ***
-        String baseName = item.getConfigDisplayName() != null ? item.getConfigDisplayName() : item.getMaterial().name();
-        ItemStack displayItem = new ItemBuilder(item.getMaterial())
-            .setName(modeName + " " + ChatColor.translateAlternateColorCodes('&', baseName) + " x" + safeAmount)
-            .setAmount(1)
-            .setLore(lore)
-            .build();
+        
+        ItemStack displayItem;
+        // *** FIX: Build from custom item if it exists ***
+        if (item.isCustomItem() && item.getCustomItemStack() != null) {
+            displayItem = new ItemBuilder(item.getCustomItemStack().clone()) // Start with the custom item
+                .setName(modeName + " " + ChatColor.translateAlternateColorCodes('&', item.getConfigDisplayName()) + " x" + safeAmount)
+                .setAmount(1) // Display stack size 1 in GUI
+                .setLore(lore) // Set the generated price lore
+                .build();
+        } else {
+            // Vanilla item
+            String baseName = item.getConfigDisplayName() != null ? item.getConfigDisplayName() : item.getMaterial().name();
+            displayItem = new ItemBuilder(item.getMaterial())
+                .setName(modeName + " " + ChatColor.translateAlternateColorCodes('&', baseName) + " x" + safeAmount)
+                .setAmount(1)
+                .setLore(lore)
+                .build();
+        }
 
         inv.setItem(displaySlot, displayItem);
     }
@@ -480,7 +493,8 @@ public class GUIManager {
                              plugin.getMessageManager().sendMessage(player, "gui_sell_disabled");
                              return;
                         }
-                        int playerHas = getAmountInInventory(player, itemToSell.getMaterial());
+                        // *** FIX: Use new helper method ***
+                        int playerHas = getAmountInInventory(player, itemToSell); 
                         if (playerHas == 0) {
                             plugin.getMessageManager().sendMessage(player, "not_enough_items");
                             return;
@@ -559,7 +573,8 @@ public class GUIManager {
 
     private void performSellAllTransaction(Player player, ShopItem item) {
         if (item == null || !item.isAllowSell()) return;
-        int amount = getAmountInInventory(player, item.getMaterial());
+        // *** FIX: Use new helper method ***
+        int amount = getAmountInInventory(player, item); 
 
         if (amount <= 0) {
             plugin.getMessageManager().sendMessage(player, "not_enough_items");
@@ -573,6 +588,25 @@ public class GUIManager {
         if (item == null || amount <= 0) return;
 
         double pricePerItem;
+        String itemName; // For messages
+
+        // *** FIX: Determine item name for messages ***
+        if (item.isCustomItem() && item.getCustomItemStack() != null) {
+            ItemMeta meta = item.getCustomItemStack().getItemMeta();
+            if (meta != null && meta.hasDisplayName()) {
+                itemName = meta.getDisplayName();
+            } else if (item.getConfigDisplayName() != null) {
+                itemName = item.getConfigDisplayName();
+            } else {
+                itemName = item.getMaterial().name();
+            }
+        } else {
+            itemName = (item.getConfigDisplayName() != null) ? item.getConfigDisplayName() : item.getMaterial().name();
+        }
+        // Strip colors for placeholders
+        itemName = ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', itemName));
+
+
         if (isBuy) {
             if (!item.isAllowBuy()) return;
             pricePerItem = plugin.getDynamicPriceManager().getBuyPrice(item);
@@ -584,7 +618,7 @@ public class GUIManager {
 
         Map<String, String> placeholders = new HashMap<>();
         placeholders.put("amount", String.valueOf(amount));
-        placeholders.put("item", item.getMaterial().name());
+        placeholders.put("item", itemName); // Use fixed item name
         placeholders.put("price", PriceUtil.format(totalPrice));
         placeholders.put("currency_symbol", plugin.getCurrencyService().getCurrencySymbol(item.getCurrencyId()));
 
@@ -594,9 +628,17 @@ public class GUIManager {
                 plugin.getMessageManager().sendMessage(player, "not_enough_money", placeholders);
                 return;
             }
-            int maxStack = item.getMaterial().getMaxStackSize();
-            int neededSlots = (int) Math.ceil((double) amount / maxStack);
-            if (getEmptySlots(player) < neededSlots && getPartialStackSpace(player, item.getMaterial(), amount) < amount) {
+            
+            // *** FIX: Check inventory space based on custom/vanilla item ***
+            int neededSlots;
+            if (item.isCustomItem() && item.getCustomItemStack() != null) {
+                // Custom items might not stack, check based on amount
+                neededSlots = (int) Math.ceil((double) amount / item.getCustomItemStack().getMaxStackSize());
+            } else {
+                neededSlots = (int) Math.ceil((double) amount / item.getMaterial().getMaxStackSize());
+            }
+
+            if (getEmptySlots(player) < neededSlots && getPartialStackSpace(player, item, amount) < amount) {
                  plugin.getMessageManager().sendMessage(player, "inventory_full", placeholders);
                  return;
             }
@@ -607,29 +649,48 @@ public class GUIManager {
                 return;
             }
 
-            player.getInventory().addItem(new ItemStack(item.getMaterial(), amount));
+            // *** FIX: Give the CORRECT item (custom or vanilla) ***
+            if (item.isCustomItem() && item.getCustomItemStack() != null) {
+                ItemStack itemToGive = item.getCustomItemStack().clone();
+                itemToGive.setAmount(amount); // This correctly handles splitting stacks
+                player.getInventory().addItem(itemToGive);
+            } else {
+                player.getInventory().addItem(new ItemStack(item.getMaterial(), amount));
+            }
+
             plugin.getDynamicPriceManager().recordBuy(item, amount);
             plugin.getMessageManager().sendMessage(player, "buy_success", placeholders);
             plugin.getDiscordWebhookService().logBuy(player, item, amount, totalPrice);
 
         } else { // Selling
-             int playerAmount = getAmountInInventory(player, item.getMaterial());
+            // *** FIX: Use new helper method ***
+             int playerAmount = getAmountInInventory(player, item); 
              int amountToSell = Math.min(amount, playerAmount);
 
              if (amountToSell <= 0) {
                  plugin.getMessageManager().sendMessage(player, "not_enough_items", placeholders);
                  return;
              }
+             
              totalPrice = pricePerItem * amountToSell;
              placeholders.put("amount", String.valueOf(amountToSell));
              placeholders.put("price", PriceUtil.format(totalPrice));
 
-
-            player.getInventory().removeItem(new ItemStack(item.getMaterial(), amountToSell));
+            // *** FIX: Remove the CORRECT item (custom or vanilla) ***
+            removeItemFromInventory(player, item, amountToSell);
 
             if (!plugin.getCurrencyService().addBalance(player, item.getCurrencyId(), totalPrice)) {
                 plugin.getLogger().severe("CRITICAL: Failed to add balance for " + player.getName() + " after removing items! Returning items.");
-                player.getInventory().addItem(new ItemStack(item.getMaterial(), amountToSell));
+                
+                // *** FIX: Rollback the CORRECT item ***
+                if (item.isCustomItem() && item.getCustomItemStack() != null) {
+                    ItemStack itemToReturn = item.getCustomItemStack().clone();
+                    itemToReturn.setAmount(amountToSell);
+                    player.getInventory().addItem(itemToReturn);
+                } else {
+                    player.getInventory().addItem(new ItemStack(item.getMaterial(), amountToSell));
+                }
+                
                 plugin.getMessageManager().sendMessage(player, "error_occurred");
                 return;
             }
@@ -639,14 +700,29 @@ public class GUIManager {
             plugin.getDiscordWebhookService().logSell(player, item, amountToSell, totalPrice);
         }
     }
-     private int getPartialStackSpace(Player player, Material material, int amountNeeded) {
+
+    // *** FIX: Updated helper to check ShopItem (for custom) ***
+     private int getPartialStackSpace(Player player, ShopItem shopItem, int amountNeeded) {
         int space = 0;
-        int maxStack = material.getMaxStackSize();
-        for (ItemStack item : player.getInventory().getStorageContents()) {
-            if (item != null && item.getType() == material && item.getAmount() < maxStack) {
-                space += maxStack - item.getAmount();
-                if (space >= amountNeeded) {
-                    return amountNeeded;
+        ItemStack[] contents = player.getInventory().getStorageContents();
+        
+        if (shopItem.isCustomItem() && shopItem.getCustomItemStack() != null) {
+            ItemStack customBase = shopItem.getCustomItemStack();
+            int maxStack = customBase.getMaxStackSize();
+            for (ItemStack item : contents) {
+                if (item != null && item.isSimilar(customBase) && item.getAmount() < maxStack) {
+                    space += maxStack - item.getAmount();
+                    if (space >= amountNeeded) return amountNeeded;
+                }
+            }
+        } else {
+            // Vanilla
+            Material material = shopItem.getMaterial();
+            int maxStack = material.getMaxStackSize();
+            for (ItemStack item : contents) {
+                if (item != null && item.getType() == material && item.getAmount() < maxStack) {
+                    space += maxStack - item.getAmount();
+                    if (space >= amountNeeded) return amountNeeded;
                 }
             }
         }
@@ -654,16 +730,70 @@ public class GUIManager {
     }
 
 
-    private int getAmountInInventory(Player player, Material material) {
+    // *** FIX: Renamed/Updated to check ShopItem (for custom) ***
+    private int getAmountInInventory(Player player, ShopItem shopItem) {
         int amount = 0;
         ItemStack[] contents = player.getInventory().getStorageContents();
-        for (ItemStack item : contents) {
-            if (item != null && item.getType() == material) {
-                amount += item.getAmount();
+
+        if (shopItem.isCustomItem() && shopItem.getCustomItemStack() != null) {
+            // Custom item: Check similarity
+            ItemStack customBase = shopItem.getCustomItemStack();
+             for (ItemStack item : contents) {
+                if (item != null && item.isSimilar(customBase)) {
+                    amount += item.getAmount();
+                }
+            }
+        } else {
+            // Vanilla item: Check material
+            Material material = shopItem.getMaterial();
+            for (ItemStack item : contents) {
+                if (item != null && item.getType() == material) {
+                    amount += item.getAmount();
+                }
             }
         }
         return amount;
     }
+    
+    // *** NEW HELPER: Remove custom or vanilla items ***
+    private void removeItemFromInventory(Player player, ShopItem shopItem, int amountToRemove) {
+        ItemStack[] contents = player.getInventory().getStorageContents();
+        ItemStack customBase = (shopItem.isCustomItem()) ? shopItem.getCustomItemStack() : null;
+        Material vanillaMat = (shopItem.isCustomItem()) ? null : shopItem.getMaterial();
+
+        for (int i = 0; i < contents.length; i++) {
+            ItemStack item = contents[i];
+            if (item == null || item.getType() == Material.AIR) continue;
+
+            boolean match = false;
+            if (customBase != null) {
+                // Custom item check
+                match = item.isSimilar(customBase);
+            } else {
+                // Vanilla item check
+                match = item.getType() == vanillaMat;
+            }
+
+            if (match) {
+                int amountInSlot = item.getAmount();
+                if (amountInSlot > amountToRemove) {
+                    // Remove part of the stack
+                    item.setAmount(amountInSlot - amountToRemove);
+                    player.getInventory().setItem(i, item);
+                    amountToRemove = 0;
+                    break; // All removed
+                } else {
+                    // Remove the whole stack and continue
+                    player.getInventory().setItem(i, null);
+                    amountToRemove -= amountInSlot;
+                    if (amountToRemove <= 0) {
+                        break; // All removed
+                    }
+                }
+            }
+        }
+    }
+
 
     private int getEmptySlots(Player player) {
         int emptySlots = 0;
@@ -782,4 +912,3 @@ public class GUIManager {
         openMenus.clear();
     }
 }
-
