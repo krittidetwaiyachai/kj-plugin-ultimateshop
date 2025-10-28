@@ -45,5 +45,5 @@ gui_error_closed: "§x§F§F§5§5§5§5§l✖ §x§F§F§8§0§8§0This shop GU
 task_started: "§x§5§5§F§F§5§5§l✓ §x§9§9§F§F§9§9Price reset task started."
 task_stopped: "§x§F§F§8§0§8§0§l✖ §x§F§F§A§A§A§APrice reset task stopped."
 data_saved: "§x§6§F§F§F§0§0§l✓ §x§B§3§F§F§0§0Data saved successfully."
-data_error: "§x§F§F§8§0§8§0§l✖ §x§F§F§B§3§B§3Error saving data. Check logs."
+data_error: "§x§F§F§8§0§8§0§l✖ §xD: 
 

@@ -15,7 +15,12 @@ public class KJGUIData implements InventoryHolder {
     private final GUITYPE guiType;
     private final String categoryId; // e.g., "ores", "main"
     private final int page;
-    private ShopItem tradeItem; // Only used for TRADE_CONFIRM type
+    private ShopItem tradeItem; // Only used for QUANTITY_SELECTOR type
+
+    // --- เพิ่ม 2 field นี้ ---
+    private boolean isBuying;       // เก็บว่ากำลัง ซื้อ (true) หรือ ขาย (false) ในหน้าเลือกจำนวน
+    private int cartQuantity;     // เก็บจำนวนที่เลือกในหน้าเลือกจำนวน
+    // --- จบ ---
 
     // --- THIS IS THE CORRECT CONSTRUCTOR ---
     public KJGUIData(InventoryHolder holder, GUITYPE type, String categoryId, int page) {
@@ -23,6 +28,11 @@ public class KJGUIData implements InventoryHolder {
         this.guiType = type;
         this.categoryId = categoryId;
         this.page = page;
+        
+        // --- เพิ่ม Default value ---
+        this.cartQuantity = 0;
+        this.isBuying = true;
+        // --- จบ ---
     }
 
     @Override
@@ -54,5 +64,12 @@ public class KJGUIData implements InventoryHolder {
     public void setTradeItem(ShopItem tradeItem) {
         this.tradeItem = tradeItem;
     }
+    
+    // --- เพิ่ม Getter/Setter ---
+    public boolean isBuying() { return isBuying; }
+    public void setIsBuying(boolean buying) { isBuying = buying; }
+    public int getCartQuantity() { return cartQuantity; }
+    public void setCartQuantity(int cartQuantity) { this.cartQuantity = cartQuantity; }
+    // --- จบ ---
 }
 
