@@ -322,7 +322,7 @@ public class GUIManager {
             .setPDCAction("CANCEL_TRANSACTION")
             .build());
 
-        Material addMat = mapBedrockMaterial(safeMaterial("GREEN_STAINED_GLASS_PANE", Material.LIME_STAINED_GLASS_PANE), player);
+        Material addMat = mapBedrockMaterial(safeMaterial("LIME_STAINED_GLASS_PANE", Material.LIME_STAINED_GLASS_PANE), player);
         Material subMat = mapBedrockMaterial(safeMaterial("RED_STAINED_GLASS_PANE", Material.RED_STAINED_GLASS_PANE), player);
 
         int[] amountSteps = {1, 8, 32, 64};
@@ -417,16 +417,28 @@ public class GUIManager {
         }
         
         ItemStack displayItem;
-        // *** FIX: Build from custom item if it exists ***
+        String baseName; // FIX: Declare baseName here
+
         if (item.isCustomItem() && item.getCustomItemStack() != null) {
-            displayItem = new ItemBuilder(item.getCustomItemStack().clone()) // Start with the custom item
-                .setName(modeName + " " + ChatColor.translateAlternateColorCodes('&', item.getConfigDisplayName()) + " x" + safeAmount)
-                .setAmount(1) // Display stack size 1 in GUI
-                .setLore(lore) // Set the generated price lore
+            // *** FIX: Get name from custom item meta or config override ***
+            baseName = item.getConfigDisplayName(); // Use config override first
+            if (baseName == null || baseName.isBlank()) {
+                ItemMeta meta = item.getCustomItemStack().getItemMeta();
+                if (meta != null && meta.hasDisplayName()) {
+                    baseName = meta.getDisplayName(); // Fallback to item's internal name
+                } else {
+                    baseName = item.getMaterial().name(); // Fallback to material name
+                }
+            }
+
+            displayItem = new ItemBuilder(item.getCustomItemStack().clone())
+                .setName(modeName + " " + ChatColor.translateAlternateColorCodes('&', baseName) + " x" + safeAmount)
+                .setAmount(1)
+                .setLore(lore)
                 .build();
         } else {
             // Vanilla item
-            String baseName = item.getConfigDisplayName() != null ? item.getConfigDisplayName() : item.getMaterial().name();
+            baseName = item.getConfigDisplayName() != null ? item.getConfigDisplayName() : item.getMaterial().name();
             displayItem = new ItemBuilder(item.getMaterial())
                 .setName(modeName + " " + ChatColor.translateAlternateColorCodes('&', baseName) + " x" + safeAmount)
                 .setAmount(1)
@@ -588,22 +600,22 @@ public class GUIManager {
         if (item == null || amount <= 0) return;
 
         double pricePerItem;
-        String itemName; // For messages
+        String itemName;
 
-        // *** FIX: Determine item name for messages ***
-        if (item.isCustomItem() && item.getCustomItemStack() != null) {
-            ItemMeta meta = item.getCustomItemStack().getItemMeta();
-            if (meta != null && meta.hasDisplayName()) {
-                itemName = meta.getDisplayName();
-            } else if (item.getConfigDisplayName() != null) {
-                itemName = item.getConfigDisplayName();
+        // *** FIX: Determine item name for messages (using config override first) ***
+        itemName = item.getConfigDisplayName(); // Use config override first
+        if (itemName == null || itemName.isBlank()) {
+            if (item.isCustomItem() && item.getCustomItemStack() != null) {
+                ItemMeta meta = item.getCustomItemStack().getItemMeta();
+                if (meta != null && meta.hasDisplayName()) {
+                    itemName = meta.getDisplayName(); // Fallback to item's internal name
+                } else {
+                    itemName = item.getMaterial().name(); // Fallback to material name
+                }
             } else {
-                itemName = item.getMaterial().name();
+                itemName = item.getMaterial().name(); // Fallback to material name for vanilla
             }
-        } else {
-            itemName = (item.getConfigDisplayName() != null) ? item.getConfigDisplayName() : item.getMaterial().name();
         }
-        // Strip colors for placeholders
         itemName = ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', itemName));
 
 
@@ -618,7 +630,7 @@ public class GUIManager {
 
         Map<String, String> placeholders = new HashMap<>();
         placeholders.put("amount", String.valueOf(amount));
-        placeholders.put("item", itemName); // Use fixed item name
+        placeholders.put("item", itemName);
         placeholders.put("price", PriceUtil.format(totalPrice));
         placeholders.put("currency_symbol", plugin.getCurrencyService().getCurrencySymbol(item.getCurrencyId()));
 
@@ -630,13 +642,13 @@ public class GUIManager {
             }
             
             // *** FIX: Check inventory space based on custom/vanilla item ***
-            int neededSlots;
+            int maxStack = 64; // Default
             if (item.isCustomItem() && item.getCustomItemStack() != null) {
-                // Custom items might not stack, check based on amount
-                neededSlots = (int) Math.ceil((double) amount / item.getCustomItemStack().getMaxStackSize());
+                maxStack = item.getCustomItemStack().getMaxStackSize();
             } else {
-                neededSlots = (int) Math.ceil((double) amount / item.getMaterial().getMaxStackSize());
+                maxStack = item.getMaterial().getMaxStackSize();
             }
+            int neededSlots = (int) Math.ceil((double) amount / maxStack);
 
             if (getEmptySlots(player) < neededSlots && getPartialStackSpace(player, item, amount) < amount) {
                  plugin.getMessageManager().sendMessage(player, "inventory_full", placeholders);
@@ -701,7 +713,7 @@ public class GUIManager {
         }
     }
 
-    // *** FIX: Updated helper to check ShopItem (for custom) ***
+     // *** FIX: Updated helper to check ShopItem (for custom) ***
      private int getPartialStackSpace(Player player, ShopItem shopItem, int amountNeeded) {
         int space = 0;
         ItemStack[] contents = player.getInventory().getStorageContents();
@@ -710,6 +722,7 @@ public class GUIManager {
             ItemStack customBase = shopItem.getCustomItemStack();
             int maxStack = customBase.getMaxStackSize();
             for (ItemStack item : contents) {
+                // Use isSimilar for NBT check
                 if (item != null && item.isSimilar(customBase) && item.getAmount() < maxStack) {
                     space += maxStack - item.getAmount();
                     if (space >= amountNeeded) return amountNeeded;
@@ -736,7 +749,7 @@ public class GUIManager {
         ItemStack[] contents = player.getInventory().getStorageContents();
 
         if (shopItem.isCustomItem() && shopItem.getCustomItemStack() != null) {
-            // Custom item: Check similarity
+            // Custom item: Check similarity (NBT)
             ItemStack customBase = shopItem.getCustomItemStack();
              for (ItemStack item : contents) {
                 if (item != null && item.isSimilar(customBase)) {
@@ -744,10 +757,11 @@ public class GUIManager {
                 }
             }
         } else {
-            // Vanilla item: Check material
+            // Vanilla item: Check material only
             Material material = shopItem.getMaterial();
             for (ItemStack item : contents) {
-                if (item != null && item.getType() == material) {
+                // Make sure it's NOT a custom item that just happens to share the material
+                if (item != null && item.getType() == material && !item.hasItemMeta()) { // Simple check, might need refinement
                     amount += item.getAmount();
                 }
             }
@@ -762,6 +776,7 @@ public class GUIManager {
         Material vanillaMat = (shopItem.isCustomItem()) ? null : shopItem.getMaterial();
 
         for (int i = 0; i < contents.length; i++) {
+            if (amountToRemove <= 0) break; // Stop if we've removed enough
             ItemStack item = contents[i];
             if (item == null || item.getType() == Material.AIR) continue;
 
@@ -771,7 +786,8 @@ public class GUIManager {
                 match = item.isSimilar(customBase);
             } else {
                 // Vanilla item check
-                match = item.getType() == vanillaMat;
+                // Make sure it's NOT a custom item
+                match = item.getType() == vanillaMat && !item.getItemMeta().hasCustomModelData() && !item.hasItemMeta(); // Basic check
             }
 
             if (match) {
@@ -779,16 +795,12 @@ public class GUIManager {
                 if (amountInSlot > amountToRemove) {
                     // Remove part of the stack
                     item.setAmount(amountInSlot - amountToRemove);
-                    player.getInventory().setItem(i, item);
+                    // No need to setItem, reference is modified
                     amountToRemove = 0;
-                    break; // All removed
                 } else {
                     // Remove the whole stack and continue
                     player.getInventory().setItem(i, null);
                     amountToRemove -= amountInSlot;
-                    if (amountToRemove <= 0) {
-                        break; // All removed
-                    }
                 }
             }
         }
@@ -912,3 +924,4 @@ public class GUIManager {
         openMenus.clear();
     }
 }
+
