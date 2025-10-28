@@ -1,4 +1,4 @@
- package xyz.kaijiieow.kjshopplus.config;
+package xyz.kaijiieow.kjshopplus.config;
 
  import org.bukkit.Material;
  import org.bukkit.configuration.ConfigurationSection;
@@ -6,6 +6,7 @@
  import org.bukkit.configuration.file.FileConfiguration;
  import org.bukkit.configuration.file.YamlConfiguration;
  import org.bukkit.inventory.ItemStack;
+ import org.bukkit.inventory.meta.ItemMeta; // เพิ่ม import
  import xyz.kaijiieow.kjshopplus.KJShopPlus;
  import xyz.kaijiieow.kjshopplus.config.model.MainCategoryMenu;
  import xyz.kaijiieow.kjshopplus.config.model.ShopCategory;
@@ -113,9 +114,12 @@
      }
 
      private void saveDefaultShopConfigs() {
-         String[] defaultShops = {"ores.yml", "farming.yml", "blocks.yml", "combat.yml", "mob_drops.yml", "brewing.yml", "redstone.yml", "misc.yml"};
+         String[] defaultShops = {"ores.yml", "farming.yml", "blocks.yml", "combat.yml", "mob_drops.yml", "brewing.yml", "redstone.yml", "misc.yml", "item_custom.yml"}; // เพิ่ม item_custom.yml ถ้ายังไม่มี
          for (String shopFileName : defaultShops) {
-             plugin.saveResource("shops/" + shopFileName, false);
+              File shopFile = new File(plugin.getDataFolder(), "shops/" + shopFileName);
+              if (!shopFile.exists()) {
+                 plugin.saveResource("shops/" + shopFileName, false);
+              }
          }
      }
 
@@ -146,20 +150,32 @@
          ConfigurationSection newItemSection = itemsSection.createSection(newItemId);
 
          // Set defaults
-         newItemSection.set("slot", -1);
+         newItemSection.set("slot", -1); // Auto-slotting
          newItemSection.set("currency", "vault");
-         newItemSection.set("buy", 0.0);
-         newItemSection.set("sell", 0.0);
-         newItemSection.set("trade.allow_buy", false);
-         newItemSection.set("trade.allow_sell", false);
+         newItemSection.set("buy", 0.0); // Default to 0, admin needs to set price
+         newItemSection.set("sell", 0.0); // Default to 0
+         newItemSection.set("trade.allow_buy", false); // Default to false
+         newItemSection.set("trade.allow_sell", false); // Default to false
          newItemSection.set("dynamic.enabled", false);
-         
+
+         // --- เพิ่มส่วนนี้ ---
+         // ดึง display name จาก ItemMeta (ถ้ามี)
+         if (itemStack.hasItemMeta()) {
+             ItemMeta meta = itemStack.getItemMeta();
+             if (meta != null && meta.hasDisplayName()) {
+                 // เพิ่ม comment และ set display name สำหรับอ้างอิง
+                 newItemSection.set("display_name_comment", meta.getDisplayName()); // ใช้ชื่อ key ที่ต่างออกไป
+                 newItemSection.setComments("display_name_comment", Collections.singletonList(" This field is just a comment to show the item name, not used by the plugin."));
+             }
+         }
+         // --- จบส่วนที่เพิ่ม ---
+
          // --- DO NOT SAVE THE 'display' SECTION ---
          // We rely on the 'itemstack' section to store display info (NBT)
          // The user can add a 'display' section MANUALLY later if they want to OVERRIDE the item's NBT.
 
          // Save the ItemStack itself
-         newItemSection.set("itemstack", itemStack); 
+         newItemSection.set("itemstack", itemStack);
 
          try {
              shopConfig.save(shopFile);
@@ -198,4 +214,3 @@
          return Collections.unmodifiableCollection(allShopItems.values());
      }
  }
-
