@@ -27,7 +27,7 @@ main_menu:
 
   # --- Categories ---
   # THIS "categories:" KEY IS CRITICAL
-  categorie:
+  categories:
     ores: # ID must match the shop file name (ores.yml)
       enable: true
       slot: 10 # Example slot
