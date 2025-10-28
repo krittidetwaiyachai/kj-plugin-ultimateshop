@@ -70,7 +70,7 @@ category:
       buy: 0.0
       sell: 0.0
       trade:
-        allow_buy: false
+        allow_buy: true
         allow_sell: false
       dynamic:
         enabled: false
