@@ -19,9 +19,10 @@ import xyz.kaijiieow.kjshopplus.pricing.DynamicPriceManager;
 import xyz.kaijiieow.kjshopplus.pricing.LoreFormatter;
 import xyz.kaijiieow.kjshopplus.services.DiscordWebhookService;
 
+import java.util.logging.Level;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.logging.Level;
+
 
 public final class KJShopPlus extends JavaPlugin {
 
@@ -45,7 +46,7 @@ public final class KJShopPlus extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        
+
         PDC_ACTION_KEY = new NamespacedKey(this, "kjshop_action");
         PDC_VALUE_KEY = new NamespacedKey(this, "kjshop_value");
 
@@ -55,25 +56,23 @@ public final class KJShopPlus extends JavaPlugin {
             return;
         }
 
-        this.configManager = new ConfigManager(this);
+        // --- ลำดับการสร้าง Instance สำคัญ ---
+        this.configManager = new ConfigManager(this); // สร้าง Config ก่อน
         this.messageManager = new MessageManager(this);
         this.shopManager = new ShopManager(this);
-        this.currencyService = new KJCurrencyService(vaultEconomy, this); 
-        this.discordWebhookService = new DiscordWebhookService(this);
+        this.currencyService = new KJCurrencyService(vaultEconomy, this);
+        this.discordWebhookService = new DiscordWebhookService(this); // สร้าง Webhook ทีหลัง Config
         this.dynamicPriceManager = new DynamicPriceManager(this);
         this.loreFormatter = new LoreFormatter(this);
         this.guiManager = new GUIManager(this);
         this.playerTapManager = new PlayerTapManager(this);
 
-        reload(); 
+        reload(); // โหลด Config ทั้งหมด
 
         getServer().getPluginManager().registerEvents(new GUIListener(this), this);
-        
-        // --- THIS IS THE FIX ---
-        // Register BOTH commands
-        Objects.requireNonNull(getCommand("kjshop")).setExecutor(new ShopCommand(this));
+
+        Objects.requireNonNull(getCommand("shop")).setExecutor(new ShopCommand(this)); // แก้ kjshop เป็น shop
         Objects.requireNonNull(getCommand("kjshopadmin")).setExecutor(new AdminCommand(this));
-        // --- END FIX ---
 
         getLogger().info("KJShopPlus v" + getDescription().getVersion() + " enabled successfully.");
     }
@@ -118,16 +117,22 @@ public final class KJShopPlus extends JavaPlugin {
         if (guiManager != null) {
             guiManager.closeAllMenus();
         }
-        
+
         configManager.load();
+        // --- ADD THIS LINE ---
+        if (discordWebhookService != null) {
+             discordWebhookService.loadConfig(); // สั่งให้โหลด username/avatar ใหม่หลัง reload config
+        }
+        // --- END ADD ---
         messageManager.load();
-        shopManager.load(); 
-        
+        shopManager.load();
+
         if (dynamicPriceManager != null) {
             dynamicPriceManager.stopPriceResetTask();
             dynamicPriceManager.loadPrices();
             dynamicPriceManager.startPriceResetTask();
         }
+        getLogger().log(Level.INFO, "KJShopPlus configuration reloaded."); // Log เพิ่มตอน reload สำเร็จ
     }
     
     // Public Getters
