@@ -1,56 +1,53 @@
-name: KJShopPlus
-version: 1.0.0
-main: xyz.kaijiieow.kjshopplus.KJShopPlus
-api-version: '1.21' # Target 1.21 API
-softdepend: [Vault, CoinsEngine, Geyser-Spigot, floodgate]
+ name: KJShopPlus
+ version: 1.0.0
+ main: xyz.kaijiieow.kjshopplus.KJShopPlus
+ api-version: '1.21'
+ softdepend: [Vault, CoinsEngine, Geyser-Spigot, floodgate]
 
-commands:
-  # Main shop command for players
-  shop:
-    description: "Opens the main KJShopPlus GUI"
-    aliases: [kshop, kjshop] # Common aliases
-    permission: kjshopplus.user.open # Permission required to open the shop
-    permission-message: "You don't have permission to use the shop."
+ commands:
+   shop:
+     description: "Opens the main KJShopPlus GUI"
+     aliases: [kshop, kjshop]
+     permission: kjshopplus.user.open
+     permission-message: "You don't have permission to use the shop."
 
-  # --- เพิ่มคำสั่งนี้เข้าไป ---
-  sellall:
-    description: "Sells all sellable items from your inventory."
-    aliases: [sellitems]
-    permission: kjshopplus.user.sellall
-    permission-message: "You don't have permission to use this command."
-  # --- สิ้นสุด ---
+   sellall:
+     description: "Sells all sellable items from your inventory."
+     aliases: [sellitems]
+     permission: kjshopplus.user.sellall
+     permission-message: "You don't have permission to use this command."
 
-  # Admin command
-  kjshopadmin:
-    description: "Admin commands for KJShopPlus"
-    aliases: [sa, kjsa] # Short aliases for admin
-    permission: kjshopplus.admin # Base admin permission (specific subcommands need sub-permissions)
-    permission-message: "You don't have permission to use admin commands."
-    usage: "/<command> [reload|resetprices|help]" # Basic usage info
+   kjshopadmin:
+     description: "Admin commands for KJShopPlus"
+     aliases: [sa, kjsa]
+     permission: kjshopplus.admin
+     permission-message: "You don't have permission to use admin commands."
+     usage: "/<command> [reload|resetprices|additem|help]" # Updated usage
 
-permissions:
-  kjshopplus.user.open:
-    description: Allows players to open the shop GUI using /shop.
-    default: true # Allow everyone to open by default
-  
-  # --- เพิ่ม Permission นี้เข้าไป ---
-  kjshopplus.user.sellall:
-    description: Allows players to use the /sellall command.
-    default: true # เปิดให้ใช้ทุกคน
-  # --- สิ้นสุด ---
-  
-  kjshopplus.admin:
-    description: Base permission node for admin commands.
-    default: op # Only OPs have admin access by default
-    children:
-      kjshopplus.admin.reload: true
-      kjshopplus.admin.resetprices: true
-      # kjshopplus.admin.edit: true # Example for future edit commands
+ permissions:
+   kjshopplus.user.open:
+     description: Allows players to open the shop GUI using /shop.
+     default: true
 
-  kjshopplus.admin.reload:
-    description: Allows reloading the plugin configuration.
-    default: op
-  kjshopplus.admin.resetprices:
-    description: Allows manually resetting dynamic prices.
-    default: op
+   kjshopplus.user.sellall:
+     description: Allows players to use the /sellall command.
+     default: true
 
+   kjshopplus.admin:
+     description: Base permission node for admin commands.
+     default: op
+     children:
+       kjshopplus.admin.reload: true
+       kjshopplus.admin.resetprices: true
+       kjshopplus.admin.additem: true # Added child permission
+       # kjshopplus.admin.edit: true
+
+   kjshopplus.admin.reload:
+     description: Allows reloading the plugin configuration.
+     default: op
+   kjshopplus.admin.resetprices:
+     description: Allows manually resetting dynamic prices.
+     default: op
+   kjshopplus.admin.additem: # Added permission node
+     description: Allows adding the held item to a shop category.
+     default: op
