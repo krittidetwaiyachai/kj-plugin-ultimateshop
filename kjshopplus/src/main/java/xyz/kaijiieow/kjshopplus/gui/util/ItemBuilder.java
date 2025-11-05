@@ -34,7 +34,7 @@ public class ItemBuilder {
             try {
                 meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
             } catch (Exception e) {
-                System.err.println("[KJShopPlus ERROR] Failed to set item name for " + item.getType() + ": " + e.getMessage());
+                // System.err.println("[KJShopPlus ERROR] Failed to set item name for " + item.getType() + ": " + e.getMessage());
             }
         }
         return this;
@@ -52,7 +52,7 @@ public class ItemBuilder {
                     meta.setLore(Collections.emptyList());
                 }
             } catch (Exception e) {
-                System.err.println("[KJShopPlus ERROR] Failed to set item lore for " + item.getType() + ": " + e.getMessage());
+                // System.err.println("[KJShopPlus ERROR] Failed to set item lore for " + item.getType() + ": " + e.getMessage());
             }
         }
         return this;
@@ -73,7 +73,7 @@ public class ItemBuilder {
          try {
              meta.getPersistentDataContainer().set(KJShopPlus.PDC_ACTION_KEY, PersistentDataType.STRING, action);
          } catch (Exception e) {
-             System.err.println("[KJShopPlus ERROR] Failed to set PDC Action for " + item.getType() + ": " + e.getMessage());
+             // System.err.println("[KJShopPlus ERROR] Failed to set PDC Action for " + item.getType() + ": " + e.getMessage());
          }
         return this;
     }
@@ -83,7 +83,7 @@ public class ItemBuilder {
          try {
             meta.getPersistentDataContainer().set(KJShopPlus.PDC_VALUE_KEY, PersistentDataType.STRING, value);
          } catch (Exception e) {
-             System.err.println("[KJShopPlus ERROR] Failed to set PDC Value for " + item.getType() + ": " + e.getMessage());
+             // System.err.println("[KJShopPlus ERROR] Failed to set PDC Value for " + item.getType() + ": " + e.getMessage());
          }
         return this;
     }
@@ -102,7 +102,7 @@ public class ItemBuilder {
                     meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
                 }
              } catch (Exception e) {
-                 System.err.println("[KJShopPlus ERROR] Failed to add glow for " + item.getType() + ": " + e.getMessage());
+                 // System.err.println("[KJShopPlus ERROR] Failed to add glow for " + item.getType() + ": " + e.getMessage());
              }
          }
         return this;
@@ -114,7 +114,7 @@ public class ItemBuilder {
             try {
                 item.setItemMeta(meta);
             } catch (Exception e) {
-                 System.err.println("[KJShopPlus ERROR] Failed to apply final ItemMeta for " + item.getType() + ": " + e.getMessage());
+                 // System.err.println("[KJShopPlus ERROR] Failed to apply final ItemMeta for " + item.getType() + ": " + e.getMessage());
             }
         }
         return item.clone();
@@ -130,7 +130,7 @@ public class ItemBuilder {
             }
             return meta.getPersistentDataContainer().get(KJShopPlus.PDC_ACTION_KEY, PersistentDataType.STRING);
          } catch (Exception e) {
-             System.err.println("[KJShopPlus ERROR] Failed to get PDC Action for " + item.getType() + ": " + e.getMessage());
+             // System.err.println("[KJShopPlus ERROR] Failed to get PDC Action for " + item.getType() + ": " + e.getMessage());
              return null;
          }
     }
@@ -144,7 +144,7 @@ public class ItemBuilder {
             }
             return meta.getPersistentDataContainer().get(KJShopPlus.PDC_VALUE_KEY, PersistentDataType.STRING);
          } catch (Exception e) {
-             System.err.println("[KJShopPlus ERROR] Failed to get PDC Value for " + item.getType() + ": " + e.getMessage());
+             // System.err.println("[KJShopPlus ERROR] Failed to get PDC Value for " + item.getType() + ": " + e.getMessage());
              return null;
          }
     }
@@ -156,7 +156,7 @@ public class ItemBuilder {
             if (meta == null) return false;
             return meta.getPersistentDataContainer().has(KJShopPlus.PDC_ACTION_KEY, PersistentDataType.STRING);
          } catch (Exception e) {
-             System.err.println("[KJShopPlus ERROR] Failed check PDC Action for " + item.getType() + ": " + e.getMessage());
+             // System.err.println("[KJShopPlus ERROR] Failed check PDC Action for " + item.getType() + ": " + e.getMessage());
              return false;
          }
     }

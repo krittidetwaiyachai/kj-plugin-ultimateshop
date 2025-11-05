@@ -84,15 +84,18 @@ public class DiscordWebhookService {
         String url = plugin.getConfigManager().getWebhookUrl("buy");
         if (url == null || url.isEmpty()) return;
 
-        String title = "Player Purchase";
-        String description = String.format("**%s** bought **%dx %s** for **%s %s**.",
+        String title = "🛒 รายการซื้อสินค้า"; // 🛒 Purchase
+        String description = String.format(
+                "**ผู้เล่น:** `%s`\n" +
+                "**ซื้อไอเทม:** %s (x%d)\n" +
+                "**ราคา:** %s %s",
                 player.getName(),
-                amount,
                 escapeMarkdown(itemName),
+                amount,
                 plugin.getCurrencyService().getCurrencySymbol(item.getCurrencyId()),
                 PriceUtil.format(totalPrice));
 
-        String json = buildEmbedJson(title, description, 5763719);
+        String json = buildEmbedJson(title, description, 5763719); // สีเขียว (เดิม)
         sendAsync(url, json);
     }
 
@@ -111,15 +114,18 @@ public class DiscordWebhookService {
         String url = plugin.getConfigManager().getWebhookUrl("sell");
         if (url == null || url.isEmpty()) return;
 
-        String title = "Player Sale";
-        String description = String.format("**%s** sold **%dx %s** for **%s %s**.",
+        String title = "💰 รายการขายสินค้า"; // 💰 Sale
+        String description = String.format(
+                "**ผู้เล่น:** `%s`\n" +
+                "**ขายไอเทม:** %s (x%d)\n" +
+                "**ได้รับ:** %s %s",
                 player.getName(),
-                amount,
                 escapeMarkdown(itemName),
+                amount,
                 plugin.getCurrencyService().getCurrencySymbol(item.getCurrencyId()),
                 PriceUtil.format(totalPrice));
 
-        String json = buildEmbedJson(title, description, 15548997);
+        String json = buildEmbedJson(title, description, 15548997); // สีแดง (เดิม)
         sendAsync(url, json);
     }
 
@@ -131,13 +137,15 @@ public class DiscordWebhookService {
         String url = plugin.getConfigManager().getWebhookUrl("admin");
         if (url == null || url.isEmpty()) return;
 
-        String title = "Admin Action";
+        String title = "🛡️ การดำเนินการของแอดมิน"; // 🛡️ Admin Action
         String safeAction = escapeMarkdown(action);
-        String description = String.format("Admin **%s** performed action: `%s`",
+        String description = String.format(
+                "**แอดมิน:** `%s`\n" +
+                "**ดำเนินการ:** `%s`",
                 player.getName(),
                 safeAction);
 
-        String json = buildEmbedJson(title, description, 3447003);
+        String json = buildEmbedJson(title, description, 3447003); // สีฟ้า (เดิม)
         sendAsync(url, json);
     }
 
@@ -148,10 +156,10 @@ public class DiscordWebhookService {
         String url = plugin.getConfigManager().getWebhookUrl("price_reset");
         if (url == null || url.isEmpty()) return;
 
-        String title = "Dynamic Price Reset";
-        String description = String.format("Successfully reset **%d** dynamic item prices.", itemsReset);
+        String title = "🔄 รีเซ็ตราคาอัตโนมัติ"; // 🔄 Price Reset
+        String description = String.format("รีเซ็ตราคาไอเทม (Dynamic) จำนวน **%d** รายการเรียบร้อยแล้ว", itemsReset);
 
-        String json = buildEmbedJson(title, description, 16705372);
+        String json = buildEmbedJson(title, description, 16705372); // สีเหลือง (เดิม)
         sendAsync(url, json);
     }
 

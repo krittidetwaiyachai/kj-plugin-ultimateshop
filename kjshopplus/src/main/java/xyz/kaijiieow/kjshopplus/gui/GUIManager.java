@@ -109,7 +109,7 @@ public class GUIManager {
             ItemMeta meta = head.getItemMeta();
              if (meta instanceof SkullMeta skullMeta) {
                  skullMeta.setOwningPlayer(player);
-                 head.setItemMeta(skullMeta);
+                 head.setItemMeta(meta);
                  builder = new ItemBuilder(head);
              }
         }
@@ -453,13 +453,13 @@ public class GUIManager {
         String action = ItemBuilder.getPDCAction(clickedItem);
         String value = ItemBuilder.getPDCValue(clickedItem);
         
-        System.out.println("[KJShopPlus DEBUG] Click processing: Slot=" + slot
-                + " | Item=" + (clickedItem != null ? clickedItem.getType() : "NULL")
-                + " | PDC Action=" + action + " | PDC Value=" + value);
+        // System.out.println("[KJShopPlus DEBUG] Click processing: Slot=" + slot
+        //         + " | Item=" + (clickedItem != null ? clickedItem.getType() : "NULL")
+        //         + " | PDC Action=" + action + " | PDC Value=" + value);
 
 
         if (action == null) {
-             System.out.println("[KJShopPlus DEBUG] Click ignored: No PDC Action found on item.");
+             // System.out.println("[KJShopPlus DEBUG] Click ignored: No PDC Action found on item.");
              return;
         }
 

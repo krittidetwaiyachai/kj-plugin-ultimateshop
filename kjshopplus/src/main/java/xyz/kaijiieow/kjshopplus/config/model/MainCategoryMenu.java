@@ -24,7 +24,7 @@ public class MainCategoryMenu {
             this.closeButton = null;
             this.playerInfoItem = null;
              
-             System.out.println("[KJShopPlus ERROR] MainCategoryMenu constructor received null config!");
+             // System.out.println("[KJShopPlus ERROR] MainCategoryMenu constructor received null config!");
              return;
         }
 
@@ -58,15 +58,15 @@ public class MainCategoryMenu {
                     categoryItems.put(key, menuItem);
                     loadedCount++;
                      
-                     System.out.println("[KJShopPlus DEBUG] Loaded category item '" + key + "' for main menu.");
+                     // System.out.println("[KJShopPlus DEBUG] Loaded category item '" + key + "' for main menu.");
                 } else if (itemConfig == null) {
-                    System.out.println("[KJShopPlus ERROR] Invalid config section for category item '" + key + "' in categories.yml");
+                    // System.out.println("[KJShopPlus ERROR] Invalid config section for category item '" + key + "' in categories.yml");
                 }
             }
-             System.out.println("[KJShopPlus DEBUG] Finished loading main menu category items. Count: " + loadedCount);
+             // System.out.println("[KJShopPlus DEBUG] Finished loading main menu category items. Count: " + loadedCount);
         } else {
              
-             System.out.println("[KJShopPlus ERROR] main_menu in categories.yml is missing 'categories:' section!");
+             // System.out.println("[KJShopPlus ERROR] main_menu in categories.yml is missing 'categories:' section!");
         }
     }
 

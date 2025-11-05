@@ -82,24 +82,24 @@ public class GUIListener implements Listener {
 
         
         if (configManager.isLeftTapOnly() && clickType != ClickType.LEFT) {
-             System.out.println("[KJShopPlus DEBUG] Click cancelled: Left tap only mode.");
+             // System.out.println("[KJShopPlus DEBUG] Click cancelled: Left tap only mode.");
              return;
         }
         if (!configManager.isLeftTapOnly() && configManager.isDisableRightClick() && clickType == ClickType.RIGHT) {
-             System.out.println("[KJShopPlus DEBUG] Click cancelled: Right click disabled.");
+             // System.out.println("[KJShopPlus DEBUG] Click cancelled: Right click disabled.");
              return;
         }
         
         
         
         if (configManager.isDisableShiftClick() && clickType.isShiftClick()) {
-            System.out.println("[KJShopPlus DEBUG] Click cancelled: Shift click disabled (inside shop).");
+            // System.out.println("[KJShopPlus DEBUG] Click cancelled: Shift click disabled (inside shop).");
             return;
         }
         
         
         if (action == InventoryAction.HOTBAR_SWAP || action == InventoryAction.HOTBAR_MOVE_AND_READD) {
-             System.out.println("[KJShopPlus DEBUG] Click cancelled: Hotbar swap action (inside shop).");
+             // System.out.println("[KJShopPlus DEBUG] Click cancelled: Hotbar swap action (inside shop).");
              return;
         }
 
@@ -115,14 +115,14 @@ public class GUIListener implements Listener {
         String pdcAction = ItemBuilder.getPDCAction(itemClicked);
         String pdcValue = ItemBuilder.getPDCValue(itemClicked);
         
-        System.out.println("[KJShopPlus DEBUG] Click processing: Slot=" + event.getSlot()
-                + " | Item=" + (itemClicked != null ? itemClicked.getType() : "NULL")
-                + " | PDC Action=" + pdcAction + " | PDC Value=" + pdcValue);
+        // System.out.println("[KJShopPlus DEBUG] Click processing: Slot=" + event.getSlot()
+        //         + " | Item=" + (itemClicked != null ? itemClicked.getType() : "NULL")
+        //         + " | PDC Action=" + pdcAction + " | PDC Value=" + pdcValue);
 
         if (pdcAction != null) {
              guiManager.handleClick(player, event.getSlot(), guiData);
         } else {
-             System.out.println("[KJShopPlus DEBUG] Click ignored: No PDC Action found on item.");
+             // System.out.println("[KJShopPlus DEBUG] Click ignored: No PDC Action found on item.");
         }
     }
 

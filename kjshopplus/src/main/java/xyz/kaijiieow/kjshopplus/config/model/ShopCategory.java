@@ -47,7 +47,7 @@ public class ShopCategory {
              if (KJShopPlus.getInstance() != null) {
                  KJShopPlus.getInstance().getLogger().warning("Category '" + categoryId + "' is missing 'layout:' section.");
              } else {
-                 System.out.println("[KJShopPlus ERROR] ShopCategory loaded before plugin instance! Cannot log warning for missing layout.");
+                 // System.out.println("[KJShopPlus ERROR] ShopCategory loaded before plugin instance! Cannot log warning for missing layout.");
              }
         }
 
@@ -76,7 +76,7 @@ public class ShopCategory {
              if (KJShopPlus.getInstance() != null) {
                  KJShopPlus.getInstance().getLogger().warning("Category '" + categoryId + "' is missing 'items:' section!");
              } else {
-                  System.out.println("[KJShopPlus ERROR] ShopCategory loaded before plugin instance! Cannot log warning for missing items.");
+                  // System.out.println("[KJShopPlus ERROR] ShopCategory loaded before plugin instance! Cannot log warning for missing items.");
              }
         }
     }
