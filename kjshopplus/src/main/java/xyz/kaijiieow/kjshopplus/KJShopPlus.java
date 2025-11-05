@@ -20,10 +20,10 @@ import xyz.kaijiieow.kjshopplus.pricing.DynamicPriceManager;
 import xyz.kaijiieow.kjshopplus.pricing.LoreFormatter;
 import xyz.kaijiieow.kjshopplus.services.DiscordWebhookService;
 
-// --- เพิ่ม Import ---
-import java.io.File; 
+
+import java.io.File;
 import java.util.logging.Level;
-// --- จบ ---
+
 
 import java.util.Objects;
 import java.util.UUID;
@@ -61,22 +61,22 @@ public final class KJShopPlus extends JavaPlugin {
             return;
         }
 
-        // --- ลำดับการสร้าง Instance สำคัญ ---
-        this.configManager = new ConfigManager(this); // สร้าง Config ก่อน
+        
+        this.configManager = new ConfigManager(this);
         this.messageManager = new MessageManager(this);
         this.shopManager = new ShopManager(this);
         this.currencyService = new KJCurrencyService(vaultEconomy, this);
-        this.discordWebhookService = new DiscordWebhookService(this); // สร้าง Webhook ทีหลัง Config
+        this.discordWebhookService = new DiscordWebhookService(this);
         this.dynamicPriceManager = new DynamicPriceManager(this);
         this.loreFormatter = new LoreFormatter(this);
         this.guiManager = new GUIManager(this);
         this.playerTapManager = new PlayerTapManager(this);
 
-        // --- เพิ่มการสร้างไฟล์ Log ---
+        
         setupLogFile();
-        // --- จบ ---
+        
 
-        reload(); // โหลด Config ทั้งหมด
+        reload();
 
         getServer().getPluginManager().registerEvents(new GUIListener(this), this);
 
@@ -98,7 +98,7 @@ public final class KJShopPlus extends JavaPlugin {
         getLogger().info("KJShopPlus disabled.");
     }
 
-    // --- เพิ่มเมธอดนี้ ---
+    
     private void setupLogFile() {
         File logFile = new File(getDataFolder(), "shop-log.txt");
         if (!logFile.exists()) {
@@ -111,7 +111,7 @@ public final class KJShopPlus extends JavaPlugin {
             }
         }
     }
-    // --- จบ ---
+    
 
     private boolean setupDependencies() {
         if (getServer().getPluginManager().getPlugin("Vault") == null) {
@@ -145,14 +145,14 @@ public final class KJShopPlus extends JavaPlugin {
         
         configManager.load();
         
-        // --- ADD THIS LINE (Keep webhook config reload) ---
+        
         if (discordWebhookService != null) {
-             discordWebhookService.loadConfig(); // สั่งให้โหลด username/avatar ใหม่หลัง reload config
+             discordWebhookService.loadConfig();
         }
-        // --- END ADD ---
+        
         
         messageManager.load();
-        shopManager.load(); 
+        shopManager.load();
         
         if (dynamicPriceManager != null) {
             dynamicPriceManager.stopPriceResetTask();
@@ -162,7 +162,7 @@ public final class KJShopPlus extends JavaPlugin {
         getLogger().log(Level.INFO, "KJShopPlus configuration reloaded.");
     }
     
-    // Public Getters
+    
     public static KJShopPlus getInstance() { return instance; }
     public ConfigManager getConfigManager() { return configManager; }
     public MessageManager getMessageManager() { return messageManager; }
@@ -178,4 +178,3 @@ public final class KJShopPlus extends JavaPlugin {
         return floodgateApi != null && floodgateApi.isFloodgatePlayer(uuid);
     }
 }
-

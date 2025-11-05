@@ -7,7 +7,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import xyz.kaijiieow.kjshopplus.KJShopPlus;
 
 import java.io.File;
-import java.util.Collections; // <-- IMPORT
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -77,18 +77,17 @@ public class MessageManager {
 
 
     public void sendMessage(CommandSender sender, String key, Map<String, String> placeholders) {
-        // --- MODIFIED ---
+        
         String message = messages.get(key);
         if (message == null) {
             sender.sendMessage(ChatColor.RED + "Error: Message key '" + key + "' not found.");
             return;
         }
         
-        // Use the new getMessage method to format, then add prefix
-        String formattedMessage = getMessage(key, placeholders); // This will re-color
+        
+        String formattedMessage = getMessage(key, placeholders);
         
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + formattedMessage));
-        // --- END MODIFIED ---
+        
     }
 }
-

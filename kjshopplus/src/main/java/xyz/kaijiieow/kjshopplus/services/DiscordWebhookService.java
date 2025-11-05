@@ -70,7 +70,7 @@ public class DiscordWebhookService {
     }
 
     public void logBuy(Player player, ShopItem item, int amount, double totalPrice) {
-        // *** FIX: Use getConfigDisplayName() ***
+        
         String configName = item.getConfigDisplayName();
         String itemName = (configName != null && !configName.isBlank())
                 ? ChatColor.stripColor(configName)
@@ -92,12 +92,12 @@ public class DiscordWebhookService {
                 plugin.getCurrencyService().getCurrencySymbol(item.getCurrencyId()),
                 PriceUtil.format(totalPrice));
 
-        String json = buildEmbedJson(title, description, 5763719); // Green
+        String json = buildEmbedJson(title, description, 5763719);
         sendAsync(url, json);
     }
 
     public void logSell(Player player, ShopItem item, int amount, double totalPrice) {
-        // *** FIX: Use getConfigDisplayName() ***
+        
         String configName = item.getConfigDisplayName();
         String itemName = (configName != null && !configName.isBlank())
                 ? ChatColor.stripColor(configName)
@@ -119,7 +119,7 @@ public class DiscordWebhookService {
                 plugin.getCurrencyService().getCurrencySymbol(item.getCurrencyId()),
                 PriceUtil.format(totalPrice));
 
-        String json = buildEmbedJson(title, description, 15548997); // Red
+        String json = buildEmbedJson(title, description, 15548997);
         sendAsync(url, json);
     }
 
@@ -137,7 +137,7 @@ public class DiscordWebhookService {
                 player.getName(),
                 safeAction);
 
-        String json = buildEmbedJson(title, description, 3447003); // Blue
+        String json = buildEmbedJson(title, description, 3447003);
         sendAsync(url, json);
     }
 
@@ -151,17 +151,17 @@ public class DiscordWebhookService {
         String title = "Dynamic Price Reset";
         String description = String.format("Successfully reset **%d** dynamic item prices.", itemsReset);
 
-        String json = buildEmbedJson(title, description, 16705372); // Yellow
+        String json = buildEmbedJson(title, description, 16705372);
         sendAsync(url, json);
     }
 
     private String buildEmbedJson(String title, String description, int color) {
-        // For Discord's 'timestamp' field, which must be UTC ISO 8601
+        
         SimpleDateFormat sdfDiscord = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", java.util.Locale.US);
         sdfDiscord.setTimeZone(TimeZone.getTimeZone("UTC"));
         String discordTimestamp = sdfDiscord.format(new Date());
 
-        // For the human-readable footer text, using server's local time and desired format.
+        
         SimpleDateFormat sdfFooter = new SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US);
         String footerTimestamp = sdfFooter.format(new Date());
 

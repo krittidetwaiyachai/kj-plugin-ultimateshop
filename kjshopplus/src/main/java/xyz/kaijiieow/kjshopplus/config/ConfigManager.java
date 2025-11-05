@@ -5,35 +5,35 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import xyz.kaijiieow.kjshopplus.KJShopPlus;
 
-import java.util.ArrayList; // Import ArrayList
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List; // Import List
+import java.util.List;
 import java.util.Map;
-import java.util.Set; // Import Set
+import java.util.Set;
 
 public class ConfigManager {
 
     private final KJShopPlus plugin;
     private FileConfiguration config;
 
-    // Input Control
+    
     private boolean leftTapOnly, disableRightClick, disableShiftClick, disableInventoryDrag;
     private int tapDebounceMs;
 
-    // Bedrock
+    
     private boolean bedrockCompatEnabled;
     private final Map<Material, Material> bedrockMaterialMap = new HashMap<>();
 
-    // Discord
+    
     private boolean discordLoggingEnabled;
     private String webhookUsername, webhookAvatarUrl;
     private final Map<String, String> webhookUrls = new HashMap<>();
 
-    // Dynamic Pricing
+    
     private boolean dynamicPricingEnabled;
-    private long dynamicPriceResetInterval; // in seconds
+    private long dynamicPriceResetInterval;
 
-    // Currencies
+    
     private final Map<String, String> currencyDisplayNames = new HashMap<>();
 
     public ConfigManager(KJShopPlus plugin) {
@@ -49,7 +49,7 @@ public class ConfigManager {
         loadBedrockCompat();
         loadDiscordLogging();
         loadDynamicPricing();
-        loadCustomCurrencies(); // Make sure this is called
+        loadCustomCurrencies();
     }
 
     private void loadInputControl() {
@@ -71,7 +71,7 @@ public class ConfigManager {
         if (map != null) {
             for (String key : map.getKeys(false)) {
                 try {
-                    // Use valueOf for exact match, less prone to errors than matchMaterial
+                    
                     Material original = Material.valueOf(key.toUpperCase());
                     Material replacement = Material.valueOf(map.getString(key).toUpperCase());
                     bedrockMaterialMap.put(original, replacement);
@@ -103,35 +103,32 @@ public class ConfigManager {
         ConfigurationSection dp = config.getConfigurationSection("dynamic");
         if (dp == null) return;
         this.dynamicPricingEnabled = dp.getBoolean("enabled", true);
-        this.dynamicPriceResetInterval = dp.getLong("reset_interval_seconds", 3600); // Default 1 hour
+        this.dynamicPriceResetInterval = dp.getLong("reset_interval_seconds", 3600);
     }
 
     private void loadCustomCurrencies() {
         currencyDisplayNames.clear();
-        // Always include Vault
+        
         currencyDisplayNames.put("vault", config.getString("vault_display_symbol", "$"));
 
         ConfigurationSection cc = config.getConfigurationSection("custom_currencies");
         if (cc != null) {
             for (String key : cc.getKeys(false)) {
-                 // Use lowercase key internally, get display name
+                 
                  currencyDisplayNames.put(key.toLowerCase(), cc.getString(key + ".display_name", key));
             }
         }
         plugin.getLogger().info("Loaded currencies: " + String.join(", ", currencyDisplayNames.keySet()));
     }
 
-    // --- ADDED: Method to get all currency IDs ---
-    /**
-     * Gets a list of all configured currency IDs (e.g., "vault", "gems", "tokens").
-     * @return A list of currency IDs.
-     */
+    
+    
     public List<String> getAllCurrencyIds() {
         return new ArrayList<>(currencyDisplayNames.keySet());
     }
 
 
-    // Getters
+    
     public boolean isLeftTapOnly() { return leftTapOnly; }
     public boolean isDisableRightClick() { return disableRightClick; }
     public boolean isDisableShiftClick() { return disableShiftClick; }
@@ -147,9 +144,8 @@ public class ConfigManager {
     public String getWebhookUrl(String key) { return webhookUrls.getOrDefault(key.toLowerCase(), ""); }
     public boolean isDynamicPricingEnabled() { return dynamicPricingEnabled; }
     public long getDynamicPriceResetInterval() { return dynamicPriceResetInterval; }
-    // Get display name (symbol) for a currency ID
+    
     public String getCurrencyDisplayName(String currencyId) {
-        return currencyDisplayNames.getOrDefault(currencyId.toLowerCase(), currencyId); // Use lowercase lookup
+        return currencyDisplayNames.getOrDefault(currencyId.toLowerCase(), currencyId);
     }
 }
-

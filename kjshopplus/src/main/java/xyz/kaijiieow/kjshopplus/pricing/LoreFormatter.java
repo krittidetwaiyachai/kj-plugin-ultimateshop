@@ -1,4 +1,4 @@
- package xyz.kaijiieow.kjshopplus.pricing;
+package xyz.kaijiieow.kjshopplus.pricing;
 
  import org.bukkit.ChatColor;
  import xyz.kaijiieow.kjshopplus.KJShopPlus;
@@ -18,18 +18,15 @@
      }
  
      private String translateColors(String text) {
-         if (text == null) return ""; // Safety check
+         if (text == null) return "";
          return ChatColor.translateAlternateColorCodes('&', text);
      }
  
-     /**
-      * Formats the FULL lore, including base lore + price info.
-      * Used for VANILLA items.
-      */
+     
      public List<String> formatItemLore(ShopItem item) {
          List<String> lore = new ArrayList<>();
          
-         // 1. Add base lore (from config's display.lore)
+         
          List<String> configLore = item.getConfigBaseLore();
          if (configLore != null) {
              lore.addAll(configLore.stream()
@@ -37,20 +34,17 @@
                      .collect(Collectors.toList()));
          }
  
-         // 2. Add price lore
-         lore.addAll(getPriceLore(item)); // Calls the new method
+         
+         lore.addAll(getPriceLore(item));
  
          return lore;
      }
  
-     /**
-      * Formats ONLY the price/dynamic info.
-      * Used for CUSTOM items to append to their existing lore.
-      */
+     
      public List<String> getPriceLore(ShopItem item) {
          List<String> priceLore = new ArrayList<>();
  
-         // 1. Add prices (translated)
+         
          double buyPrice = plugin.getDynamicPriceManager().getBuyPrice(item);
          double sellPrice = plugin.getDynamicPriceManager().getSellPrice(item);
          String symbol = plugin.getCurrencyService().getCurrencySymbol(item.getCurrencyId());
@@ -64,11 +58,11 @@
              priceLore.add(translateColors("&7Sell Price: &c" + symbol + sellStr));
          }
          
-         // 2. Add dynamic status (translated)
+         
          if (item.isDynamicEnabled()) {
              priceLore.add(translateColors("&8(Dynamic Pricing Active)"));
          } else {
-             // Only add "Static Pricing" if at least one price is set, otherwise it's just clutter
+             
              if (item.isAllowBuy() || item.isAllowSell()) {
                   priceLore.add(translateColors("&8(Static Pricing)"));
              }
@@ -77,4 +71,3 @@
          return priceLore;
      }
  }
-

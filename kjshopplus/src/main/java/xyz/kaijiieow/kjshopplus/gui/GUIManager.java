@@ -149,13 +149,13 @@ public class GUIManager {
             return;
         }
 
-        List<ShopItem> items = category.getShopItems(page); // Get items FOR THIS PAGE
+        List<ShopItem> items = category.getShopItems(page);
         
-        if (items.isEmpty() && page == 1) { // Only warn if page 1 is empty
+        if (items.isEmpty() && page == 1) {
             plugin.getLogger().warning("Opening category '" + categoryId + "' but it has 0 items loaded for page 1.");
         }
 
-        int totalPages = category.getTotalPages(); // <-- MODIFIED
+        int totalPages = category.getTotalPages();
         if (page < 1) page = 1;
         if (page > totalPages) page = totalPages;
 
@@ -167,23 +167,23 @@ public class GUIManager {
 
         Set<Integer> layoutSlots = new HashSet<>();
         boolean isBedrock = plugin.isBedrockPlayer(player.getUniqueId());
-        // boolean toggleButtonPlaced = false; // <-- *** REMOVED ***
+        
 
-        // --- *** START MODIFICATION *** ---
-        final int HARDCODED_TOGGLE_SLOT = 4; // Slot 4 (top row, middle)
+        
+        final int HARDCODED_TOGGLE_SLOT = 4;
 
         for (MenuItem layoutItem : category.getLayoutItems().values()) {
             String action = layoutItem.getAction();
             if (action == null) continue;
 
-            // *** SKIP the YML definition of TOGGLE_MODE ***
-            if (action.equals("TOGGLE_MODE")) continue; 
+            
+            if (action.equals("TOGGLE_MODE")) continue;
 
             if (action.equals("PAGE_PREV") && page <= 1) continue;
             if (action.equals("PAGE_NEXT") && page >= totalPages) continue;
 
             int slot = layoutItem.getSlot();
-            ItemStack item = layoutItem.build(player, isBedrock); // No need for 'else'
+            ItemStack item = layoutItem.build(player, isBedrock);
 
              if (item != null && item.getType() != Material.AIR) {
                  if (slot >= 0 && slot < category.getSize()) {
@@ -195,12 +195,12 @@ public class GUIManager {
             }
         }
 
-        // *** REMOVE the automatic placement block ***
-        // if (!toggleButtonPlaced) { ... } // <-- ENTIRE BLOCK REMOVED
+        
+        
 
-        // *** ADD the new hardcoded placement ***
+        
         if (HARDCODED_TOGGLE_SLOT >= 0 && HARDCODED_TOGGLE_SLOT < category.getSize()) {
-            // Check if slot 4 is already taken by another layout item (e.g., "go-back" if YML is weird)
+            
             if (layoutSlots.contains(HARDCODED_TOGGLE_SLOT)) {
                 plugin.getLogger().warning("Cannot place hardcoded TOGGLE_MODE button at slot " + HARDCODED_TOGGLE_SLOT + " for category '" + categoryId + "' because it is already occupied by another layout item!");
             } else {
@@ -210,11 +210,11 @@ public class GUIManager {
         } else {
             plugin.getLogger().warning("Hardcoded toggle slot (" + HARDCODED_TOGGLE_SLOT + ") is outside the GUI size (" + category.getSize() + ") for category '" + categoryId + "'");
         }
-        // --- *** END MODIFICATION *** ---
+        
 
-        int slotIndex = 0; 
+        int slotIndex = 0;
 
-        for (ShopItem shopItem : items) { 
+        for (ShopItem shopItem : items) {
 
             if (isBuyMode && !shopItem.isAllowBuy()) continue;
             if (!isBuyMode && !shopItem.isAllowSell()) continue;
@@ -348,7 +348,7 @@ public class GUIManager {
         }
 
         if (!isBuyMode) {
-             int sellAllAmount = getAmountInInventory(player, item); 
+             int sellAllAmount = getAmountInInventory(player, item);
              double sellPrice = plugin.getDynamicPriceManager().getSellPrice(item);
              String symbol = plugin.getCurrencyService().getCurrencySymbol(item.getCurrencyId());
 
@@ -403,22 +403,22 @@ public class GUIManager {
         if (isBuyMode) {
             lore.add(plugin.getMessageManager().getMessage("gui_click_to_confirm_buy", "&aClick confirm (bottom left) to buy."));
         } else {
-            int playerAmount = getAmountInInventory(player, item); 
+            int playerAmount = getAmountInInventory(player, item);
             lore.add(plugin.getMessageManager().getMessage("gui_you_have", "&7You have: &e") + playerAmount);
             lore.add(plugin.getMessageManager().getMessage("gui_click_to_confirm_sell", "&cClick confirm (bottom left) to sell."));
         }
         
         ItemStack displayItem;
-        String baseName; 
+        String baseName;
 
         if (item.isCustomItem() && item.getCustomItemStack() != null) {
-            baseName = item.getConfigDisplayName(); 
+            baseName = item.getConfigDisplayName();
             if (baseName == null || baseName.isBlank()) {
                 ItemMeta meta = item.getCustomItemStack().getItemMeta();
                 if (meta != null && meta.hasDisplayName()) {
-                    baseName = meta.getDisplayName(); 
+                    baseName = meta.getDisplayName();
                 } else {
-                    baseName = item.getMaterial().name(); 
+                    baseName = item.getMaterial().name();
                 }
             }
 
@@ -428,7 +428,7 @@ public class GUIManager {
                 .setLore(lore)
                 .build();
         } else {
-            // Vanilla item
+            
             baseName = item.getConfigDisplayName() != null ? item.getConfigDisplayName() : item.getMaterial().name();
             displayItem = new ItemBuilder(item.getMaterial())
                 .setName(modeName + " " + ChatColor.translateAlternateColorCodes('&', baseName) + " x" + safeAmount)
@@ -496,7 +496,7 @@ public class GUIManager {
                              plugin.getMessageManager().sendMessage(player, "gui_sell_disabled");
                              return;
                         }
-                        int playerHas = getAmountInInventory(player, itemToSell); 
+                        int playerHas = getAmountInInventory(player, itemToSell);
                         if (playerHas == 0) {
                             plugin.getMessageManager().sendMessage(player, "not_enough_items");
                             return;
@@ -529,7 +529,7 @@ public class GUIManager {
                         int amountToAdd = Integer.parseInt(value);
                         int newAmount = currentAmount + amountToAdd;
                         openQuantitySelector(player, tradeItem, isBuyMode, newAmount, previousPage);
-                    } catch (NumberFormatException e) { /* ignore */ }
+                    } catch (NumberFormatException e) {  }
                 }
                 break;
             case "SUB_AMOUNT":
@@ -538,7 +538,7 @@ public class GUIManager {
                         int amountToSub = Integer.parseInt(value);
                         int newAmount = Math.max(0, currentAmount - amountToSub);
                         openQuantitySelector(player, tradeItem, isBuyMode, newAmount, previousPage);
-                    } catch (NumberFormatException e) { /* ignore */ }
+                    } catch (NumberFormatException e) {  }
                 }
                 break;
             case "SELL_ALL_CART":
@@ -575,7 +575,7 @@ public class GUIManager {
 
     private void performSellAllTransaction(Player player, ShopItem item) {
         if (item == null || !item.isAllowSell()) return;
-        int amount = getAmountInInventory(player, item); 
+        int amount = getAmountInInventory(player, item);
 
         if (amount <= 0) {
             plugin.getMessageManager().sendMessage(player, "not_enough_items");
@@ -591,17 +591,17 @@ public class GUIManager {
         double pricePerItem;
         String itemName;
 
-        itemName = item.getConfigDisplayName(); 
+        itemName = item.getConfigDisplayName();
         if (itemName == null || itemName.isBlank()) {
             if (item.isCustomItem() && item.getCustomItemStack() != null) {
                 ItemMeta meta = item.getCustomItemStack().getItemMeta();
                 if (meta != null && meta.hasDisplayName()) {
-                    itemName = meta.getDisplayName(); 
+                    itemName = meta.getDisplayName();
                 } else {
-                    itemName = item.getMaterial().name(); 
+                    itemName = item.getMaterial().name();
                 }
             } else {
-                itemName = item.getMaterial().name(); 
+                itemName = item.getMaterial().name();
             }
         }
         itemName = ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', itemName));
@@ -629,7 +629,7 @@ public class GUIManager {
                 return;
             }
             
-            int maxStack = 64; 
+            int maxStack = 64;
             if (item.isCustomItem() && item.getCustomItemStack() != null) {
                 maxStack = item.getCustomItemStack().getMaxStackSize();
             } else {
@@ -650,7 +650,7 @@ public class GUIManager {
 
             if (item.isCustomItem() && item.getCustomItemStack() != null) {
                 ItemStack itemToGive = item.getCustomItemStack().clone();
-                itemToGive.setAmount(amount); 
+                itemToGive.setAmount(amount);
                 player.getInventory().addItem(itemToGive);
             } else {
                 player.getInventory().addItem(new ItemStack(item.getMaterial(), amount));
@@ -660,8 +660,8 @@ public class GUIManager {
             plugin.getMessageManager().sendMessage(player, "buy_success", placeholders);
             plugin.getDiscordWebhookService().logBuy(player, item, amount, totalPrice);
 
-        } else { // Selling
-             int playerAmount = getAmountInInventory(player, item); 
+        } else {
+             int playerAmount = getAmountInInventory(player, item);
              int amountToSell = Math.min(amount, playerAmount);
 
              if (amountToSell <= 0) {
@@ -710,7 +710,7 @@ public class GUIManager {
                 }
             }
         } else {
-            // Vanilla
+            
             Material material = shopItem.getMaterial();
             int maxStack = material.getMaxStackSize();
             for (ItemStack item : contents) {
@@ -738,7 +738,7 @@ public class GUIManager {
         } else {
             Material material = shopItem.getMaterial();
             for (ItemStack item : contents) {
-                if (item != null && item.getType() == material && !item.hasItemMeta()) { 
+                if (item != null && item.getType() == material && !item.hasItemMeta()) {
                     amount += item.getAmount();
                 }
             }
@@ -752,7 +752,7 @@ public class GUIManager {
         Material vanillaMat = (shopItem.isCustomItem()) ? null : shopItem.getMaterial();
 
         for (int i = 0; i < contents.length; i++) {
-            if (amountToRemove <= 0) break; 
+            if (amountToRemove <= 0) break;
             ItemStack item = contents[i];
             if (item == null || item.getType() == Material.AIR) continue;
 
@@ -760,7 +760,7 @@ public class GUIManager {
             if (customBase != null) {
                 match = item.isSimilar(customBase);
             } else {
-                match = item.getType() == vanillaMat && !item.getItemMeta().hasCustomModelData() && !item.hasItemMeta(); 
+                match = item.getType() == vanillaMat && !item.getItemMeta().hasCustomModelData() && !item.hasItemMeta();
             }
 
             if (match) {

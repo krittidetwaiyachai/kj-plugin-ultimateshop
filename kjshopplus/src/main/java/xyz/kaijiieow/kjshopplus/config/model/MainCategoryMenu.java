@@ -23,7 +23,7 @@ public class MainCategoryMenu {
             this.fillItem = null;
             this.closeButton = null;
             this.playerInfoItem = null;
-             // Use System.out.println for early errors before logger might be ready
+             
              System.out.println("[KJShopPlus ERROR] MainCategoryMenu constructor received null config!");
              return;
         }
@@ -45,19 +45,19 @@ public class MainCategoryMenu {
                 : null;
 
 
-        // --- THIS IS THE CRITICAL PART ---
-        // Ensure it reads "categories" (plural with 's')
+        
+        
         ConfigurationSection itemsSection = config.getConfigurationSection("categories");
         if (itemsSection != null) {
-            int loadedCount = 0; // Debug counter
+            int loadedCount = 0;
             for (String key : itemsSection.getKeys(false)) {
                 ConfigurationSection itemConfig = itemsSection.getConfigurationSection(key);
                 if (itemConfig != null && itemConfig.getBoolean("enable", true)) {
-                    // Create the MenuItem using (id, config) constructor
+                    
                     MenuItem menuItem = new MenuItem(key, itemConfig);
                     categoryItems.put(key, menuItem);
                     loadedCount++;
-                     // Debug log for each loaded category item
+                     
                      System.out.println("[KJShopPlus DEBUG] Loaded category item '" + key + "' for main menu.");
                 } else if (itemConfig == null) {
                     System.out.println("[KJShopPlus ERROR] Invalid config section for category item '" + key + "' in categories.yml");
@@ -65,7 +65,7 @@ public class MainCategoryMenu {
             }
              System.out.println("[KJShopPlus DEBUG] Finished loading main menu category items. Count: " + loadedCount);
         } else {
-             // Log error if 'categories' section is completely missing
+             
              System.out.println("[KJShopPlus ERROR] main_menu in categories.yml is missing 'categories:' section!");
         }
     }
@@ -77,4 +77,3 @@ public class MainCategoryMenu {
     public MenuItem getPlayerInfoItem() { return playerInfoItem; }
     public Map<String, MenuItem> getCategoryItems() { return categoryItems; }
 }
-

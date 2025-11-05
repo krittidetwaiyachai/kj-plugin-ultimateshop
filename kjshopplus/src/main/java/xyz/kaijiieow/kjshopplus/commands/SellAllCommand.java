@@ -49,10 +49,10 @@ public class SellAllCommand implements CommandExecutor {
 
         Player player = (Player) sender;
 
-        // สร้าง Map ของไอเทมที่จะขาย (Material -> จำนวน)
+        
         Map<Material, Integer> itemsToSell = new HashMap<>();
 
-        // วนลูปในช่องเก็บของหลัก (ไม่รวมเกราะและ off-hand)
+        
         for (ItemStack itemStack : player.getInventory().getStorageContents()) {
             if (itemStack == null || itemStack.getType() == Material.AIR) {
                 continue;

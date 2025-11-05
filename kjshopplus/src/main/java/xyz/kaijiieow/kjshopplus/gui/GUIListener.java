@@ -28,7 +28,7 @@ public class GUIListener implements Listener {
     public GUIListener(KJShopPlus plugin) {
         this.plugin = plugin;
         this.configManager = plugin.getConfigManager();
-        this.guiManager = plugin.getGuiManager(); // Get GUIManager instance
+        this.guiManager = plugin.getGuiManager();
         this.tapManager = plugin.getPlayerTapManager();
     }
 
@@ -37,12 +37,12 @@ public class GUIListener implements Listener {
         Inventory clickedInventory = event.getClickedInventory();
         Inventory topInventory = event.getView().getTopInventory();
 
-        // 1. Check if the GUI is ours. If not, ignore completely.
+        
         if (!(topInventory.getHolder() instanceof KJGUIData guiData)) {
             return;
         }
 
-        // 2. Handle clicks *outside* the GUI windows (e.g., dropping items, slot -999)
+        
         if (clickedInventory == null) {
             event.setCancelled(true);
             return;
@@ -53,34 +53,34 @@ public class GUIListener implements Listener {
         InventoryAction action = event.getAction();
         boolean isBedrock = plugin.isBedrockPlayer(player.getUniqueId());
 
-        // 3. Handle clicks *inside the player's inventory*
+        
         if (clickedInventory != topInventory) {
-            // Player is clicking their own inventory.
-            // We only care if they are trying to interact *with* the shop GUI.
+            
+            
 
-            // If shift-click (MOVE_TO_OTHER_INVENTORY), cancel it
+            
             if (action == InventoryAction.MOVE_TO_OTHER_INVENTORY || (configManager.isDisableShiftClick() && clickType.isShiftClick())) {
                 event.setCancelled(true);
                 return;
             }
 
-            // If hotbar swap, cancel it
+            
             if (action == InventoryAction.HOTBAR_SWAP || action == InventoryAction.HOTBAR_MOVE_AND_READD) {
                  event.setCancelled(true);
                  return;
             }
             
-            // Otherwise (e.g., moving items *within* player inv), let it happen.
-            // DO NOT CANCEL. DO NOT RETURN. Let vanilla handle it.
+            
+            
             return;
         }
 
-        // 4. Handle clicks *inside the shop GUI* (clickedInventory == topInventory)
         
-        // ALWAYS cancel the vanilla event. Player cannot take items from the shop GUI.
+        
+        
         event.setCancelled(true);
 
-        // 5. Check all preventative input controls *for shop GUI clicks*
+        
         if (configManager.isLeftTapOnly() && clickType != ClickType.LEFT) {
              System.out.println("[KJShopPlus DEBUG] Click cancelled: Left tap only mode.");
              return;
@@ -90,27 +90,27 @@ public class GUIListener implements Listener {
              return;
         }
         
-        // This check is needed if shift-clicking is used for buy/sell actions
-        // But for now, if it's disabled, we stop it.
+        
+        
         if (configManager.isDisableShiftClick() && clickType.isShiftClick()) {
             System.out.println("[KJShopPlus DEBUG] Click cancelled: Shift click disabled (inside shop).");
             return;
         }
         
-        // This check is also needed
+        
         if (action == InventoryAction.HOTBAR_SWAP || action == InventoryAction.HOTBAR_MOVE_AND_READD) {
              System.out.println("[KJShopPlus DEBUG] Click cancelled: Hotbar swap action (inside shop).");
              return;
         }
 
 
-        // 6. Check debounce
+        
         if (!tapManager.canTap(player.getUniqueId(), configManager.getTapDebounceMs())) {
-             // System.out.println("[KJShopPlus DEBUG] Click cancelled: Debounce."); // Debug (Maybe spammy)
+             
              return;
         }
 
-        // 7. Process the click
+        
         ItemStack itemClicked = clickedInventory.getItem(event.getSlot());
         String pdcAction = ItemBuilder.getPDCAction(itemClicked);
         String pdcValue = ItemBuilder.getPDCValue(itemClicked);

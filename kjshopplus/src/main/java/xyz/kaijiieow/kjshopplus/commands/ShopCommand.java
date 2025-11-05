@@ -28,11 +28,11 @@ public class ShopCommand implements CommandExecutor {
             return true;
         }
 
-        // Optional: Open a specific category directly
-        // /shop <category_id>
+        
+        
         String categoryId = args[0];
         if (plugin.getShopManager().getShopCategory(categoryId) != null) {
-            // --- เปิดหน้าหมวดหมู่ โดยบังคับเป็น Buy Mode เสมอ ---
+            
             plugin.getGuiManager().openShopPage(player, categoryId, 1, true);
         } else {
             plugin.getGuiManager().openCategoryMenu(player);
@@ -41,4 +41,3 @@ public class ShopCommand implements CommandExecutor {
         return true;
     }
 }
-

@@ -17,16 +17,16 @@ import java.util.stream.Collectors;
 public class ItemBuilder {
 
     private final ItemStack item;
-    private final ItemMeta meta; // <-- ** FIX: Cache ItemMeta **
+    private final ItemMeta meta;
 
     public ItemBuilder(Material material) {
         this.item = new ItemStack(material != null ? material : Material.STONE);
-        this.meta = item.getItemMeta(); // <-- ** FIX: Get meta on construction **
+        this.meta = item.getItemMeta();
     }
 
     public ItemBuilder(ItemStack item) {
         this.item = (item != null) ? item.clone() : new ItemStack(Material.STONE);
-        this.meta = this.item.getItemMeta(); // <-- ** FIX: Get meta from the clone on construction **
+        this.meta = this.item.getItemMeta();
     }
 
     public ItemBuilder setName(String name) {
@@ -109,7 +109,7 @@ public class ItemBuilder {
     }
 
     public ItemStack build() {
-        // --- ** FIX: Apply the meta only at the very end ** ---
+        
         if (meta != null) {
             try {
                 item.setItemMeta(meta);
@@ -120,7 +120,7 @@ public class ItemBuilder {
         return item.clone();
     }
 
-    // --- Static PDC Getters (These are fine as they only read meta) ---
+    
     public static String getPDCAction(ItemStack item) {
         if (item == null || item.getType() == Material.AIR || KJShopPlus.PDC_ACTION_KEY == null) return null;
          try {

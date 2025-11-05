@@ -18,8 +18,8 @@ public class MenuItem {
     private final boolean enable;
     private final int slot;
     private final Material material;
-    private final String name; // Keep raw name
-    private final List<String> lore; // Keep raw lore
+    private final String name;
+    private final List<String> lore;
     private final String action;
     private final String value;
 
@@ -51,25 +51,25 @@ public class MenuItem {
             mat = KJShopPlus.getInstance().getConfigManager().getBedrockMappedMaterial(material);
         }
 
-        // Colorize lore here, keep original list untouched
+        
         List<String> coloredLore = (lore != null)
                 ? lore.stream().map(line -> ChatColor.translateAlternateColorCodes('&', line)).collect(Collectors.toList())
                 : Collections.emptyList();
 
         ItemBuilder builder = new ItemBuilder(mat)
-            // Colorize name here
+            
             .setName(ChatColor.translateAlternateColorCodes('&', name))
             .setLore(coloredLore);
 
         String finalAction = this.action;
         String finalValue = this.value;
 
-        // Default action for main category items is OPEN_CATEGORY
+        
         if (finalAction == null && id != null && !id.equals("fill")) {
              finalAction = "OPEN_CATEGORY";
         }
 
-        // If value is missing for OPEN_CATEGORY, use the item's ID
+        
         if (finalValue == null && "OPEN_CATEGORY".equals(finalAction)) {
             finalValue = this.id;
         }
@@ -90,8 +90,7 @@ public class MenuItem {
     public String getValue() { return value; }
     public String getId() { return id; }
 
-    // --- ADDED GETTERS FOR NAME AND LORE ---
-    public String getName() { return name; } // Return raw name
-    public List<String> getLore() { return lore; } // Return raw lore list
+    
+    public String getName() { return name; }
+    public List<String> getLore() { return lore; }
 }
-

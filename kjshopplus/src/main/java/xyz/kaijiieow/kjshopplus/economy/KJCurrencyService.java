@@ -20,7 +20,7 @@ public final class KJCurrencyService implements CurrencyService {
         this.plugin = plugin;
     }
 
-    // --- Player specific (convenience) ---
+    
     @Override
     public double getBalance(Player player, String currencyId) {
         if (player == null) return 0D;
@@ -45,7 +45,7 @@ public final class KJCurrencyService implements CurrencyService {
         return removeBalance(player.getUniqueId(), currencyId, amount);
     }
 
-    // --- UUID specific (core logic) ---
+    
     @Override
     public double getBalance(UUID uuid, String currencyId) {
         if (uuid == null) return 0D;
@@ -92,7 +92,7 @@ public final class KJCurrencyService implements CurrencyService {
     public boolean removeBalance(UUID uuid, String currencyId, double amount) {
         if (uuid == null || amount < 0) return false;
         
-        // Use the UUID version of getBalance to check
+        
         if (getBalance(uuid, currencyId) < amount) {
             return false;
         }

@@ -9,7 +9,7 @@ package xyz.kaijiieow.kjshopplus.config.model;
  import xyz.kaijiieow.kjshopplus.KJShopPlus;
  import xyz.kaijiieow.kjshopplus.gui.util.ItemBuilder;
  import xyz.kaijiieow.kjshopplus.pricing.LoreFormatter;
- import java.util.ArrayList; // *** ADDED IMPORT ***
+ import java.util.ArrayList;
  import java.util.Collections;
  import java.util.List;
  import java.util.stream.Collectors;
@@ -20,7 +20,7 @@ package xyz.kaijiieow.kjshopplus.config.model;
      private final String itemId;
      private final String globalId;
      private final int slot;
-     private final int page; // <-- *** ADDED ***
+     private final int page;
      private final Material material;
      private final boolean allowBuy;
      private final boolean allowSell;
@@ -45,7 +45,7 @@ package xyz.kaijiieow.kjshopplus.config.model;
          this.itemId = itemId;
          this.globalId = categoryId + ":" + itemId;
          this.slot = config.getInt("slot", -1);
-         this.page = config.getInt("page", 1); // <-- *** ADDED (Default to page 1) ***
+         this.page = config.getInt("page", 1);
 
          if (config.isConfigurationSection("itemstack") || config.contains("itemstack")) {
              ItemStack loadedStack = config.getItemStack("itemstack");
@@ -115,49 +115,49 @@ package xyz.kaijiieow.kjshopplus.config.model;
          ItemBuilder builder;
 
          if (isCustom && customItemStack != null) {
-             // Start with a clone of the custom item
+             
              builder = new ItemBuilder(customItemStack.clone());
-             ItemMeta meta = builder.build().getItemMeta(); // Get meta to check existing values
+             ItemMeta meta = builder.build().getItemMeta();
              
              List<String> finalLore = new ArrayList<>();
 
-             // 1. Check for lore OVERRIDE from display.lore
+             
              if (configBaseLore != null && !configBaseLore.isEmpty()) {
-                 // If display.lore exists, it REPLACES the item's lore
+                 
                  finalLore.addAll(configBaseLore.stream()
                      .map(line -> ChatColor.translateAlternateColorCodes('&', line))
                      .collect(Collectors.toList()));
              } 
-             // 2. ELSE, use the item's internal lore
+             
              else if (meta != null && meta.hasLore()) {
                  finalLore.addAll(meta.getLore());
              }
 
-             // 3. Add price lore (price/dynamic)
-             finalLore.addAll(formatter.getPriceLore(this)); // Use new method
+             
+             finalLore.addAll(formatter.getPriceLore(this));
 
-             // 4. Set the combined lore
+             
              builder.setLore(finalLore);
 
-             // 5. Handle Name (Prioritize config override)
+             
              if (configDisplayName != null && !configDisplayName.isBlank()) {
                  builder.setName(ChatColor.translateAlternateColorCodes('&', configDisplayName));
              }
-             // If configDisplayName is null, the builder automatically has the item's internal name from the clone.
+             
 
          } else {
-             // Vanilla item: build from material
+             
              Material mat = this.material;
              if (isBedrock) {
                  mat = KJShopPlus.getInstance().getConfigManager().getBedrockMappedMaterial(this.material);
              }
              builder = new ItemBuilder(mat);
-             // Use config display name, fallback to material name
+             
              String displayName = (configDisplayName != null) ? configDisplayName : "&f" + this.material.name();
              builder.setName(ChatColor.translateAlternateColorCodes('&', displayName));
              
-             // Set combined lore (base lore from config + price info)
-             builder.setLore(formatter.formatItemLore(this)); // Use old method that includes base lore
+             
+             builder.setLore(formatter.formatItemLore(this));
          }
 
          builder.setPDCAction(isBuyMode ? "TRADE_ITEM_BUY" : "TRADE_ITEM_SELL")
@@ -166,11 +166,11 @@ package xyz.kaijiieow.kjshopplus.config.model;
          return builder.build();
      }
 
-     // This helper is no longer needed because LoreFormatter is split
+     
      @Deprecated
      private ConfigurationSection createEmptyConfigForFormatter() {
           org.bukkit.configuration.file.YamlConfiguration tempConfig = new org.bukkit.configuration.file.YamlConfiguration();
-          tempConfig.set("material", this.material.name()); 
+          tempConfig.set("material", this.material.name());
           tempConfig.set("currency", this.currencyId);
           tempConfig.set("buy", this.baseBuyPrice);
           tempConfig.set("sell", this.baseSellPrice);
@@ -200,14 +200,14 @@ package xyz.kaijiieow.kjshopplus.config.model;
          return configBaseLore;
      }
      
-     // --- ADDED DELEGATE METHODS ---
+     
      public String getDisplayName() {
          return getConfigDisplayName();
      }
      public List<String> getBaseLore() {
          return getConfigBaseLore();
      }
-     // --- END DELEGATE METHODS ---
+     
 
      public ItemStack getCustomItemStack() {
          return customItemStack;
@@ -221,5 +221,5 @@ package xyz.kaijiieow.kjshopplus.config.model;
      public double getDynamicMaxPrice() { return dynamicMaxPrice; }
      public double getDynamicMinPrice() { return dynamicMinPrice; }
      
-     public int getPage() { return page; } // <-- *** ADDED ***
+     public int getPage() { return page; }
  }
