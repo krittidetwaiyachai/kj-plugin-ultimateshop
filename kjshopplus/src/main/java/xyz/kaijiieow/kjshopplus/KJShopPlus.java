@@ -73,7 +73,7 @@ public final class KJShopPlus extends JavaPlugin {
         this.playerTapManager = new PlayerTapManager(this);
 
         
-        setupLogFile();
+        
         
 
         reload();
@@ -100,7 +100,13 @@ public final class KJShopPlus extends JavaPlugin {
 
     
     private void setupLogFile() {
-        File logFile = new File(getDataFolder(), "shop-log.txt");
+        
+        File dataDir = getDataFolder();
+        if (!dataDir.exists()) {
+            dataDir.mkdirs();
+        }
+        
+        File logFile = new File(dataDir, "shop-log.txt");
         if (!logFile.exists()) {
             try {
                 if (logFile.createNewFile()) {
@@ -143,7 +149,11 @@ public final class KJShopPlus extends JavaPlugin {
             guiManager.closeAllMenus();
         }
         
+        
         configManager.load();
+        
+        
+        setupLogFile();
         
         
         if (discordWebhookService != null) {

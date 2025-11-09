@@ -122,7 +122,19 @@ package xyz.kaijiieow.kjshopplus.config;
      }
 
      private void saveDefaultShopConfigs() {
-         String[] defaultShops = {"ores.yml", "farming.yml", "blocks.yml", "combat.yml", "mob_drops.yml", "brewing.yml", "redstone.yml", "misc.yml", "item_custom.yml"};
+         
+         String[] defaultShops = {
+             "ores.yml", 
+             "farm.yml", 
+             "blocks.yml", 
+             "mobdrops.yml", 
+             "food.yml", 
+             "protect.yml", 
+             "spawner.yml", 
+             "specials.yml", 
+             "trees.yml"
+         };
+         
          for (String shopFileName : defaultShops) {
               File shopFile = new File(plugin.getDataFolder(), "shops/" + shopFileName);
               if (!shopFile.exists()) {
