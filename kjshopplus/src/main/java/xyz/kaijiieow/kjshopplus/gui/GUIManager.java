@@ -123,12 +123,12 @@ public class GUIManager {
             config.getLore().forEach(line -> finalLore.add(ChatColor.translateAlternateColorCodes('&', line)));
         }
 
-        for (String currencyId : plugin.getConfigManager().getAllCurrencyIds()) {
-            String symbol = plugin.getCurrencyService().getCurrencySymbol(currencyId);
-            double balance = plugin.getCurrencyService().getBalance(player, currencyId);
-            String balanceLine = "&f" + capitalize(currencyId) + ": &a" + symbol + PriceUtil.format(balance);
-            finalLore.add(ChatColor.translateAlternateColorCodes('&', balanceLine));
-        }
+        String vaultCurrencyId = "vault";
+        String symbol = plugin.getCurrencyService().getCurrencySymbol(vaultCurrencyId);
+        double balance = plugin.getCurrencyService().getBalance(player, vaultCurrencyId);
+        String balanceLine = "&f" + capitalize(vaultCurrencyId) + ": &a" + symbol + PriceUtil.format(balance);
+        finalLore.add(ChatColor.translateAlternateColorCodes('&', balanceLine));
+
 
         builder.setLore(finalLore);
 

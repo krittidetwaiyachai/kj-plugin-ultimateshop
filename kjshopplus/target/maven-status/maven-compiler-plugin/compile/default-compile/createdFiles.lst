@@ -12,6 +12,7 @@ xyz\kaijiieow\kjshopplus\gui\GUIManager$GUITYPE.class
 xyz\kaijiieow\kjshopplus\config\model\ShopItem.class
 xyz\kaijiieow\kjshopplus\config\MessageManager.class
 xyz\kaijiieow\kjshopplus\config\model\MenuItem.class
+xyz\kaijiieow\kjshopplus\commands\SellAllCommand$1.class
 xyz\kaijiieow\kjshopplus\services\DiscordWebhookService.class
 xyz\kaijiieow\kjshopplus\services\DiscordWebhookService$1.class
 xyz\kaijiieow\kjshopplus\commands\ShopCommand.class
@@ -22,5 +23,6 @@ xyz\kaijiieow\kjshopplus\commands\SellAllCommand$SellRequest.class
 xyz\kaijiieow\kjshopplus\gui\GUIManager.class
 xyz\kaijiieow\kjshopplus\KJShopPlus.class
 xyz\kaijiieow\kjshopplus\api\CurrencyService.class
+xyz\kaijiieow\kjshopplus\services\DiscordWebhookService$2.class
 xyz\kaijiieow\kjshopplus\config\model\MainCategoryMenu.class
 xyz\kaijiieow\kjshopplus\economy\KJCurrencyService.class

@@ -1,11 +1,13 @@
 package xyz.kaijiieow.kjshopplus.commands;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import xyz.kaijiieow.kjshopplus.KJShopPlus;
 import xyz.kaijiieow.kjshopplus.config.MessageManager;
@@ -21,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class SellAllCommand implements CommandExecutor {
 
@@ -48,104 +51,121 @@ public class SellAllCommand implements CommandExecutor {
         }
 
         Player player = (Player) sender;
+        UUID playerUUID = player.getUniqueId();
 
-        
-        Map<Material, Integer> itemsToSell = new HashMap<>();
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                Map<Material, Integer> itemsToSell = new HashMap<>();
+                ItemStack[] contents = player.getInventory().getStorageContents();
 
-        
-        for (ItemStack itemStack : player.getInventory().getStorageContents()) {
-            if (itemStack == null || itemStack.getType() == Material.AIR) {
-                continue;
+                for (ItemStack itemStack : contents) {
+                    if (itemStack == null || itemStack.getType() == Material.AIR) {
+                        continue;
+                    }
+
+                    Material mat = itemStack.getType();
+                    List<ShopItem> sellable = shopManager.getSellableItems(mat);
+                    if (!sellable.isEmpty()) {
+                        itemsToSell.put(mat, itemsToSell.getOrDefault(mat, 0) + itemStack.getAmount());
+                    }
+                }
+
+                if (itemsToSell.isEmpty()) {
+                    messageManager.sendMessage(player, "sellall_nothing_to_sell");
+                    return;
+                }
+
+                List<SellRequest> sellRequests = new ArrayList<>();
+                for (Map.Entry<Material, Integer> entry : itemsToSell.entrySet()) {
+                    Material mat = entry.getKey();
+                    int amount = entry.getValue();
+                    List<ShopItem> candidates = shopManager.getSellableItems(mat);
+                    if (candidates.isEmpty() || amount <= 0) {
+                        continue;
+                    }
+                    ShopItem best = selectBestSellCandidate(candidates);
+                    if (best == null) {
+                        continue;
+                    }
+                    double unitPrice = dynamicPriceManager.getSellPrice(best);
+                    if (unitPrice <= 0) {
+                        continue;
+                    }
+                    sellRequests.add(new SellRequest(mat, amount, best, unitPrice));
+                }
+
+                if (sellRequests.isEmpty()) {
+                    messageManager.sendMessage(player, "sellall_nothing_to_sell");
+                    return;
+                }
+
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    Player p = Bukkit.getPlayer(playerUUID);
+                    if (p == null || !p.isOnline()) {
+                        return;
+                    }
+                    
+                    Map<String, Double> payoutTotals = new HashMap<>();
+                    Map<String, Integer> payoutItemCounts = new HashMap<>();
+                    Map<Material, Integer> removedAmounts = new HashMap<>();
+
+                    for (SellRequest request : sellRequests) {
+                        ItemStack toRemove = new ItemStack(request.material, request.amount);
+                        Map<Integer, ItemStack> leftovers = p.getInventory().removeItem(toRemove);
+                        int notRemoved = leftovers.values().stream().mapToInt(ItemStack::getAmount).sum();
+                        int removed = request.amount - notRemoved;
+
+                        if (removed > 0) {
+                            removedAmounts.merge(request.material, removed, Integer::sum);
+                            
+                            double totalRequestPrice = request.unitPrice * removed;
+                            payoutTotals.merge(request.currencyId, totalRequestPrice, Double::sum);
+                            payoutItemCounts.merge(request.currencyId, removed, Integer::sum);
+                        }
+
+                        if (notRemoved > 0) {
+                            rollbackInventory(p, removedAmounts);
+                            messageManager.sendMessage(p, "not_enough_items");
+                            return; 
+                        }
+                    }
+
+                    for (Map.Entry<String, Double> payout : payoutTotals.entrySet()) {
+                        double amount = payout.getValue();
+                        if (amount <= 0) continue;
+                        if (!currencyService.addBalance(p, payout.getKey(), amount)) {
+                            rollbackInventory(p, removedAmounts);
+                            plugin.getLogger().severe("CRITICAL: Failed to add balance (" + payout.getKey() + ") for " + p.getName() + " after /sellall! Returning items.");
+                            messageManager.sendMessage(p, "error_occurred");
+                            return;
+                        }
+                    }
+
+                    for (SellRequest request : sellRequests) {
+                        int soldAmount = removedAmounts.getOrDefault(request.material, 0);
+                        if (soldAmount > 0) {
+                            dynamicPriceManager.recordSell(request.shopItem, soldAmount);
+                            discordWebhookService.logSell(p, request.shopItem, soldAmount, request.unitPrice * soldAmount);
+                        }
+                    }
+
+                    for (Map.Entry<String, Double> payout : payoutTotals.entrySet()) {
+                        String currencyId = payout.getKey();
+                        double totalPrice = payout.getValue();
+                        int itemsSold = payoutItemCounts.getOrDefault(currencyId, 0);
+
+                        Map<String, String> placeholders = new HashMap<>();
+                        placeholders.put("amount", String.valueOf(itemsSold));
+                        placeholders.put("price", PriceUtil.format(totalPrice));
+                        String symbol = currencyService.getCurrencySymbol(currencyId);
+                        placeholders.put("currency_symbol", symbol != null ? symbol : "");
+
+                        messageManager.sendMessage(p, "sellall_success", placeholders);
+                    }
+                });
             }
-
-            Material mat = itemStack.getType();
-            List<ShopItem> sellable = shopManager.getSellableItems(mat);
-            if (!sellable.isEmpty()) {
-                itemsToSell.put(mat, itemsToSell.getOrDefault(mat, 0) + itemStack.getAmount());
-            }
-        }
-
-        if (itemsToSell.isEmpty()) {
-            messageManager.sendMessage(player, "sellall_nothing_to_sell");
-            return true;
-        }
-
-        List<SellRequest> sellRequests = new ArrayList<>();
-        for (Map.Entry<Material, Integer> entry : itemsToSell.entrySet()) {
-            Material mat = entry.getKey();
-            int amount = entry.getValue();
-            List<ShopItem> candidates = shopManager.getSellableItems(mat);
-            if (candidates.isEmpty() || amount <= 0) {
-                continue;
-            }
-            ShopItem best = selectBestSellCandidate(candidates);
-            if (best == null) {
-                continue;
-            }
-            double unitPrice = dynamicPriceManager.getSellPrice(best);
-            if (unitPrice <= 0) {
-                continue;
-            }
-            sellRequests.add(new SellRequest(mat, amount, best, unitPrice));
-        }
-
-        if (sellRequests.isEmpty()) {
-            messageManager.sendMessage(player, "sellall_nothing_to_sell");
-            return true;
-        }
-
-        Map<String, Double> payoutTotals = new HashMap<>();
-        Map<String, Integer> payoutItemCounts = new HashMap<>();
-        for (SellRequest request : sellRequests) {
-            payoutTotals.merge(request.currencyId, request.totalPrice, Double::sum);
-            payoutItemCounts.merge(request.currencyId, request.amount, Integer::sum);
-        }
-
-        Map<Material, Integer> removedAmounts = new HashMap<>();
-        for (SellRequest request : sellRequests) {
-            ItemStack toRemove = new ItemStack(request.material, request.amount);
-            Map<Integer, ItemStack> leftovers = player.getInventory().removeItem(toRemove);
-            int notRemoved = leftovers.values().stream().mapToInt(ItemStack::getAmount).sum();
-            int removed = request.amount - notRemoved;
-            if (removed > 0) {
-                removedAmounts.merge(request.material, removed, Integer::sum);
-            }
-            if (notRemoved > 0) {
-                rollbackInventory(player, removedAmounts);
-                messageManager.sendMessage(player, "not_enough_items");
-                return true;
-            }
-        }
-
-        for (Map.Entry<String, Double> payout : payoutTotals.entrySet()) {
-            double amount = payout.getValue();
-            if (amount <= 0) continue;
-            if (!currencyService.addBalance(player, payout.getKey(), amount)) {
-                rollbackInventory(player, removedAmounts);
-                plugin.getLogger().severe("CRITICAL: Failed to add balance (" + payout.getKey() + ") for " + player.getName() + " after /sellall! Returning items.");
-                messageManager.sendMessage(player, "error_occurred");
-                return true;
-            }
-        }
-
-        for (SellRequest request : sellRequests) {
-            dynamicPriceManager.recordSell(request.shopItem, request.amount);
-            discordWebhookService.logSell(player, request.shopItem, request.amount, request.totalPrice);
-        }
-
-        for (Map.Entry<String, Double> payout : payoutTotals.entrySet()) {
-            String currencyId = payout.getKey();
-            double totalPrice = payout.getValue();
-            int itemsSold = payoutItemCounts.getOrDefault(currencyId, 0);
-
-            Map<String, String> placeholders = new HashMap<>();
-            placeholders.put("amount", String.valueOf(itemsSold));
-            placeholders.put("price", PriceUtil.format(totalPrice));
-            String symbol = currencyService.getCurrencySymbol(currencyId);
-            placeholders.put("currency_symbol", symbol != null ? symbol : "");
-
-            messageManager.sendMessage(player, "sellall_success", placeholders);
-        }
+        }.runTaskAsynchronously(plugin);
 
         return true;
     }

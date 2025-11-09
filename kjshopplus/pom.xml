@@ -3,8 +3,8 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>xyz.kaijiieow</groupId>
-  <artifactId>kjshopplus</artifactId>
-  <version>1.0.0</version>
+  <artifactId>KJShopPlus</artifactId>
+  <version>1.0</version>
   <packaging>jar</packaging>
 
   <name>KJShopPlus</name>

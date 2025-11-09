@@ -1,0 +1,233 @@
+category:
+  id: protect
+  title: '&b&lProtect BLock &7({page}/{total_pages})'
+  size: 54
+  fill-item:
+    material: WHITE_STAINED_GLASS_PANE
+    displayname: ' '
+  
+  layout:
+    go-back:
+      slot: 49
+      material: BARRIER
+      displayname: '&cGo Back'
+      action: OPEN_CATEGORY
+      value: main
+    page-prev:
+      slot: 48
+      material: ARROW
+      displayname: '&aPrevious Page'
+      action: PAGE_PREV
+    page-next:
+      slot: 50
+      material: ARROW
+      displayname: '&aNext Page'
+      action: PAGE_NEXT
+
+  items:
+    purple_glazed_terracotta_2582:
+      slot: 10
+      page: 1
+      currency: points
+      buy: 1.0
+      sell: 0.0
+      trade:
+        allow_buy: true
+        allow_sell: false
+      dynamic:
+        enabled: false
+      display_name_comment: §a§m<---§b Protection Block 15x15x15 §a§m--->
+      itemstack:
+        ==: org.bukkit.inventory.ItemStack
+        DataVersion: 4440
+        id: minecraft:purple_glazed_terracotta
+        count: 1
+        components:
+          minecraft:lore: '[{extra:[{bold:0b,color:"gold",italic:0b,obfuscated:0b,strikethrough:0b,text:"Protection
+            Block Commands",underlined:0b}],text:""},{extra:[{bold:0b,color:"yellow",italic:0b,obfuscated:0b,strikethrough:0b,text:"/ps
+            addowner [player]",underlined:0b}],text:""},{extra:[{bold:0b,color:"yellow",italic:0b,obfuscated:0b,strikethrough:0b,text:"/ps
+            add [player]",underlined:0b}],text:""},{extra:[{bold:0b,color:"yellow",italic:0b,obfuscated:0b,strikethrough:0b,text:"/ps
+            remove [player]",underlined:0b}],text:""},{extra:[{bold:0b,color:"yellow",italic:0b,obfuscated:0b,strikethrough:0b,text:"/ps
+            view",underlined:0b}],text:""}]'
+          minecraft:custom_name: '{extra:[{bold:0b,color:"green",italic:0b,obfuscated:0b,strikethrough:1b,text:"<---",underlined:0b},{color:"aqua",italic:0b,text:"
+            Protection Block 15x15x15 "},{color:"green",italic:0b,strikethrough:1b,text:"--->"}],text:""}'
+          minecraft:custom_data: '{PublicBukkitValues:{"protectionstones:ispsblock":1b}}'
+        schema_version: 1
+        
+    light_blue_glazed_terracotta_4025:
+      slot: 12
+      page: 1
+      currency: points
+      buy: 1.0
+      sell: 0.0
+      trade:
+        allow_buy: true
+        allow_sell: false
+      dynamic:
+        enabled: false
+      #  This field is just a comment to show the item name, not used by the plugin.
+      display_name_comment: §a§m<---§b Protection Block 20x20 §a§m--->
+      itemstack:
+        ==: org.bukkit.inventory.ItemStack
+        DataVersion: 4440
+        id: minecraft:light_blue_glazed_terracotta
+        count: 1
+        components:
+          minecraft:lore: '[{extra:[{bold:0b,color:"gold",italic:0b,obfuscated:0b,strikethrough:0b,text:"Protection
+            Block Commands",underlined:0b}],text:""},{extra:[{bold:0b,color:"yellow",italic:0b,obfuscated:0b,strikethrough:0b,text:"/ps
+            addowner [player]",underlined:0b}],text:""},{extra:[{bold:0b,color:"yellow",italic:0b,obfuscated:0b,strikethrough:0b,text:"/ps
+            add [player]",underlined:0b}],text:""},{extra:[{bold:0b,color:"yellow",italic:0b,obfuscated:0b,strikethrough:0b,text:"/ps
+            remove [player]",underlined:0b}],text:""},{extra:[{bold:0b,color:"yellow",italic:0b,obfuscated:0b,strikethrough:0b,text:"/ps
+            view",underlined:0b}],text:""}]'
+          minecraft:custom_name: '{extra:[{bold:0b,color:"green",italic:0b,obfuscated:0b,strikethrough:1b,text:"<---",underlined:0b},{color:"aqua",italic:0b,text:"
+            Protection Block 20x20 "},{color:"green",italic:0b,strikethrough:1b,text:"--->"}],text:""}'
+          minecraft:custom_data: '{PublicBukkitValues:{"protectionstones:ispsblock":1b}}'
+        schema_version: 1
+    blue_glazed_terracotta_5740:
+      slot: 14
+      page: 1
+      currency: points
+      buy: 1.0
+      sell: 0.0
+      trade:
+        allow_buy: true
+        allow_sell: false
+      dynamic:
+        enabled: false
+      #  This field is just a comment to show the item name, not used by the plugin.
+      display_name_comment: §a§m<---§b Protection Block 30x30 §a§m--->
+      itemstack:
+        ==: org.bukkit.inventory.ItemStack
+        DataVersion: 4440
+        id: minecraft:blue_glazed_terracotta
+        count: 1
+        components:
+          minecraft:lore: '[{extra:[{bold:0b,color:"gold",italic:0b,obfuscated:0b,strikethrough:0b,text:"Protection
+            Block Commands",underlined:0b}],text:""},{extra:[{bold:0b,color:"yellow",italic:0b,obfuscated:0b,strikethrough:0b,text:"/ps
+            addowner [player]",underlined:0b}],text:""},{extra:[{bold:0b,color:"yellow",italic:0b,obfuscated:0b,strikethrough:0b,text:"/ps
+            add [player]",underlined:0b}],text:""},{extra:[{bold:0b,color:"yellow",italic:0b,obfuscated:0b,strikethrough:0b,text:"/ps
+            remove [player]",underlined:0b}],text:""},{extra:[{bold:0b,color:"yellow",italic:0b,obfuscated:0b,strikethrough:0b,text:"/ps
+            view",underlined:0b}],text:""}]'
+          minecraft:custom_name: '{extra:[{bold:0b,color:"green",italic:0b,obfuscated:0b,strikethrough:1b,text:"<---",underlined:0b},{color:"aqua",italic:0b,text:"
+            Protection Block 30x30 "},{color:"green",italic:0b,strikethrough:1b,text:"--->"}],text:""}'
+          minecraft:custom_data: '{PublicBukkitValues:{"protectionstones:ispsblock":1b}}'
+        schema_version: 1
+    green_glazed_terracotta_7148:
+      slot: 16
+      page: 1
+      currency: points
+      buy: 1.0
+      sell: 0.0
+      trade:
+        allow_buy: true
+        allow_sell: false
+      dynamic:
+        enabled: false
+      #  This field is just a comment to show the item name, not used by the plugin.
+      display_name_comment: §a§m<---§b Protection Block 50x50 §a§m--->
+      itemstack:
+        ==: org.bukkit.inventory.ItemStack
+        DataVersion: 4440
+        id: minecraft:green_glazed_terracotta
+        count: 1
+        components:
+          minecraft:lore: '[{extra:[{bold:0b,color:"gold",italic:0b,obfuscated:0b,strikethrough:0b,text:"Protection
+            Block Commands",underlined:0b}],text:""},{extra:[{bold:0b,color:"yellow",italic:0b,obfuscated:0b,strikethrough:0b,text:"/ps
+            addowner [player]",underlined:0b}],text:""},{extra:[{bold:0b,color:"yellow",italic:0b,obfuscated:0b,strikethrough:0b,text:"/ps
+            add [player]",underlined:0b}],text:""},{extra:[{bold:0b,color:"yellow",italic:0b,obfuscated:0b,strikethrough:0b,text:"/ps
+            remove [player]",underlined:0b}],text:""},{extra:[{bold:0b,color:"yellow",italic:0b,obfuscated:0b,strikethrough:0b,text:"/ps
+            view",underlined:0b}],text:""}]'
+          minecraft:custom_name: '{extra:[{bold:0b,color:"green",italic:0b,obfuscated:0b,strikethrough:1b,text:"<---",underlined:0b},{color:"aqua",italic:0b,text:"
+            Protection Block 50x50 "},{color:"green",italic:0b,strikethrough:1b,text:"--->"}],text:""}'
+          minecraft:custom_data: '{PublicBukkitValues:{"protectionstones:ispsblock":1b}}'
+        schema_version: 1
+
+    yellow_glazed_terracotta_8668:
+      slot: 28
+      page: 1
+      currency: points
+      buy: 1.0
+      sell: 0.0
+      trade:
+        allow_buy: true
+        allow_sell: false
+      dynamic:
+        enabled: false
+      #  This field is just a comment to show the item name, not used by the plugin.
+      display_name_comment: §a§m<---§b Protection Block 80x80 §a§m--->
+      itemstack:
+        ==: org.bukkit.inventory.ItemStack
+        DataVersion: 4440
+        id: minecraft:yellow_glazed_terracotta
+        count: 1
+        components:
+          minecraft:lore: '[{extra:[{bold:0b,color:"gold",italic:0b,obfuscated:0b,strikethrough:0b,text:"Protection
+            Block Commands",underlined:0b}],text:""},{extra:[{bold:0b,color:"yellow",italic:0b,obfuscated:0b,strikethrough:0b,text:"/ps
+            addowner [player]",underlined:0b}],text:""},{extra:[{bold:0b,color:"yellow",italic:0b,obfuscated:0b,strikethrough:0b,text:"/ps
+            add [player]",underlined:0b}],text:""},{extra:[{bold:0b,color:"yellow",italic:0b,obfuscated:0b,strikethrough:0b,text:"/ps
+            remove [player]",underlined:0b}],text:""},{extra:[{bold:0b,color:"yellow",italic:0b,obfuscated:0b,strikethrough:0b,text:"/ps
+            view",underlined:0b}],text:""}]'
+          minecraft:custom_name: '{extra:[{bold:0b,color:"green",italic:0b,obfuscated:0b,strikethrough:1b,text:"<---",underlined:0b},{color:"aqua",italic:0b,text:"
+            Protection Block 80x80 "},{color:"green",italic:0b,strikethrough:1b,text:"--->"}],text:""}'
+          minecraft:custom_data: '{PublicBukkitValues:{"protectionstones:ispsblock":1b}}'
+        schema_version: 1
+
+    orange_glazed_terracotta_9059:
+      slot: 30
+      page: 1
+      currency: points
+      buy: 1.0
+      sell: 0.0
+      trade:
+        allow_buy: true
+        allow_sell: false
+      dynamic:
+        enabled: false
+      #  This field is just a comment to show the item name, not used by the plugin.
+      display_name_comment: §a§m<---§b Protection Block 100x100 §a§m--->
+      itemstack:
+        ==: org.bukkit.inventory.ItemStack
+        DataVersion: 4440
+        id: minecraft:orange_glazed_terracotta
+        count: 1
+        components:
+          minecraft:lore: '[{extra:[{bold:0b,color:"gold",italic:0b,obfuscated:0b,strikethrough:0b,text:"Protection
+            Block Commands",underlined:0b}],text:""},{extra:[{bold:0b,color:"yellow",italic:0b,obfuscated:0b,strikethrough:0b,text:"/ps
+            addowner [player]",underlined:0b}],text:""},{extra:[{bold:0b,color:"yellow",italic:0b,obfuscated:0b,strikethrough:0b,text:"/ps
+            add [player]",underlined:0b}],text:""},{extra:[{bold:0b,color:"yellow",italic:0b,obfuscated:0b,strikethrough:0b,text:"/ps
+            remove [player]",underlined:0b}],text:""},{extra:[{bold:0b,color:"yellow",italic:0b,obfuscated:0b,strikethrough:0b,text:"/ps
+            view",underlined:0b}],text:""}]'
+          minecraft:custom_name: '{extra:[{bold:0b,color:"green",italic:0b,obfuscated:0b,strikethrough:1b,text:"<---",underlined:0b},{color:"aqua",italic:0b,text:"
+            Protection Block 100x100 "},{color:"green",italic:0b,strikethrough:1b,text:"--->"}],text:""}'
+          minecraft:custom_data: '{PublicBukkitValues:{"protectionstones:ispsblock":1b}}'
+        schema_version: 1
+
+    black_glazed_terracotta_1065:
+      slot: 32
+      page: 1
+      currency: points
+      buy: 1.0
+      sell: 0.0
+      trade:
+        allow_buy: true
+        allow_sell: false
+      dynamic:
+        enabled: false
+      #  This field is just a comment to show the item name, not used by the plugin.
+      display_name_comment: §a§m<---§b Protection Block 150x150 §a§m--->
+      itemstack:
+        ==: org.bukkit.inventory.ItemStack
+        DataVersion: 4440
+        id: minecraft:black_glazed_terracotta
+        count: 1
+        components:
+          minecraft:lore: '[{extra:[{bold:0b,color:"gold",italic:0b,obfuscated:0b,strikethrough:0b,text:"Protection
+            Block Commands",underlined:0b}],text:""},{extra:[{bold:0b,color:"yellow",italic:0b,obfuscated:0b,strikethrough:0b,text:"/ps
+            addowner [player]",underlined:0b}],text:""},{extra:[{bold:0b,color:"yellow",italic:0b,obfuscated:0b,strikethrough:0b,text:"/ps
+            add [player]",underlined:0b}],text:""},{extra:[{bold:0b,color:"yellow",italic:0b,obfuscated:0b,strikethrough:0b,text:"/ps
+            remove [player]",underlined:0b}],text:""},{extra:[{bold:0b,color:"yellow",italic:0b,obfuscated:0b,strikethrough:0b,text:"/ps
+            view",underlined:0b}],text:""}]'
+          minecraft:custom_name: '{extra:[{bold:0b,color:"green",italic:0b,obfuscated:0b,strikethrough:1b,text:"<---",underlined:0b},{color:"aqua",italic:0b,text:"
+            Protection Block 150x150 "},{color:"green",italic:0b,strikethrough:1b,text:"--->"}],text:""}'
+          minecraft:custom_data: '{PublicBukkitValues:{"protectionstones:ispsblock":1b}}'
+        schema_version: 1

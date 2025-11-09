@@ -1,5 +1,6 @@
 package xyz.kaijiieow.kjshopplus.services;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import xyz.kaijiieow.kjshopplus.KJShopPlus;
@@ -46,18 +47,23 @@ public class DiscordWebhookService {
     }
 
     private void logToFile(String message) {
-        String timestamp = fileTimestampFormatter.format(new Date());
-        String strippedMessage = ChatColor.stripColor(message);
-        String logEntry = String.format("[%s] %s", timestamp, strippedMessage);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                String timestamp = fileTimestampFormatter.format(new Date());
+                String strippedMessage = ChatColor.stripColor(message);
+                String logEntry = String.format("[%s] %s", timestamp, strippedMessage);
 
-        File logFile = new File(plugin.getDataFolder(), "shop-log.txt");
-        try (FileWriter fw = new FileWriter(logFile, true);
-             BufferedWriter bw = new BufferedWriter(fw)) {
-            bw.write(logEntry);
-            bw.newLine();
-        } catch (IOException e) {
-            plugin.getLogger().warning("Failed to write to shop-log.txt: " + e.getMessage());
-        }
+                File logFile = new File(plugin.getDataFolder(), "shop-log.txt");
+                try (FileWriter fw = new FileWriter(logFile, true);
+                     BufferedWriter bw = new BufferedWriter(fw)) {
+                    bw.write(logEntry);
+                    bw.newLine();
+                } catch (IOException e) {
+                    plugin.getLogger().warning("Failed to write to shop-log.txt: " + e.getMessage());
+                }
+            }
+        }.runTaskAsynchronously(plugin);
     }
 
     private String escapeMarkdown(String text) {

@@ -1,0 +1,33 @@
+category:
+  id: "trees"
+  title: "&a&lTree & Sappling &7({page}/{total_pages})"
+  size: 54
+  fill-item:
+    material: WHITE_STAINED_GLASS_PANE
+    displayname: " "
+
+  layout:
+    go-back:
+      {
+        slot: 49,
+        material: BARRIER,
+        displayname: "&cGo Back",
+        action: "OPEN_CATEGORY",
+        value: "main",
+      }
+    page-prev:
+      {
+        slot: 48,
+        material: ARROW,
+        displayname: "&aPrevious Page",
+        action: "PAGE_PREV",
+      }
+    page-next:
+      {
+        slot: 50,
+        material: ARROW,
+        displayname: "&aNext Page",
+        action: "PAGE_NEXT",
+      }
+
+  items:

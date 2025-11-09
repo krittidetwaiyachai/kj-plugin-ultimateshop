@@ -39,6 +39,21 @@ package xyz.kaijiieow.kjshopplus.pricing;
  
          return lore;
      }
+
+     private String getPriceChange(double current, double base) {
+        if (base <= 0.001 || Math.abs(current - base) < 0.001) {
+            return translateColors(" &7(0.0%)");
+        }
+        double diff = current - base;
+        double percent = (diff / base) * 100.0;
+        String percentStr = String.format("%.1f", Math.abs(percent));
+
+        if (diff > 0) {
+            return translateColors(" &a(⏶ " + percentStr + "%)");
+        } else {
+            return translateColors(" &c(⏷ " + percentStr + "%)");
+        }
+     }
  
      
      public List<String> getPriceLore(ShopItem item) {
@@ -52,10 +67,12 @@ package xyz.kaijiieow.kjshopplus.pricing;
          String sellStr = PriceUtil.format(sellPrice);
  
          if (item.isAllowBuy()) {
-             priceLore.add(translateColors("&7Buy Price: &a" + symbol + buyStr));
+            String change = item.isDynamicEnabled() ? getPriceChange(buyPrice, item.getBaseBuyPrice()) : "";
+             priceLore.add(translateColors("&7Buy Price: &a" + symbol + buyStr + change));
          }
          if (item.isAllowSell()) {
-             priceLore.add(translateColors("&7Sell Price: &c" + symbol + sellStr));
+            String change = item.isDynamicEnabled() ? getPriceChange(sellPrice, item.getBaseSellPrice()) : "";
+             priceLore.add(translateColors("&7Sell Price: &c" + symbol + sellStr + change));
          }
          
          
