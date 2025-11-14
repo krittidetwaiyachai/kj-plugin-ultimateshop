@@ -22,8 +22,8 @@ dynamic:
   # How long before prices reset to base (in seconds)
   reset_interval_seconds: 86400 # 1 hour
   # Default formulas (can be overridden per-item)
-  buy_formula: "default" # "default" = +1% per item
-  sell_formula: "flat"  # "flat" = -0.1 per item
+  buy_formula: 0.8 # "default" = +1% per item
+  sell_formula: 1.3  # "flat" = -0.1 per item
 
 # Input Control (for Bedrock/Mobile support)
 input_mode:
