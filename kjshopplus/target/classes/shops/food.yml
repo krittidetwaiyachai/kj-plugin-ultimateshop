@@ -1,11 +1,14 @@
+# --- shops/food.yml (หน้าเดียว - อัปเกรดราคา Money Sink) ---
 category:
   id: "food"
-  title: "&a&lFood &7({page}/{total_pages})"
+  title: "&6&lFood &7({page}/{total_pages})"
   size: 54
+  dynamic:
+    buy_formula: 0.02 # 2% ต่อ 1 ชิ้น (เพิ่มเร็วขึ้น)
+    sell_formula: 0.005 # 0.5% ต่อ 1 ชิ้น (ลดช้าลง)
   fill-item:
     material: WHITE_STAINED_GLASS_PANE
     displayname: " "
-
   layout:
     go-back:
       {
@@ -31,3 +34,214 @@ category:
       }
 
   items:
+    # --- [ขายให้เซิร์ฟเท่านั้น] ของดิบ (Money Faucet - Dynamic Price) ---
+    # --- (ราคาคงเดิม ให้ Dynamic Price จัดการ) ---
+    beef:
+      {
+        slot: 10,
+        page: 1,
+        material: BEEF,
+        display: { name: "&cBeef (Sell Only)" },
+        currency: vault,
+        sell: 0.8,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+
+    porkchop:
+      {
+        slot: 11,
+        page: 1,
+        material: PORKCHOP,
+        display: { name: "&cPorkchop (Sell Only)" },
+        currency: vault,
+        sell: 0.8,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    chicken:
+      {
+        slot: 12,
+        page: 1,
+        material: CHICKEN,
+        display: { name: "&cChicken (Sell Only)" },
+        currency: vault,
+        sell: 0.6,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    mutton:
+      {
+        slot: 13,
+        page: 1,
+        material: MUTTON,
+        display: { name: "&cMutton (Sell Only)" },
+        currency: vault,
+        sell: 0.6,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    rabbit:
+      {
+        slot: 14,
+        page: 1,
+        material: RABBIT,
+        display: { name: "&cRabbit (Sell Only)" },
+        currency: vault,
+        sell: 0.6,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    apple:
+      {
+        slot: 15,
+        page: 1,
+        material: APPLE,
+        display: { name: "&cApple (Sell Only)" },
+        currency: vault,
+        sell: 0.4,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    glow_berries:
+      {
+        slot: 16,
+        page: 1,
+        material: GLOW_BERRIES,
+        display: { name: "&eGlow Berries (Sell Only)" },
+        currency: vault,
+        sell: 0.4,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+
+    # --- [ซื้อจากเซิร์ฟเท่านั้น] ของสุก/คราฟต์ (Money Sink - ราคาอัปเกรด) ---
+    cooked_beef: {
+        slot: 28,
+        page: 1,
+        material: COOKED_BEEF,
+        display: { name: "&6Cooked Beef (Buy Only)" },
+        currency: vault,
+        buy: 25.00,
+        trade: { allow_buy: true, allow_sell: false },
+      } # (เดิม 15)
+    cooked_porkchop: {
+        slot: 29,
+        page: 1,
+        material: COOKED_PORKCHOP,
+        display: { name: "&6Cooked Porkchop (Buy Only)" },
+        currency: vault,
+        buy: 25.00,
+        trade: { allow_buy: true, allow_sell: false },
+      } # (เดิม 15)
+    cooked_chicken: {
+        slot: 30,
+        page: 1,
+        material: COOKED_CHICKEN,
+        display: { name: "&6Cooked Chicken (Buy Only)" },
+        currency: vault,
+        buy: 20.00,
+        trade: { allow_buy: true, allow_sell: false },
+      } # (เดิม 12)
+    cooked_mutton: {
+        slot: 31,
+        page: 1,
+        material: COOKED_MUTTON,
+        display: { name: "&6Cooked Mutton (Buy Only)" },
+        currency: vault,
+        buy: 20.00,
+        trade: { allow_buy: true, allow_sell: false },
+      } # (เดิม 12)
+    cooked_rabbit: {
+        slot: 32,
+        page: 1,
+        material: COOKED_RABBIT,
+        display: { name: "&6Cooked Rabbit (Buy Only)" },
+        currency: vault,
+        buy: 18.00,
+        trade: { allow_buy: true, allow_sell: false },
+      } # (เดิม 10)
+    cooked_salmon: {
+        slot: 33,
+        page: 1,
+        material: COOKED_SALMON,
+        display: { name: "&6Cooked Salmon (Buy Only)" },
+        currency: vault,
+        buy: 18.00,
+        trade: { allow_buy: true, allow_sell: false },
+      } # (เดิม 10)
+    baked_potato: {
+        slot: 34,
+        page: 1,
+        material: BAKED_POTATO,
+        display: { name: "&eBaked Potato (Buy Only)" },
+        currency: vault,
+        buy: 20.00,
+        trade: { allow_buy: true, allow_sell: false },
+      } # (เดิม 11)
+
+    bread: {
+        slot: 37,
+        page: 1,
+        material: BREAD,
+        display: { name: "&eBread (Buy Only)" },
+        currency: vault,
+        buy: 25.00,
+        trade: { allow_buy: true, allow_sell: false },
+      } # (เดิม 16)
+    cookie: {
+        slot: 38,
+        page: 1,
+        material: COOKIE,
+        display: { name: "&6Cookie (Buy Only)" },
+        currency: vault,
+        buy: 10.00,
+        trade: { allow_buy: true, allow_sell: false },
+      } # (เดิม 6)
+    cake: {
+        slot: 39,
+        page: 1,
+        material: CAKE,
+        display: { name: "&fCake (Buy Only)" },
+        currency: vault,
+        buy: 150.00,
+        trade: { allow_buy: true, allow_sell: false },
+      } # (เดิม 100)
+    beetroot_soup: {
+        slot: 40,
+        page: 1,
+        material: BEETROOT_SOUP,
+        display: { name: "&cBeetroot Soup (Buy Only)" },
+        currency: vault,
+        buy: 30.00,
+        trade: { allow_buy: true, allow_sell: false },
+      } # (เดิม 20)
+    honey_bottle: {
+        slot: 41,
+        page: 1,
+        material: HONEY_BOTTLE,
+        display: { name: "&6Honey Bottle (Buy Only)" },
+        currency: vault,
+        buy: 25.00,
+        trade: { allow_buy: true, allow_sell: false },
+      } # (เดิม 15)
+
+    # --- Utility Sinks (อัปเกรดราคา) ---
+    golden_carrot: {
+        slot: 42,
+        page: 1,
+        material: GOLDEN_CARROT,
+        display: { name: "&6&lGolden Carrot (Buy Only)" },
+        currency: vault,
+        buy: 80.00,
+        trade: { allow_buy: true, allow_sell: false },
+      } # (เดิม 50)
+    glistering_melon_slice: {
+        slot: 43,
+        page: 1,
+        material: GLISTERING_MELON_SLICE,
+        display: { name: "&e&lGlistering Melon (Buy Only)" },
+        currency: vault,
+        buy: 80.00,
+        trade: { allow_buy: true, allow_sell: false },
+      } # (เดิม 50)

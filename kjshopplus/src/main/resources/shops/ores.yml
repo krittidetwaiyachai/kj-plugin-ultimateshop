@@ -1,11 +1,14 @@
+# --- shops/ores.yml (ฉบับขายอย่างเดียว - เพิ่ม Ingots/Blocks) ---
 category:
   id: "ores"
-  title: "&b&lOre & Minerals &7({page}/{total_pages})"
-  size: 54
+  title: "&8&lOres (Sell Only) &7({page}/{total_pages})"
+  size: 54 # ขยายเป็น 2 หน้า
+  dynamic:
+    buy_formula: 0.02 # 2% ต่อ 1 ชิ้น (เพิ่มเร็วขึ้น)
+    sell_formula: 0.005 # 0.5% ต่อ 1 ชิ้น (ลดช้าลง)
   fill-item:
     material: WHITE_STAINED_GLASS_PANE
     displayname: " "
-
   layout:
     go-back:
       {
@@ -31,656 +34,271 @@ category:
       }
 
   items:
-    raw_iron:
+    # --- หน้า 1: แร่ดิบ & อัญมณี (Faucet) ---
+    coal:
       {
         slot: 10,
         page: 1,
-        material: RAW_IRON,
-        display:
-          {
-            name: "&7Raw Iron",
-            lore: ["&7เหล็กดิบ พร้อมเผา", "&eคลิกเพื่อซื้อหรือขาย"],
-          },
+        material: COAL,
+        display: { name: "&8Coal (Sell Only)" },
         currency: vault,
-        buy: 18.00,
-        sell: 9.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 0.9,
-            sell_step_percent: 0.7,
-            max_price: 72.00,
-            min_price: 5.00,
-          },
-      }
-    raw_gold:
-      {
-        slot: 11,
-        page: 1,
-        material: RAW_GOLD,
-        display:
-          {
-            name: "&6Raw Gold",
-            lore: ["&7ทองดิบ จากสายแยงถ้ำ", "&eคลิกเพื่อซื้อหรือขาย"],
-          },
-        currency: vault,
-        buy: 20.00,
-        sell: 10.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 1.0,
-            sell_step_percent: 0.8,
-            max_price: 80.00,
-            min_price: 6.00,
-          },
+        sell: 0.5,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
       }
     raw_copper:
       {
-        slot: 12,
+        slot: 11,
         page: 1,
         material: RAW_COPPER,
-        display:
-          {
-            name: "&6Raw Copper",
-            lore: ["&7ทองแดงดิบ ของมันเยอะ", "&eคลิกเพื่อซื้อหรือขาย"],
-          },
+        display: { name: "&6Raw Copper (Sell Only)" },
         currency: vault,
-        buy: 8.00,
-        sell: 4.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 0.8,
-            sell_step_percent: 0.6,
-            max_price: 32.00,
-            min_price: 2.00,
-          },
+        sell: 0.8,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
       }
-    resin_clump:
+    raw_iron:
+      {
+        slot: 12,
+        page: 1,
+        material: RAW_IRON,
+        display: { name: "&fRaw Iron (Sell Only)" },
+        currency: vault,
+        sell: 1.5,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    raw_gold:
       {
         slot: 13,
         page: 1,
-        material: RESIN_CLUMP,
-        display:
-          {
-            name: "&6Resin Clump",
-            lore:
-              ["&7ก้อนเรซิ่นดิบ เหนียวหนึบจากใต้ดิน", "&eคลิกเพื่อซื้อหรือขาย"],
-          },
+        material: RAW_GOLD,
+        display: { name: "&eRaw Gold (Sell Only)" },
         currency: vault,
-        buy: 12.00,
-        sell: 6.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 0.9,
-            sell_step_percent: 0.8,
-            max_price: 48.00,
-            min_price: 3.00,
-          },
-      }
-    resin_brick:
-      {
-        slot: 14,
-        page: 1,
-        material: RESIN_BRICK,
-        display:
-          {
-            name: "&eResin Brick",
-            lore:
-              ["&7อัดเรซิ่นผ่านความร้อนเป็นก้อนแข็ง", "&eคลิกเพื่อซื้อหรือขาย"],
-          },
-        currency: vault,
-        buy: 24.00,
-        sell: 12.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 1.0,
-            sell_step_percent: 0.85,
-            max_price: 96.00,
-            min_price: 7.00,
-          },
-      }
-    resin_block:
-      {
-        slot: 15,
-        page: 1,
-        material: RESIN_BLOCK,
-        display:
-          {
-            name: "&6Block of Resin",
-            lore:
-              [
-                "&7อัด 9 ก้อน เป็นบล็อกเรซิ่นเหนียวแน่น",
-                "&eคลิกเพื่อซื้อหรือขาย",
-              ],
-          },
-        currency: vault,
-        buy: 216.00,
-        sell: 108.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 1.05,
-            sell_step_percent: 0.9,
-            max_price: 864.00,
-            min_price: 70.00,
-          },
-      }
-
-    coal:
-      {
-        slot: 16,
-        page: 1,
-        material: COAL,
-        display:
-          {
-            name: "&8Coal",
-            lore: ["&7ถ่านหิน คู่บุญเตาเผา", "&eคลิกเพื่อซื้อหรือขาย"],
-          },
-        currency: vault,
-        buy: 4.00,
-        sell: 2.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 0.7,
-            sell_step_percent: 0.6,
-            max_price: 16.00,
-            min_price: 1.00,
-          },
-      }
-    iron_ingot:
-      {
-        slot: 19,
-        page: 1,
-        material: IRON_INGOT,
-        display:
-          {
-            name: "&fIron Ingot",
-            lore: ["&7เผามาจากเหล็กดิบ", "&eคลิกเพื่อซื้อหรือขาย"],
-          },
-        currency: vault,
-        buy: 24.00,
-        sell: 12.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 1.0,
-            sell_step_percent: 0.8,
-            max_price: 96.00,
-            min_price: 7.00,
-          },
-      }
-    gold_ingot:
-      {
-        slot: 20,
-        page: 1,
-        material: GOLD_INGOT,
-        display:
-          {
-            name: "&6Gold Ingot",
-            lore: ["&7ทองแท่ง อเนกประสงค์", "&eคลิกเพื่อซื้อหรือขาย"],
-          },
-        currency: vault,
-        buy: 28.00,
-        sell: 14.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 1.0,
-            sell_step_percent: 0.85,
-            max_price: 112.00,
-            min_price: 8.00,
-          },
-      }
-    copper_ingot:
-      {
-        slot: 21,
-        page: 1,
-        material: COPPER_INGOT,
-        display:
-          {
-            name: "&6Copper Ingot",
-            lore: ["&7ทองแดงแท่ง งานไฟ/ตกแต่ง", "&eคลิกเพื่อซื้อหรือขาย"],
-          },
-        currency: vault,
-        buy: 10.00,
-        sell: 5.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 0.9,
-            sell_step_percent: 0.75,
-            max_price: 40.00,
-            min_price: 3.00,
-          },
-      }
-    netherite_scrap:
-      {
-        slot: 22,
-        page: 1,
-        material: NETHERITE_SCRAP,
-        display:
-          {
-            name: "&8Netherite Scrap",
-            lore: ["&7เศษเนเธอไรต์ จากโลกนรก", "&eคลิกเพื่อซื้อหรือขาย"],
-          },
-        currency: vault,
-        buy: 180.00,
-        sell: 90.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 1.2,
-            sell_step_percent: 0.9,
-            max_price: 720.00,
-            min_price: 60.00,
-          },
-      }
-    netherite_ingot:
-      {
-        slot: 23,
-        page: 1,
-        material: NETHERITE_INGOT,
-        display:
-          {
-            name: "&8Netherite Ingot",
-            lore: ["&7สุดยอดวัสดุ อัพเกรดเทพ", "&eคลิกเพื่อซื้อหรือขาย"],
-          },
-        currency: vault,
-        buy: 520.00,
-        sell: 260.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 1.2,
-            sell_step_percent: 0.9,
-            max_price: 2080.00,
-            min_price: 160.00,
-          },
-      }
-    diamond:
-      {
-        slot: 24,
-        page: 1,
-        material: DIAMOND,
-        display:
-          {
-            name: "&bDiamond",
-            lore: ["&7เพชรเม็ดงาม", "&eคลิกเพื่อซื้อหรือขาย"],
-          },
-        currency: vault,
-        buy: 120.00,
-        sell: 60.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 1.1,
-            sell_step_percent: 0.85,
-            max_price: 480.00,
-            min_price: 40.00,
-          },
-      }
-    emerald:
-      {
-        slot: 25,
-        page: 1,
-        material: EMERALD,
-        display:
-          {
-            name: "&aEmerald",
-            lore: ["&7สกุลเงินแห่งชาวบ้าน", "&eคลิกเพื่อซื้อหรือขาย"],
-          },
-        currency: vault,
-        buy: 80.00,
-        sell: 40.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 1.0,
-            sell_step_percent: 0.85,
-            max_price: 320.00,
-            min_price: 28.00,
-          },
+        sell: 2.0,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
       }
 
     lapis_lazuli:
       {
-        slot: 28,
+        slot: 14,
         page: 1,
         material: LAPIS_LAZULI,
-        display:
-          {
-            name: "&9Lapis Lazuli",
-            lore: ["&7ย้อมสี/สวมมนต์ต้องมี", "&eคลิกเพื่อซื้อหรือขาย"],
-          },
+        display: { name: "&1Lapis Lazuli (Sell Only)" },
         currency: vault,
-        buy: 16.00,
-        sell: 8.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 0.95,
-            sell_step_percent: 0.8,
-            max_price: 64.00,
-            min_price: 5.00,
-          },
+        sell: 0.4,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
       }
     redstone:
       {
-        slot: 29,
+        slot: 15,
         page: 1,
         material: REDSTONE,
-        display:
-          {
-            name: "&cRedstone Dust",
-            lore: ["&7หัวใจกลไกออโต้ทุกสำนัก", "&eคลิกเพื่อซื้อหรือขาย"],
-          },
+        display: { name: "&cRedstone (Sell Only)" },
         currency: vault,
-        buy: 12.00,
-        sell: 6.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 0.95,
-            sell_step_percent: 0.8,
-            max_price: 48.00,
-            min_price: 4.00,
-          },
+        sell: 0.3,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
       }
     quartz:
       {
-        slot: 30,
+        slot: 16,
         page: 1,
         material: QUARTZ,
-        display:
-          {
-            name: "&fNether Quartz",
-            lore: ["&7ควอตซ์จากนรก ตกแต่งเนียนตา", "&eคลิกเพื่อซื้อหรือขาย"],
-          },
+        display: { name: "&fNether Quartz (Sell Only)" },
         currency: vault,
-        buy: 14.00,
-        sell: 7.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 1.0,
-            sell_step_percent: 0.8,
-            max_price: 56.00,
-            min_price: 4.00,
-          },
+        sell: 1.0,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
       }
-    coal_block:
+    amethyst_shard:
       {
-        slot: 31,
+        slot: 22,
         page: 1,
-        material: COAL_BLOCK,
-        display:
-          {
-            name: "&8Block of Coal",
-            lore: ["&7อัด 9 ชิ้น เผาคุ้ม", "&eคลิกเพื่อซื้อหรือขาย"],
-          },
+        material: AMETHYST_SHARD,
+        display: { name: "&dAmethyst Shard (Sell Only)" },
         currency: vault,
-        buy: 36.00,
-        sell: 18.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 0.9,
-            sell_step_percent: 0.75,
-            max_price: 144.00,
-            min_price: 10.00,
-          },
+        sell: 0.5,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
       }
-    iron_block:
+    diamond:
       {
-        slot: 32,
+        slot: 19,
         page: 1,
-        material: IRON_BLOCK,
-        display:
-          {
-            name: "&fBlock of Iron",
-            lore: ["&7อัดเหล็ก 9 แท่ง", "&eคลิกเพื่อซื้อหรือขาย"],
-          },
+        material: DIAMOND,
+        display: { name: "&bDiamond (Sell Only)" },
         currency: vault,
-        buy: 216.00,
-        sell: 108.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 1.05,
-            sell_step_percent: 0.9,
-            max_price: 864.00,
-            min_price: 70.00,
-          },
+        sell: 20.0,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
       }
-    gold_block:
-      {
-        slot: 33,
+    emerald: {
+        slot: 20,
         page: 1,
-        material: GOLD_BLOCK,
-        display:
-          {
-            name: "&6Block of Gold",
-            lore: ["&7อัดทอง 9 แท่ง", "&eคลิกเพื่อซื้อหรือขาย"],
-          },
+        material: EMERALD,
+        display: { name: "&aEmerald (Sell Only)" },
         currency: vault,
-        buy: 252.00,
-        sell: 126.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 1.05,
-            sell_step_percent: 0.9,
-            max_price: 1008.00,
-            min_price: 84.00,
-          },
-      }
-    copper_block:
+        sell: 3.0,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      } # (ราคานี้ถูกต้อง เพื่อฆ่าฟาร์ม Villager)
+    netherite_scrap:
       {
-        slot: 34,
+        slot: 21,
         page: 1,
-        material: COPPER_BLOCK,
-        display:
-          {
-            name: "&6Block of Copper",
-            lore: ["&7อัดทองแดง 9 แท่ง", "&eคลิกเพื่อซื้อหรือขาย"],
-          },
+        material: NETHERITE_SCRAP,
+        display: { name: "&8Netherite Scrap (Sell Only)" },
         currency: vault,
-        buy: 90.00,
-        sell: 45.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 1.0,
-            sell_step_percent: 0.85,
-            max_price: 360.00,
-            min_price: 25.00,
-          },
+        sell: 50.0,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
       }
 
-    netherite_block:
-      {
-        slot: 37,
-        page: 1,
-        material: NETHERITE_BLOCK,
-        display:
-          {
-            name: "&8Block of Netherite",
-            lore: ["&7ใครฟาร์มได้ ข้าไหว้", "&eคลิกเพื่อซื้อหรือขาย"],
-          },
+    # --- หน้า 2: ของแปรรูป (Faucet - ราคา = วัตถุดิบ) ---
+    copper_ingot: {
+        slot: 10,
+        page: 2,
+        material: COPPER_INGOT,
+        display: { name: "&6Copper Ingot (Sell Only)" },
         currency: vault,
-        buy: 4680.00,
-        sell: 2340.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 1.25,
-            sell_step_percent: 0.9,
-            max_price: 18720.00,
-            min_price: 1600.00,
-          },
-      }
-    diamond_block:
-      {
-        slot: 38,
-        page: 1,
-        material: DIAMOND_BLOCK,
-        display:
-          {
-            name: "&bBlock of Diamond",
-            lore: ["&7เพชรอัด 9 เม็ด", "&eคลิกเพื่อซื้อหรือขาย"],
-          },
+        sell: 0.8,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      } # (ราคา = 1x Raw Copper)
+    iron_ingot: {
+        slot: 11,
+        page: 2,
+        material: IRON_INGOT,
+        display: { name: "&fIron Ingot (Sell Only)" },
         currency: vault,
-        buy: 1080.00,
-        sell: 540.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 1.1,
-            sell_step_percent: 0.9,
-            max_price: 4320.00,
-            min_price: 360.00,
-          },
-      }
-    emerald_block:
-      {
-        slot: 39,
-        page: 1,
-        material: EMERALD_BLOCK,
-        display:
-          {
-            name: "&aBlock of Emerald",
-            lore: ["&7บล๊อกมรกต นักค้าชาวบ้านรัก", "&eคลิกเพื่อซื้อหรือขาย"],
-          },
+        sell: 1.5,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      } # (ราคา = 1x Raw Iron)
+    gold_ingot: {
+        slot: 12,
+        page: 2,
+        material: GOLD_INGOT,
+        display: { name: "&eGold Ingot (Sell Only)" },
         currency: vault,
-        buy: 720.00,
-        sell: 360.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 1.05,
-            sell_step_percent: 0.9,
-            max_price: 2880.00,
-            min_price: 250.00,
-          },
-      }
-    lapis_block:
-      {
-        slot: 40,
-        page: 1,
-        material: LAPIS_BLOCK,
-        display:
-          {
-            name: "&9Lapis Block",
-            lore: ["&7อัด 9 เม็ด ประดับ/สวมมนต์", "&eคลิกเพื่อซื้อหรือขาย"],
-          },
+        sell: 2.0,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      } # (ราคา = 1x Raw Gold)
+    netherite_ingot: {
+        slot: 13,
+        page: 2,
+        material: NETHERITE_INGOT,
+        display: { name: "&8Netherite Ingot (Sell Only)" },
         currency: vault,
-        buy: 144.00,
-        sell: 72.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 1.0,
-            sell_step_percent: 0.85,
-            max_price: 576.00,
-            min_price: 45.00,
-          },
-      }
-    redstone_block:
-      {
-        slot: 41,
-        page: 1,
-        material: REDSTONE_BLOCK,
-        display:
-          {
-            name: "&cRedstone Block",
-            lore: ["&7จ่ายไฟ/เก็บของกลุ่ม", "&eคลิกเพื่อซื้อหรือขาย"],
-          },
-        currency: vault,
-        buy: 108.00,
-        sell: 54.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 1.0,
-            sell_step_percent: 0.85,
-            max_price: 432.00,
-            min_price: 35.00,
-          },
-      }
-    coal_block_tail:
-      {
-        slot: 42,
-        page: 1,
+        sell: 208.0,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      } # (ราคา = 4x Scrap + 4x Gold)
+
+    coal_block: {
+        slot: 19,
+        page: 2,
         material: COAL_BLOCK,
-        display:
-          {
-            name: "&8Block of Coal &7(alt)",
-            lore: ["&7สำรองตำแหน่งบล็อกเชื้อเพลิง", "&eคลิกเพื่อซื้อหรือขาย"],
-          },
+        display: { name: "&8Coal Block (Sell Only)" },
         currency: vault,
-        buy: 36.00,
-        sell: 18.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 0.9,
-            sell_step_percent: 0.75,
-            max_price: 144.00,
-            min_price: 10.00,
-          },
-      }
-    quartz_block:
-      {
-        slot: 43,
-        page: 1,
-        material: QUARTZ_BLOCK,
-        display:
-          {
-            name: "&fBlock of Quartz",
-            lore: ["&7สายงานสถาปัตย์ต้องมี", "&eคลิกเพื่อซื้อหรือขาย"],
-          },
+        sell: 4.5,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      } # (ราคา = 9x Coal)
+    copper_block: {
+        slot: 20,
+        page: 2,
+        material: COPPER_BLOCK,
+        display: { name: "&6Copper Block (Sell Only)" },
         currency: vault,
-        buy: 126.00,
-        sell: 63.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 1.0,
-            sell_step_percent: 0.85,
-            max_price: 504.00,
-            min_price: 40.00,
-          },
-      }
+        sell: 7.2,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      } # (ราคา = 9x Raw Copper)
+    iron_block: {
+        slot: 21,
+        page: 2,
+        material: IRON_BLOCK,
+        display: { name: "&fIron Block (Sell Only)" },
+        currency: vault,
+        sell: 13.5,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      } # (ราคา = 9x Raw Iron)
+    gold_block: {
+        slot: 22,
+        page: 2,
+        material: GOLD_BLOCK,
+        display: { name: "&eGold Block (Sell Only)" },
+        currency: vault,
+        sell: 18.0,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      } # (ราคา = 9x Raw Gold)
+
+    lapis_block: {
+        slot: 28,
+        page: 2,
+        material: LAPIS_BLOCK,
+        display: { name: "&1Lapis Block (Sell Only)" },
+        currency: vault,
+        sell: 3.6,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      } # (ราคา = 9x Lapis)
+    redstone_block: {
+        slot: 29,
+        page: 2,
+        material: REDSTONE_BLOCK,
+        display: { name: "&cRedstone Block (Sell Only)" },
+        currency: vault,
+        sell: 2.7,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      } # (ราคา = 9x Redstone)
+    diamond_block: {
+        slot: 30,
+        page: 2,
+        material: DIAMOND_BLOCK,
+        display: { name: "&bDiamond Block (Sell Only)" },
+        currency: vault,
+        sell: 180.0,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      } # (ราคา = 9x Diamond)
+    emerald_block: {
+        slot: 31,
+        page: 2,
+        material: EMERALD_BLOCK,
+        display: { name: "&aEmerald Block (Sell Only)" },
+        currency: vault,
+        sell: 27.0,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      } # (ราคา = 9x Emerald)
+
+    # --- ไอเทมที่นายเพิ่มมา (ฉันไม่รู้ว่ามันคืออะไร) ---
+    RESIN_CLUMP: {
+        slot: 15,
+        page: 2,
+        material: RESIN_CLUMP,
+        display: { name: "&6Resin Clump (Sell Only)" },
+        currency: vault,
+        sell: 1.5,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      } # (แทนด้วย NETHER_BRICK ถ้านายมี Custom Item ให้เปลี่ยน Material)
+    RESIN_BRICK: {
+        slot: 16,
+        page: 2,
+        material: RESIN_BRICK,
+        display: { name: "&6Resin Brick (Sell Only)" },
+        currency: vault,
+        sell: 6.0,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      } # (แทนด้วย BRICK ถ้านายมี Custom Item ให้เปลี่ยน Material)

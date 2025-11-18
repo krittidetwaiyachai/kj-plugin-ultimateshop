@@ -40,6 +40,8 @@ package xyz.kaijiieow.kjshopplus.config.model;
      private final double dynamicMaxPrice;
      private final double dynamicMinPrice;
 
+     private final List<String> buyCommands;
+
      public ShopItem(String categoryId, String itemId, ConfigurationSection config) {
          this.categoryId = categoryId;
          this.itemId = itemId;
@@ -90,20 +92,23 @@ package xyz.kaijiieow.kjshopplus.config.model;
              }
          }
 
-         ConfigurationSection dynamicSection = config.getConfigurationSection("dynamic");
-         if (dynamicSection != null) {
-             this.dynamicEnabled = dynamicSection.getBoolean("enabled", false);
-             this.dynamicBuyStep = dynamicSection.getDouble("buy_step_percent", 1.0) / 100.0;
-             this.dynamicSellStep = dynamicSection.getDouble("sell_step_percent", 1.0) / 100.0;
-             this.dynamicMaxPrice = dynamicSection.getDouble("max_price", 1000000.0);
-             this.dynamicMinPrice = dynamicSection.getDouble("min_price", 0.01);
-         } else {
-             this.dynamicEnabled = false;
-             this.dynamicBuyStep = 0;
-             this.dynamicSellStep = 0;
-             this.dynamicMaxPrice = 0;
-             this.dynamicMinPrice = 0;
-         }
+        // Simplified: just enable/disable dynamic pricing per item
+        // All other settings are handled at category level
+        ConfigurationSection dynamicSection = config.getConfigurationSection("dynamic");
+        if (dynamicSection != null) {
+            this.dynamicEnabled = dynamicSection.getBoolean("enabled", false);
+        } else {
+            // Also support simple boolean at root level for backward compatibility
+            this.dynamicEnabled = config.getBoolean("dynamic_enabled", false);
+        }
+        
+        // These are no longer used per-item, kept for backward compatibility but ignored
+        this.dynamicBuyStep = 0;
+        this.dynamicSellStep = 0;
+        this.dynamicMaxPrice = 0;
+        this.dynamicMinPrice = 0;
+
+         this.buyCommands = config.getStringList("buy_commands");
      }
 
      public ItemStack buildDisplayItem(Player player, boolean isBedrock) {
@@ -160,10 +165,22 @@ package xyz.kaijiieow.kjshopplus.config.model;
              builder.setLore(formatter.formatItemLore(this));
          }
 
-         builder.setPDCAction(isBuyMode ? "TRADE_ITEM_BUY" : "TRADE_ITEM_SELL")
+        // Determine action based on what the item allows, not just GUI mode
+        // Priority: if item only allows one action, use that; otherwise use GUI mode
+        String action;
+        if (this.allowBuy && !this.allowSell) {
+            action = "TRADE_ITEM_BUY";
+        } else if (this.allowSell && !this.allowBuy) {
+            action = "TRADE_ITEM_SELL";
+        } else {
+            // Item allows both or neither - use GUI mode
+            action = isBuyMode ? "TRADE_ITEM_BUY" : "TRADE_ITEM_SELL";
+        }
+        
+        builder.setPDCAction(action)
                 .setPDCValue(this.globalId);
 
-         return builder.build();
+        return builder.build();
      }
 
      
@@ -222,4 +239,12 @@ package xyz.kaijiieow.kjshopplus.config.model;
      public double getDynamicMinPrice() { return dynamicMinPrice; }
      
      public int getPage() { return page; }
+
+     public List<String> getBuyCommands() {
+        return buyCommands;
+     }
+
+     public boolean hasBuyCommands() {
+        return buyCommands != null && !buyCommands.isEmpty();
+     }
  }

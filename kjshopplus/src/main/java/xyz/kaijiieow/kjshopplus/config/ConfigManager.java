@@ -32,6 +32,8 @@ public class ConfigManager {
     
     private boolean dynamicPricingEnabled;
     private long dynamicPriceResetInterval;
+    private double dynamicBuyFormula;
+    private double dynamicSellFormula;
 
     
     private final Map<String, String> currencyDisplayNames = new HashMap<>();
@@ -104,6 +106,8 @@ public class ConfigManager {
         if (dp == null) return;
         this.dynamicPricingEnabled = dp.getBoolean("enabled", true);
         this.dynamicPriceResetInterval = dp.getLong("reset_interval_seconds", 3600);
+        this.dynamicBuyFormula = dp.getDouble("buy_formula", 0.01);
+        this.dynamicSellFormula = dp.getDouble("sell_formula", 0.01);
     }
 
     private void loadCustomCurrencies() {
@@ -144,6 +148,8 @@ public class ConfigManager {
     public String getWebhookUrl(String key) { return webhookUrls.getOrDefault(key.toLowerCase(), ""); }
     public boolean isDynamicPricingEnabled() { return dynamicPricingEnabled; }
     public long getDynamicPriceResetInterval() { return dynamicPriceResetInterval; }
+    public double getDynamicBuyFormula() { return dynamicBuyFormula; }
+    public double getDynamicSellFormula() { return dynamicSellFormula; }
     
     public String getCurrencyDisplayName(String currencyId) {
         return currencyDisplayNames.getOrDefault(currencyId.toLowerCase(), currencyId);

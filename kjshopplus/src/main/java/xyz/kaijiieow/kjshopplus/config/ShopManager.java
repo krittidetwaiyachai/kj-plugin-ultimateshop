@@ -121,19 +121,19 @@ package xyz.kaijiieow.kjshopplus.config;
          }
      }
 
-     private void saveDefaultShopConfigs() {
-         
-         String[] defaultShops = {
-             "ores.yml", 
-             "farm.yml", 
-             "blocks.yml", 
-             "mobdrops.yml", 
-             "food.yml", 
-             "protect.yml", 
-             "spawner.yml", 
-             "specials.yml", 
-             "trees.yml"
-         };
+    private void saveDefaultShopConfigs() {
+        
+        String[] defaultShops = {
+            "ores.yml", 
+            "farm.yml", 
+            "blocks.yml", 
+            "mobdrops.yml", 
+            "food.yml", 
+            "protect.yml", 
+            "spawner.yml",
+            "nature.yml",
+            "backpack.yml"
+        };
          
          for (String shopFileName : defaultShops) {
               File shopFile = new File(plugin.getDataFolder(), "shops/" + shopFileName);
@@ -231,12 +231,34 @@ package xyz.kaijiieow.kjshopplus.config;
          return allShopItems.get(globalId);
      }
 
-     public List<ShopItem> getSellableItems(Material material) {
-         return itemsByMaterial.getOrDefault(material, Collections.emptyList());
-     }
+    public List<ShopItem> getSellableItems(Material material) {
+        return itemsByMaterial.getOrDefault(material, Collections.emptyList());
+    }
 
+    public ShopItem findShopItemByItemStack(ItemStack itemStack) {
+        if (itemStack == null || itemStack.getType() == Material.AIR) {
+            return null;
+        }
 
-     public Collection<ShopItem> getAllShopItems() {
-         return Collections.unmodifiableCollection(allShopItems.values());
-     }
- }
+        // First check custom items
+        for (ShopItem shopItem : allShopItems.values()) {
+            if (!shopItem.isAllowSell()) continue;
+            
+            if (shopItem.isCustomItem() && shopItem.getCustomItemStack() != null) {
+                if (itemStack.isSimilar(shopItem.getCustomItemStack())) {
+                    return shopItem;
+                }
+            } else {
+                // Check vanilla items (no meta)
+                if (itemStack.getType() == shopItem.getMaterial() && !itemStack.hasItemMeta()) {
+                    return shopItem;
+                }
+            }
+        }
+        return null;
+    }
+
+    public Collection<ShopItem> getAllShopItems() {
+        return Collections.unmodifiableCollection(allShopItems.values());
+    }
+}

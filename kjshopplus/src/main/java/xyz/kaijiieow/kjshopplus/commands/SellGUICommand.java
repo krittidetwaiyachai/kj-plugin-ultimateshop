@@ -6,12 +6,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import xyz.kaijiieow.kjshopplus.KJShopPlus;
-import xyz.kaijiieow.kjshopplus.config.model.ShopCategory;
-public class ShopCommand implements CommandExecutor {
+
+public class SellGUICommand implements CommandExecutor {
 
     private final KJShopPlus plugin;
 
-    public ShopCommand(KJShopPlus plugin) {
+    public SellGUICommand(KJShopPlus plugin) {
         this.plugin = plugin;
     }
 
@@ -24,21 +24,20 @@ public class ShopCommand implements CommandExecutor {
 
         Player player = (Player) sender;
         
-        if (args.length == 0) {
-            plugin.getGuiManager().openCategoryMenu(player);
-            return true;
-        }
-
-        // Always open in buy mode only
-        String categoryId = args[0];
-        ShopCategory category = plugin.getShopManager().getShopCategory(categoryId);
-        if (category != null) {
-            // Force buy mode (true)
-            plugin.getGuiManager().openShopPage(player, categoryId, 1, true);
+        // Open sell GUI - use "main" as default category, or first category if available
+        String categoryId = "main";
+        if (args.length > 0) {
+            categoryId = args[0];
         } else {
-            plugin.getGuiManager().openCategoryMenu(player);
+            // Try to get first available category
+            var categories = plugin.getShopManager().getAllCategoryIds();
+            if (!categories.isEmpty()) {
+                categoryId = categories.iterator().next();
+            }
         }
         
+        plugin.getGuiManager().openSellGUI(player, categoryId);
         return true;
     }
 }
+

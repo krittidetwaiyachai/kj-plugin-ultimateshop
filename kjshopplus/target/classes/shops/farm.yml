@@ -1,11 +1,14 @@
+# --- shops/farm.yml (ฉบับสมบูรณ์) ---
 category:
   id: "farm"
   title: "&a&lFarm Items &7({page}/{total_pages})"
   size: 54
+  dynamic:
+    buy_formula: 0.02   # 2% ต่อ 1 ชิ้น (เพิ่มเร็วขึ้น)
+    sell_formula: 0.005 # 0.5% ต่อ 1 ชิ้น (ลดช้าลง)
   fill-item:
     material: WHITE_STAINED_GLASS_PANE
     displayname: " "
-
   layout:
     go-back:
       {
@@ -31,875 +34,260 @@ category:
       }
 
   items:
-    wheat_seeds:
+    # --- ของฟาร์มง่าย (ก๊อกเงิน) ---
+    wheat:
       {
         slot: 10,
         page: 1,
-        material: WHEAT_SEEDS,
-        display:
-          {
-            name: "&aWheat Seeds",
-            lore:
-              [
-                "&7เมล็ดข้าวสาลี เริ่มต้นสายเกษตร",
-                "&7โตไว ต้นทุนต่ำ",
-                "&eคลิกเพื่อซื้อหรือขาย",
-              ],
-          },
-        currency: vault,
-        buy: 5.00,
-        sell: 2.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 0.8,
-            sell_step_percent: 0.6,
-            max_price: 20.00,
-            min_price: 1.00,
-          },
-      }
-    wheat:
-      {
-        slot: 11,
-        page: 1,
         material: WHEAT,
-        display:
-          {
-            name: "&eWheat",
-            lore:
-              [
-                "&7ผลผลิตจากไร่",
-                "&7คราฟขนมปัง อาหารสัตว์",
-                "&eคลิกเพื่อซื้อหรือขาย",
-              ],
-          },
+        display: { name: "&eWheat" },
         currency: vault,
         buy: 10.00,
-        sell: 5.00,
+        sell: 0.5,
         trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 0.1,
-            sell_step_percent: 0.8,
-            max_price: 40.00,
-            min_price: 3.00,
-          },
-      }
-    beetroot_seeds:
-      {
-        slot: 12,
-        page: 1,
-        material: BEETROOT_SEEDS,
-        display:
-          {
-            name: "&aBeetroot Seeds",
-            lore:
-              [
-                "&7เมล็ดบีทรูทสีแดงสด",
-                "&7หมุนเวียนพืชให้แปลงไม่โทรม",
-                "&eคลิกเพื่อซื้อหรือขาย",
-              ],
-          },
-        currency: vault,
-        buy: 5.00,
-        sell: 2.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 0.8,
-            sell_step_percent: 0.6,
-            max_price: 20.00,
-            min_price: 1.00,
-          },
-      }
-    beetroot:
-      {
-        slot: 13,
-        page: 1,
-        material: BEETROOT,
-        display:
-          {
-            name: "&cBeetroot",
-            lore:
-              [
-                "&7ผักสีแดงจากแปลง",
-                "&7ทำซุปหรือย้อมสีได้",
-                "&eคลิกเพื่อซื้อหรือขาย",
-              ],
-          },
-        currency: vault,
-        buy: 12.00,
-        sell: 6.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 1.0,
-            sell_step_percent: 0.8,
-            max_price: 48.00,
-            min_price: 3.00,
-          },
-      }
-    melon_seeds:
-      {
-        slot: 14,
-        page: 1,
-        material: MELON_SEEDS,
-        display:
-          {
-            name: "&aMelon Seeds",
-            lore:
-              [
-                "&7เมล็ดแตงโม ปลูกเรียงสวยๆ",
-                "&7ชื้นเยอะ ขายดี",
-                "&eคลิกเพื่อซื้อหรือขาย",
-              ],
-          },
-        currency: vault,
-        buy: 6.00,
-        sell: 3.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 0.8,
-            sell_step_percent: 0.6,
-            max_price: 24.00,
-            min_price: 1.50,
-          },
-      }
-    melon_slice:
-      {
-        slot: 15,
-        page: 1,
-        material: MELON_SLICE,
-        display:
-          {
-            name: "&aMelon Slice",
-            lore:
-              [
-                "&7ชิ้นแตงโมจากสวน",
-                "&7กินคลายร้อนได้ดี",
-                "&eคลิกเพื่อซื้อหรือขาย",
-              ],
-          },
-        currency: vault,
-        buy: 6.00,
-        sell: 3.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 0.9,
-            sell_step_percent: 0.7,
-            max_price: 24.00,
-            min_price: 1.50,
-          },
-      }
-    melon_block:
-      {
-        slot: 16,
-        page: 1,
-        material: MELON,
-        display:
-          {
-            name: "&aMelon",
-            lore:
-              [
-                "&7แตงโมทั้งลูก",
-                "&7แตกได้ ~9 ชิ้น ถ้าขยันผ่าเอง",
-                "&eคลิกเพื่อซื้อหรือขาย",
-              ],
-          },
-        currency: vault,
-        buy: 54.00,
-        sell: 27.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 1.0,
-            sell_step_percent: 0.8,
-            max_price: 216.00,
-            min_price: 12.00,
-          },
-      }
-
-    pumpkin_seeds:
-      {
-        slot: 19,
-        page: 1,
-        material: PUMPKIN_SEEDS,
-        display:
-          {
-            name: "&aPumpkin Seeds",
-            lore:
-              [
-                "&7เมล็ดฟักทองสำหรับเพาะปลูก",
-                "&7ทำไร่ฮาโลวีนก็ได้",
-                "&eคลิกเพื่อซื้อหรือขาย",
-              ],
-          },
-        currency: vault,
-        buy: 6.00,
-        sell: 3.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 0.8,
-            sell_step_percent: 0.6,
-            max_price: 24.00,
-            min_price: 1.50,
-          },
-      }
-    pumpkin:
-      {
-        slot: 20,
-        page: 1,
-        material: PUMPKIN,
-        display:
-          {
-            name: "&6Pumpkin",
-            lore:
-              [
-                "&7วัตถุดิบฟาร์มสารพัดประโยชน์",
-                "&7ตกแต่งบ้านก็เท่",
-                "&eคลิกเพื่อซื้อหรือขาย",
-              ],
-          },
-        currency: vault,
-        buy: 12.00,
-        sell: 6.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 1.0,
-            sell_step_percent: 0.8,
-            max_price: 48.00,
-            min_price: 3.00,
-          },
-      }
-    cocoa_beans:
-      {
-        slot: 21,
-        page: 1,
-        material: COCOA_BEANS,
-        display:
-          {
-            name: "&6Cocoa Beans",
-            lore:
-              [
-                "&7ใช้ปลูกบนไม้ป่า ทำคุกกี้ก็ได้",
-                "&7ของฟาร์มสายขนมหวาน",
-                "&eคลิกเพื่อซื้อหรือขาย",
-              ],
-          },
-        currency: vault,
-        buy: 10.00,
-        sell: 5.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 0.8,
-            sell_step_percent: 0.6,
-            max_price: 40.00,
-            min_price: 2.00,
-          },
-      }
-    sweet_berries:
-      {
-        slot: 22,
-        page: 1,
-        material: SWEET_BERRIES,
-        display:
-          {
-            name: "&cSweet Berries",
-            lore:
-              [
-                "&7ปลูกเป็นพุ่ม กินได้ เจ็บหน่อยเวลาเดินชน",
-                "&7เหมาะกับฟาร์มออโต้",
-                "&eคลิกเพื่อซื้อหรือขาย",
-              ],
-          },
-        currency: vault,
-        buy: 10.00,
-        sell: 5.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 0.9,
-            sell_step_percent: 0.7,
-            max_price: 40.00,
-            min_price: 2.50,
-          },
-      }
-    glow_berries:
-      {
-        slot: 23,
-        page: 1,
-        material: GLOW_BERRIES,
-        display:
-          {
-            name: "&eGlow Berries",
-            lore:
-              [
-                "&7เถาเบอรี่มีแสง ใช้ตกแต่งถ้ำ",
-                "&7กินได้สบายท้อง",
-                "&eคลิกเพื่อซื้อหรือขาย",
-              ],
-          },
-        currency: vault,
-        buy: 14.00,
-        sell: 7.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 1.0,
-            sell_step_percent: 0.8,
-            max_price: 56.00,
-            min_price: 4.00,
-          },
-      }
-    honeycomb:
-      {
-        slot: 24,
-        page: 1,
-        material: HONEYCOMB,
-        display:
-          {
-            name: "&6Honeycomb",
-            lore:
-              [
-                "&7วัตถุดิบจากรังผึ้ง",
-                "&7ใช้คราฟเทียน/ขี้ผึ้ง",
-                "&eคลิกเพื่อซื้อหรือขาย",
-              ],
-          },
-        currency: vault,
-        buy: 20.00,
-        sell: 10.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 1.0,
-            sell_step_percent: 0.8,
-            max_price: 80.00,
-            min_price: 6.00,
-          },
-      }
-    honey_bottle:
-      {
-        slot: 25,
-        page: 1,
-        material: HONEY_BOTTLE,
-        display:
-          {
-            name: "&6Honey Bottle",
-            lore:
-              [
-                "&7น้ำผึ้งหวานจากรังเลี้ยง",
-                "&7ฟื้นพลังนิดๆ",
-                "&eคลิกเพื่อซื้อหรือขาย",
-              ],
-          },
-        currency: vault,
-        buy: 28.00,
-        sell: 14.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 1.1,
-            sell_step_percent: 0.9,
-            max_price: 112.00,
-            min_price: 8.00,
-          },
-      }
-
-    carrot:
-      {
-        slot: 28,
-        page: 1,
-        material: CARROT,
-        display:
-          {
-            name: "&6Carrot",
-            lore:
-              [
-                "&7แครอทโตไว ทำฟาร์มหัว",
-                "&7เอาไปเพาะ/ผสมม้าได้",
-                "&eคลิกเพื่อซื้อหรือขาย",
-              ],
-          },
-        currency: vault,
-        buy: 12.00,
-        sell: 6.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 0.9,
-            sell_step_percent: 0.7,
-            max_price: 48.00,
-            min_price: 3.00,
-          },
-      }
-    potato:
-      {
-        slot: 29,
-        page: 1,
-        material: POTATO,
-        display:
-          {
-            name: "&6Potato",
-            lore:
-              [
-                "&7หัวมันยอดฮิตของชาวฟาร์ม",
-                "&7เอาไปอบได้",
-                "&eคลิกเพื่อซื้อหรือขาย",
-              ],
-          },
-        currency: vault,
-        buy: 10.00,
-        sell: 5.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 0.9,
-            sell_step_percent: 0.7,
-            max_price: 40.00,
-            min_price: 2.50,
-          },
-      }
-    poisonous_potato:
-      {
-        slot: 30,
-        page: 1,
-        material: POISONOUS_POTATO,
-        display:
-          {
-            name: "&2Poisonous Potato",
-            lore:
-              [
-                "&7หัวมันมีพิษ ได้มาจากดรอปสุ่ม",
-                "&7สะสม/ขายทิ้งก็ได้",
-                "&eคลิกเพื่อซื้อหรือขาย",
-              ],
-          },
-        currency: vault,
-        buy: 6.00,
-        sell: 3.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 0.8,
-            sell_step_percent: 0.6,
-            max_price: 24.00,
-            min_price: 1.50,
-          },
+        dynamic: { enabled: true },
       }
     sugar_cane:
       {
-        slot: 31,
+        slot: 11,
         page: 1,
         material: SUGAR_CANE,
-        display:
-          {
-            name: "&aSugar Cane",
-            lore:
-              [
-                "&7อ้อยยอดนิยม ฟาร์มคอมแพค",
-                "&7ป้อนคราฟน้ำตาล/กระดาษ",
-                "&eคลิกเพื่อซื้อหรือขาย",
-              ],
-          },
+        display: { name: "&aSugar Cane" },
         currency: vault,
         buy: 8.00,
-        sell: 4.00,
+        sell: 0.4,
         trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 0.9,
-            sell_step_percent: 0.7,
-            max_price: 32.00,
-            min_price: 2.00,
-          },
+        dynamic: { enabled: true },
       }
-    cactus:
+    melon_slice:
       {
-        slot: 32,
+        slot: 12,
         page: 1,
-        material: CACTUS,
-        display:
-          {
-            name: "&aCactus",
-            lore:
-              [
-                "&7ฟาร์มง่าย แค่ชนก็แตก",
-                "&7ย้อมสีเขียว/เผาทำ XP bank",
-                "&eคลิกเพื่อซื้อหรือขาย",
-              ],
-          },
+        material: MELON_SLICE,
+        display: { name: "&aMelon Slice" },
         currency: vault,
-        buy: 8.00,
-        sell: 4.00,
+        buy: 6.00,
+        sell: 0.3,
         trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 0.9,
-            sell_step_percent: 0.7,
-            max_price: 32.00,
-            min_price: 2.00,
-          },
+        dynamic: { enabled: true },
+      }
+    pumpkin:
+      {
+        slot: 13,
+        page: 1,
+        material: PUMPKIN,
+        display: { name: "&6Pumpkin" },
+        currency: vault,
+        buy: 12.00,
+        sell: 0.5,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    carrot:
+      {
+        slot: 14,
+        page: 1,
+        material: CARROT,
+        display: { name: "&6Carrot" },
+        currency: vault,
+        buy: 12.00,
+        sell: 0.5,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    potato:
+      {
+        slot: 15,
+        page: 1,
+        material: POTATO,
+        display: { name: "&6Potato" },
+        currency: vault,
+        buy: 10.00,
+        sell: 0.5,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
       }
     bamboo:
       {
-        slot: 33,
+        slot: 16,
         page: 1,
         material: BAMBOO,
-        display:
-          {
-            name: "&aBamboo",
-            lore:
-              [
-                "&7โตไวสุด เครือข่ายฟาร์มไม้/เชื้อเพลิง",
-                "&7คราฟไม้ไผ่ block/set",
-                "&eคลิกเพื่อซื้อหรือขาย",
-              ],
-          },
+        display: { name: "&aBamboo" },
         currency: vault,
         buy: 6.00,
-        sell: 3.00,
+        sell: 0.2,
         trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 0.8,
-            sell_step_percent: 0.6,
-            max_price: 24.00,
-            min_price: 1.50,
-          },
+        dynamic: { enabled: true },
+      }
+    cactus:
+      {
+        slot: 19,
+        page: 1,
+        material: CACTUS,
+        display: { name: "&aCactus" },
+        currency: vault,
+        buy: 8.00,
+        sell: 0.3,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
       }
     kelp:
       {
-        slot: 34,
+        slot: 20,
         page: 1,
         material: KELP,
-        display:
-          {
-            name: "&aKelp",
-            lore:
-              [
-                "&7สาหร่ายทะเล ฟาร์มน้ำลึก",
-                "&7อบเป็น Dried Kelp ได้",
-                "&eคลิกเพื่อซื้อหรือขาย",
-              ],
-          },
+        display: { name: "&aKelp" },
         currency: vault,
         buy: 6.00,
-        sell: 3.00,
+        sell: 0.1,
         trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 0.8,
-            sell_step_percent: 0.6,
-            max_price: 24.00,
-            min_price: 1.50,
-          },
-      }
-
-    red_mushroom:
-      {
-        slot: 37,
-        page: 1,
-        material: RED_MUSHROOM,
-        display:
-          {
-            name: "&cRed Mushroom",
-            lore:
-              [
-                "&7เห็ดแดง ทำฟาร์มในมืด",
-                "&7ขยายด้วย bone meal",
-                "&eคลิกเพื่อซื้อหรือขาย",
-              ],
-          },
-        currency: vault,
-        buy: 12.00,
-        sell: 6.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 0.9,
-            sell_step_percent: 0.7,
-            max_price: 48.00,
-            min_price: 3.00,
-          },
-      }
-    brown_mushroom:
-      {
-        slot: 38,
-        page: 1,
-        material: BROWN_MUSHROOM,
-        display:
-          {
-            name: "&6Brown Mushroom",
-            lore:
-              [
-                "&7เห็ดน้ำตาล คู่หูเห็ดแดง",
-                "&7ทำสตูว์/ฟาร์มมืด",
-                "&eคลิกเพื่อซื้อหรือขาย",
-              ],
-          },
-        currency: vault,
-        buy: 12.00,
-        sell: 6.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 0.9,
-            sell_step_percent: 0.7,
-            max_price: 48.00,
-            min_price: 3.00,
-          },
+        dynamic: { enabled: true },
       }
     nether_wart:
       {
-        slot: 39,
+        slot: 21,
         page: 1,
         material: NETHER_WART,
-        display:
-          {
-            name: "&4Nether Wart",
-            lore:
-              [
-                "&7หัวใจการต้มยา",
-                "&7ปลูกบน soul sand เท่านั้น",
-                "&eคลิกเพื่อซื้อหรือขาย",
-              ],
-          },
+        display: { name: "&4Nether Wart" },
         currency: vault,
         buy: 16.00,
-        sell: 8.00,
+        sell: 0.8,
         trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 1.0,
-            sell_step_percent: 0.8,
-            max_price: 64.00,
-            min_price: 4.00,
-          },
+        dynamic: { enabled: true },
       }
-    chorus_fruit:
+    poisonous_potato:
       {
-        slot: 40,
+        slot: 22,
         page: 1,
-        material: CHORUS_FRUIT,
-        display:
-          {
-            name: "&dChorus Fruit",
-            lore:
-              [
-                "&7ของจากเอนด์ เทเลพอร์ตเมากำแพง",
-                "&7คราฟ purpur ได้",
-                "&eคลิกเพื่อซื้อหรือขาย",
-              ],
-          },
+        material: POISONOUS_POTATO,
+        display: { name: "&2Poisonous Potato" },
         currency: vault,
-        buy: 18.00,
-        sell: 9.00,
+        buy: 5.00,
+        sell: 0.05,
         trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 1.0,
-            sell_step_percent: 0.8,
-            max_price: 72.00,
-            min_price: 5.00,
-          },
-      }
-    chorus_flower:
-      {
-        slot: 41,
-        page: 1,
-        material: CHORUS_FLOWER,
-        display:
-          {
-            name: "&dChorus Flower",
-            lore:
-              [
-                "&7เมล็ดพันธุ์ของ Chorus",
-                "&7ปลูกต่อยอดฟาร์มเอนด์",
-                "&eคลิกเพื่อซื้อหรือขาย",
-              ],
-          },
-        currency: vault,
-        buy: 22.00,
-        sell: 11.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 1.1,
-            sell_step_percent: 0.9,
-            max_price: 88.00,
-            min_price: 6.00,
-          },
-      }
-    sea_pickle:
-      {
-        slot: 42,
-        page: 1,
-        material: SEA_PICKLE,
-        display:
-          {
-            name: "&aSea Pickle",
-            lore:
-              [
-                "&7ขยายด้วย bone meal บนปะการัง",
-                "&7ใช้แสง/ตกแต่งน้ำ",
-                "&eคลิกเพื่อซื้อหรือขาย",
-              ],
-          },
-        currency: vault,
-        buy: 12.00,
-        sell: 6.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 0.9,
-            sell_step_percent: 0.7,
-            max_price: 48.00,
-            min_price: 3.00,
-          },
+        dynamic: { enabled: true },
       }
 
+    # --- ของฟาร์มยาก/ของอ่างล้างเงิน (Money Sink) --- (ชื่อหมวดตามที่นายเรียก แต่จริงๆ คือ 'ก๊อกเงินฟาร์มยาก')
+    cocoa_beans:
+      {
+        slot: 23,
+        page: 1,
+        material: COCOA_BEANS,
+        display: { name: "&6Cocoa Beans" },
+        currency: vault,
+        buy: 15.00,
+        sell: 1.0,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    sweet_berries:
+      {
+        slot: 24,
+        page: 1,
+        material: SWEET_BERRIES,
+        display: { name: "&cSweet Berries" },
+        currency: vault,
+        buy: 10.00,
+        sell: 0.5,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    honeycomb:
+      {
+        slot: 25,
+        page: 1,
+        material: HONEYCOMB,
+        display: { name: "&6Honeycomb" },
+        currency: vault,
+        buy: 30.00,
+        sell: 5.0,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+
+    # --- เมล็ดพันธุ์ (Money Sink ของจริง) ---
+    wheat_seeds:
+      {
+        slot: 28,
+        page: 1,
+        material: WHEAT_SEEDS,
+        display: { name: "&aWheat Seeds" },
+        currency: vault,
+        buy: 5.00,
+        trade: { allow_buy: true, allow_sell: false },
+      }
+    melon_seeds:
+      {
+        slot: 29,
+        page: 1,
+        material: MELON_SEEDS,
+        display: { name: "&aMelon Seeds" },
+        currency: vault,
+        buy: 6.00,
+        trade: { allow_buy: true, allow_sell: false },
+      }
+    pumpkin_seeds:
+      {
+        slot: 30,
+        page: 1,
+        material: PUMPKIN_SEEDS,
+        display: { name: "&aPumpkin Seeds" },
+        currency: vault,
+        buy: 6.00,
+        trade: { allow_buy: true, allow_sell: false },
+      }
+    beetroot_seeds:
+      {
+        slot: 31,
+        page: 1,
+        material: BEETROOT_SEEDS,
+        display: { name: "&aBeetroot Seeds" },
+        currency: vault,
+        buy: 5.00,
+        trade: { allow_buy: true, allow_sell: false },
+      }
     torchflower_seeds:
       {
-        slot: 10,
-        page: 2,
+        slot: 32,
+        page: 1,
         material: TORCHFLOWER_SEEDS,
-        display:
-          {
-            name: "&eTorchflower Seeds",
-            lore:
-              [
-                "&7เมล็ดจาก Sniffer",
-                "&7เพาะได้ในยุคใหม่",
-                "&eคลิกเพื่อซื้อหรือขาย",
-              ],
-          },
+        display: { name: "&eTorchflower Seeds" },
         currency: vault,
-        buy: 18.00,
-        sell: 9.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 1.0,
-            sell_step_percent: 0.8,
-            max_price: 72.00,
-            min_price: 5.00,
-          },
-      }
-    torchflower:
-      {
-        slot: 11,
-        page: 2,
-        material: TORCHFLOWER,
-        display:
-          {
-            name: "&eTorchflower",
-            lore:
-              [
-                "&7ดอกไม้เรืองแสงอ่อนๆ",
-                "&7แต่งสวน/ผสมพันธุ์ผึ้งได้ดี",
-                "&eคลิกเพื่อซื้อหรือขาย",
-              ],
-          },
-        currency: vault,
-        buy: 16.00,
-        sell: 8.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 1.0,
-            sell_step_percent: 0.8,
-            max_price: 64.00,
-            min_price: 4.00,
-          },
+        buy: 100.00,
+        trade: { allow_buy: true, allow_sell: false },
       }
     pitcher_pod:
       {
-        slot: 12,
-        page: 2,
+        slot: 33,
+        page: 1,
         material: PITCHER_POD,
-        display:
-          {
-            name: "&aPitcher Pod",
-            lore:
-              [
-                "&7ฝักจาก Sniffer",
-                "&7นำไปปลูกเป็น Pitcher Plant",
-                "&eคลิกเพื่อซื้อหรือขาย",
-              ],
-          },
+        display: { name: "&aPitcher Pod" },
         currency: vault,
-        buy: 18.00,
-        sell: 9.00,
-        trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 1.0,
-            sell_step_percent: 0.8,
-            max_price: 72.00,
-            min_price: 5.00,
-          },
+        buy: 100.00,
+        trade: { allow_buy: true, allow_sell: false },
       }
-    pitcher_plant:
+    chorus_flower:
       {
-        slot: 13,
-        page: 2,
-        material: PITCHER_PLANT,
-        display:
-          {
-            name: "&aPitcher Plant",
-            lore:
-              [
-                "&7ไม้ดักแมลงรุ่นใหม่",
-                "&7แต่งบ่อ/สวนป่า",
-                "&eคลิกเพื่อซื้อหรือขาย",
-              ],
-          },
+        slot: 34,
+        page: 1,
+        material: CHORUS_FLOWER,
+        display: { name: "&dChorus Flower" },
         currency: vault,
-        buy: 22.00,
-        sell: 11.00,
+        buy: 25.00,
+        sell: 1.5,
         trade: { allow_buy: true, allow_sell: true },
-        dynamic:
-          {
-            enabled: true,
-            buy_step_percent: 1.1,
-            sell_step_percent: 0.9,
-            max_price: 88.00,
-            min_price: 6.00,
-          },
+        dynamic: { enabled: true },
+      }
+    chorus_fruit:
+      {
+        slot: 37,
+        page: 1,
+        material: CHORUS_FRUIT,
+        display: { name: "&dChorus Fruit" },
+        currency: vault,
+        buy: 20.00,
+        sell: 1.0,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
       }

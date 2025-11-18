@@ -28,7 +28,8 @@ public class GUIManager {
     public enum GUITYPE {
         CATEGORY_MAIN,
         SHOP_PAGE,
-        QUANTITY_SELECTOR
+        QUANTITY_SELECTOR,
+        SELL_GUI
     }
 
     public GUIManager(KJShopPlus plugin) {
@@ -177,6 +178,7 @@ public class GUIManager {
             if (action == null) continue;
 
             
+            // Skip toggle mode button - shop is buy-only now
             if (action.equals("TOGGLE_MODE")) continue;
 
             if (action.equals("PAGE_PREV") && page <= 1) continue;
@@ -194,31 +196,27 @@ public class GUIManager {
                  }
             }
         }
+        
+        
+        
 
         
-        
-
-        
-        if (HARDCODED_TOGGLE_SLOT >= 0 && HARDCODED_TOGGLE_SLOT < category.getSize()) {
-            
-            if (layoutSlots.contains(HARDCODED_TOGGLE_SLOT)) {
-                plugin.getLogger().warning("Cannot place hardcoded TOGGLE_MODE button at slot " + HARDCODED_TOGGLE_SLOT + " for category '" + categoryId + "' because it is already occupied by another layout item!");
-            } else {
-                inv.setItem(HARDCODED_TOGGLE_SLOT, createToggleModeItem(player, isBuyMode));
-                layoutSlots.add(HARDCODED_TOGGLE_SLOT);
-            }
-        } else {
-            plugin.getLogger().warning("Hardcoded toggle slot (" + HARDCODED_TOGGLE_SLOT + ") is outside the GUI size (" + category.getSize() + ") for category '" + categoryId + "'");
-        }
+        // Don't show toggle mode button - shop is buy-only now
+        // if (HARDCODED_TOGGLE_SLOT >= 0 && HARDCODED_TOGGLE_SLOT < category.getSize()) {
+        //     if (layoutSlots.contains(HARDCODED_TOGGLE_SLOT)) {
+        //         plugin.getLogger().warning("Cannot place hardcoded TOGGLE_MODE button at slot " + HARDCODED_TOGGLE_SLOT + " for category '" + categoryId + "' because it is already occupied by another layout item!");
+        //     } else {
+        //         inv.setItem(HARDCODED_TOGGLE_SLOT, createToggleModeItem(player, isBuyMode));
+        //         layoutSlots.add(HARDCODED_TOGGLE_SLOT);
+        //     }
+        // } else {
+        //     plugin.getLogger().warning("Hardcoded toggle slot (" + HARDCODED_TOGGLE_SLOT + ") is outside the GUI size (" + category.getSize() + ") for category '" + categoryId + "'");
+        // }
         
 
         int slotIndex = 0;
 
         for (ShopItem shopItem : items) {
-
-            if (isBuyMode && !shopItem.isAllowBuy()) continue;
-            if (!isBuyMode && !shopItem.isAllowSell()) continue;
-
 
             int targetSlot = -1;
 
@@ -262,8 +260,18 @@ public class GUIManager {
         openMenu(player, inv);
     }
 
+    public void openSellGUI(Player player, String categoryId) {
+        String title = ChatColor.translateAlternateColorCodes('&', "&c&lSell Items");
+        int guiSize = 54;
 
-    private void openQuantitySelector(Player player, ShopItem item, boolean isBuyMode, int currentAmount, int previousPage) {
+        KJGUIData guiData = new KJGUIData(null, GUIManager.GUITYPE.SELL_GUI, categoryId, 1, false, 0, 1);
+        Inventory inv = Bukkit.createInventory(guiData, guiSize, title);
+        guiData.setInventory(inv);
+
+        openMenu(player, inv);
+    }
+
+    public void openQuantitySelector(Player player, ShopItem item, boolean isBuyMode, int currentAmount, int previousPage) {
         if (item == null) {
             player.closeInventory();
             return;
@@ -282,7 +290,7 @@ public class GUIManager {
 
 
         String title = ChatColor.translateAlternateColorCodes('&', isBuyMode ? "&a&lSelect Buy Amount" : "&c&lSelect Sell Amount");
-        int guiSize = 45;
+        int guiSize = 54;
 
         KJGUIData guiData = new KJGUIData(null, GUIManager.GUITYPE.QUANTITY_SELECTOR, item.getCategoryId(), previousPage, isBuyMode, currentAmount, previousPage);
         Inventory inv = Bukkit.createInventory(guiData, guiSize, title);
@@ -290,15 +298,15 @@ public class GUIManager {
         guiData.setTradeItem(item);
 
         boolean isBedrock = plugin.isBedrockPlayer(player.getUniqueId());
-        ItemStack fill = new ItemBuilder(mapBedrockMaterial(safeMaterial("GRAY_STAINED_GLASS_PANE", Material.STONE), player))
+        ItemStack fill = new ItemBuilder(mapBedrockMaterial(safeMaterial("WHITE_STAINED_GLASS_PANE", Material.STONE), player))
                 .setName(" ")
                 .build();
         for (int i = 0; i < guiSize; i++) inv.setItem(i, fill);
 
         final int displaySlot = 22;
-        final int confirmSlot = 37;
-        final int cancelSlot = 43;
-        final int sellAllSlot = 41;
+        final int confirmSlot = 49;
+        final int cancelSlot = 45;
+        final int sellAllSlot = 47;
 
         Material confirmMat = mapBedrockMaterial(isBuyMode ? safeMaterial("LIME_CONCRETE", Material.LIME_WOOL)
                                                            : safeMaterial("RED_CONCRETE", Material.RED_WOOL), player);
@@ -319,30 +327,78 @@ public class GUIManager {
         Material addMat = mapBedrockMaterial(safeMaterial("LIME_STAINED_GLASS_PANE", Material.LIME_STAINED_GLASS_PANE), player);
         Material subMat = mapBedrockMaterial(safeMaterial("RED_STAINED_GLASS_PANE", Material.RED_STAINED_GLASS_PANE), player);
 
-        int[] amountSteps = {1, 8, 32, 64};
-        int[] addSlots = {24, 25, 33, 34};
-        int[] subtractSlots = {20, 19, 29, 28};
+        if (isBuyMode) {
+            // Buy mode: ลดฝั่งซ้าย (11, 20, 29) ขายฝั่งขวา (15, 24, 33)
+            int[] amountSteps = {1, 8, 64};
+            int[] subtractSlots = {11, 20, 29}; // ลดฝั่งซ้าย
+            int[] confirmSlots = {15, 24, 33}; // ขายฝั่งขวา
 
-        for (int i = 0; i < amountSteps.length; i++) {
-            int step = amountSteps[i];
-            int stackAmount = Math.max(1, Math.min(step, addMat.getMaxStackSize()));
-            int stackAmountSub = Math.max(1, Math.min(step, subMat.getMaxStackSize()));
-            Map<String, String> placeholders = new HashMap<>();
-            placeholders.put("amount", String.valueOf(step));
+            for (int i = 0; i < amountSteps.length; i++) {
+                int step = amountSteps[i];
+                int stackAmountSub = Math.max(1, Math.min(step, subMat.getMaxStackSize()));
+                Map<String, String> placeholders = new HashMap<>();
+                placeholders.put("amount", String.valueOf(step));
 
-            inv.setItem(addSlots[i], new ItemBuilder(addMat)
-                .setName("&a&l+" + step)
-                .setLore(Collections.singletonList(plugin.getMessageManager().getMessage("gui_add_amount_lore", placeholders, "&7Increase by {amount}")))
-                .setAmount(stackAmount)
-                .setPDCData("ADD_AMOUNT", String.valueOf(step))
-                .build());
+                // ปุ่มลด (ฝั่งซ้าย)
+                if (currentAmount > 0) {
+                    inv.setItem(subtractSlots[i], new ItemBuilder(subMat)
+                        .setName("&c&l-" + step)
+                        .setLore(Collections.singletonList(plugin.getMessageManager().getMessage("gui_sub_amount_lore", placeholders, "&7Decrease by {amount}")))
+                        .setAmount(stackAmountSub)
+                        .setPDCData("SUB_AMOUNT", String.valueOf(step))
+                        .build());
+                } else {
+                    inv.setItem(subtractSlots[i], new ItemBuilder(subMat)
+                        .setName("&c&l-" + step)
+                        .setLore(Collections.singletonList("&7Cannot decrease below 0"))
+                        .setAmount(stackAmountSub)
+                        .setPDCData("SUB_AMOUNT", String.valueOf(step))
+                        .build());
+                }
 
-            if (currentAmount >= step && subtractSlots[i] >= 0) {
-                inv.setItem(subtractSlots[i], new ItemBuilder(subMat)
-                    .setName("&c&l-" + step)
-                    .setLore(Collections.singletonList(plugin.getMessageManager().getMessage("gui_sub_amount_lore", placeholders, "&7Decrease by {amount}")))
+                // ปุ่มเพิ่ม/ขาย (ฝั่งขวา)
+                inv.setItem(confirmSlots[i], new ItemBuilder(addMat)
+                    .setName("&a&l+" + step)
+                    .setLore(Collections.singletonList(plugin.getMessageManager().getMessage("gui_add_amount_lore", placeholders, "&7Increase by {amount}")))
                     .setAmount(stackAmountSub)
-                    .setPDCData("SUB_AMOUNT", String.valueOf(step))
+                    .setPDCData("ADD_AMOUNT", String.valueOf(step))
+                    .build());
+            }
+        } else {
+            // Sell mode: use same layout as buy mode
+            int[] amountSteps = {1, 8, 64};
+            int[] subtractSlots = {11, 20, 29}; // ลดฝั่งซ้าย
+            int[] addSlots = {15, 24, 33}; // เพิ่มฝั่งขวา
+
+            for (int i = 0; i < amountSteps.length; i++) {
+                int step = amountSteps[i];
+                int stackAmountSub = Math.max(1, Math.min(step, subMat.getMaxStackSize()));
+                Map<String, String> placeholders = new HashMap<>();
+                placeholders.put("amount", String.valueOf(step));
+
+                // ปุ่มลด (ฝั่งซ้าย)
+                if (currentAmount > 0) {
+                    inv.setItem(subtractSlots[i], new ItemBuilder(subMat)
+                        .setName("&c&l-" + step)
+                        .setLore(Collections.singletonList(plugin.getMessageManager().getMessage("gui_sub_amount_lore", placeholders, "&7Decrease by {amount}")))
+                        .setAmount(stackAmountSub)
+                        .setPDCData("SUB_AMOUNT", String.valueOf(step))
+                        .build());
+                } else {
+                    inv.setItem(subtractSlots[i], new ItemBuilder(subMat)
+                        .setName("&c&l-" + step)
+                        .setLore(Collections.singletonList("&7Cannot decrease below 0"))
+                        .setAmount(stackAmountSub)
+                        .setPDCData("SUB_AMOUNT", String.valueOf(step))
+                        .build());
+                }
+
+                // ปุ่มเพิ่ม (ฝั่งขวา)
+                inv.setItem(addSlots[i], new ItemBuilder(addMat)
+                    .setName("&a&l+" + step)
+                    .setLore(Collections.singletonList(plugin.getMessageManager().getMessage("gui_add_amount_lore", placeholders, "&7Increase by {amount}")))
+                    .setAmount(stackAmountSub)
+                    .setPDCData("ADD_AMOUNT", String.valueOf(step))
                     .build());
             }
         }
@@ -446,7 +502,7 @@ public class GUIManager {
         openMenus.add(player.getUniqueId());
     }
 
-    public void handleClick(Player player, int slot, KJGUIData guiData) {
+    public void handleClick(Player player, int slot, KJGUIData guiData, org.bukkit.event.inventory.ClickType clickType) {
         ItemStack clickedItem = guiData.getInventory().getItem(slot);
         if (clickedItem == null || clickedItem.getType() == Material.AIR) return;
 
@@ -456,7 +512,6 @@ public class GUIManager {
         // System.out.println("[KJShopPlus DEBUG] Click processing: Slot=" + slot
         //         + " | Item=" + (clickedItem != null ? clickedItem.getType() : "NULL")
         //         + " | PDC Action=" + action + " | PDC Value=" + value);
-
 
         if (action == null) {
              // System.out.println("[KJShopPlus DEBUG] Click ignored: No PDC Action found on item.");
@@ -475,35 +530,16 @@ public class GUIManager {
                 if (value != null && value.equals("main")) {
                     openCategoryMenu(player);
                 } else if (value != null) {
-                    openShopPage(player, value, 1, true);
+                    ShopCategory category = plugin.getShopManager().getShopCategory(value);
+                    if (category != null) {
+                        openShopPage(player, value, 1, category.isDefaultBuyMode());
+                    }
                 }
                 break;
             
             case "TRADE_ITEM_BUY":
-                if (value != null) {
-                    ShopItem itemToBuy = plugin.getShopManager().getShopItem(value);
-                    if (itemToBuy != null) {
-                        openQuantitySelector(player, itemToBuy, true, 1, currentPage);
-                    }
-                }
-                break;
-            
             case "TRADE_ITEM_SELL":
-                 if (value != null) {
-                    ShopItem itemToSell = plugin.getShopManager().getShopItem(value);
-                    if (itemToSell != null) {
-                        if (!itemToSell.isAllowSell()) {
-                             plugin.getMessageManager().sendMessage(player, "gui_sell_disabled");
-                             return;
-                        }
-                        int playerHas = getAmountInInventory(player, itemToSell);
-                        if (playerHas == 0) {
-                            plugin.getMessageManager().sendMessage(player, "not_enough_items");
-                            return;
-                        }
-                        openQuantitySelector(player, itemToSell, false, 1, currentPage);
-                    }
-                }
+                handleTradeItemClick(player, value, clickType, currentPage);
                 break;
             
             case "TOGGLE_MODE":
@@ -537,6 +573,10 @@ public class GUIManager {
                     try {
                         int amountToSub = Integer.parseInt(value);
                         int newAmount = Math.max(0, currentAmount - amountToSub);
+                        // Prevent going below 0
+                        if (newAmount < 0) {
+                            newAmount = 0;
+                        }
                         openQuantitySelector(player, tradeItem, isBuyMode, newAmount, previousPage);
                     } catch (NumberFormatException e) {  }
                 }
@@ -573,6 +613,41 @@ public class GUIManager {
         }
     }
 
+    private void handleTradeItemClick(Player player, String value, org.bukkit.event.inventory.ClickType clickType, int currentPage) {
+        if (value == null || clickType == null) {
+            return;
+        }
+
+        ShopItem clickedItem = plugin.getShopManager().getShopItem(value);
+        if (clickedItem == null) {
+            return;
+        }
+
+        boolean isLeftClick = clickType.isLeftClick();
+        boolean isRightClick = clickType.isRightClick();
+
+        if (!isLeftClick && !isRightClick) {
+            return;
+        }
+
+        if (isLeftClick) {
+            if (clickedItem.isAllowBuy()) {
+                openQuantitySelector(player, clickedItem, true, 1, currentPage);
+            } else {
+                plugin.getMessageManager().sendMessage(player, "gui_buy_disabled");
+            }
+            return;
+        }
+
+        if (isRightClick) {
+            if (clickedItem.isAllowSell()) {
+                openQuantitySelector(player, clickedItem, false, 1, currentPage);
+            } else {
+                plugin.getMessageManager().sendMessage(player, "gui_sell_disabled");
+            }
+        }
+    }
+
     private void performSellAllTransaction(Player player, ShopItem item) {
         if (item == null || !item.isAllowSell()) return;
         int amount = getAmountInInventory(player, item);
@@ -590,7 +665,17 @@ public class GUIManager {
 
         double pricePerItem;
         String itemName;
+        double totalPrice;
 
+        if (isBuy) {
+            if (!item.isAllowBuy()) return;
+            pricePerItem = plugin.getDynamicPriceManager().getBuyPrice(item);
+            totalPrice = pricePerItem * amount;
+        } else {
+            if (!item.isAllowSell()) return;
+            pricePerItem = plugin.getDynamicPriceManager().getSellPrice(item);
+        }
+        
         itemName = item.getConfigDisplayName();
         if (itemName == null || itemName.isBlank()) {
             if (item.isCustomItem() && item.getCustomItemStack() != null) {
@@ -608,59 +693,85 @@ public class GUIManager {
 
 
         if (isBuy) {
-            if (!item.isAllowBuy()) return;
-            pricePerItem = plugin.getDynamicPriceManager().getBuyPrice(item);
-        } else {
-            if (!item.isAllowSell()) return;
-            pricePerItem = plugin.getDynamicPriceManager().getSellPrice(item);
-        }
-        double totalPrice = pricePerItem * amount;
+            
+            totalPrice = pricePerItem * amount;
 
-        Map<String, String> placeholders = new HashMap<>();
-        placeholders.put("amount", String.valueOf(amount));
-        placeholders.put("item", itemName);
-        placeholders.put("price", PriceUtil.format(totalPrice));
-        placeholders.put("currency_symbol", plugin.getCurrencyService().getCurrencySymbol(item.getCurrencyId()));
+            Map<String, String> placeholders = new HashMap<>();
+            placeholders.put("amount", String.valueOf(amount));
+            placeholders.put("item", itemName);
+            placeholders.put("price", PriceUtil.format(totalPrice));
+            placeholders.put("currency_symbol", plugin.getCurrencyService().getCurrencySymbol(item.getCurrencyId()));
 
 
-        if (isBuy) {
             if (!plugin.getCurrencyService().hasBalance(player, item.getCurrencyId(), totalPrice)) {
                 plugin.getMessageManager().sendMessage(player, "not_enough_money", placeholders);
                 return;
             }
-            
-            int maxStack = 64;
-            if (item.isCustomItem() && item.getCustomItemStack() != null) {
-                maxStack = item.getCustomItemStack().getMaxStackSize();
+
+            if (item.hasBuyCommands()) {
+                
+                if (!plugin.getCurrencyService().removeBalance(player, item.getCurrencyId(), totalPrice)) {
+                    plugin.getMessageManager().sendMessage(player, "not_enough_money", placeholders);
+                    return;
+                }
+
+                
+                for (String command : item.getBuyCommands()) {
+                    String processedCommand = command
+                        .replace("%player%", player.getName())
+                        .replace("{player}", player.getName())
+                        .replace("{amount}", String.valueOf(amount));
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), processedCommand);
+                }
+                
+                plugin.getDynamicPriceManager().recordBuy(item, amount);
+                plugin.getMessageManager().sendMessage(player, "buy_success", placeholders);
+                plugin.getDiscordWebhookService().logBuy(player, item, amount, totalPrice);
+
             } else {
-                maxStack = item.getMaterial().getMaxStackSize();
+                
+                int maxStack = 64;
+                if (item.isCustomItem() && item.getCustomItemStack() != null) {
+                    maxStack = item.getCustomItemStack().getMaxStackSize();
+                } else {
+                    maxStack = item.getMaterial().getMaxStackSize();
+                }
+                int neededSlots = (int) Math.ceil((double) amount / maxStack);
+
+                if (getEmptySlots(player) < neededSlots && getPartialStackSpace(player, item, amount) < amount) {
+                     plugin.getMessageManager().sendMessage(player, "inventory_full", placeholders);
+                     return;
+                }
+
+
+                if (!plugin.getCurrencyService().removeBalance(player, item.getCurrencyId(), totalPrice)) {
+                    plugin.getMessageManager().sendMessage(player, "not_enough_money", placeholders);
+                    return;
+                }
+
+                if (item.isCustomItem() && item.getCustomItemStack() != null) {
+                    ItemStack itemToGive = item.getCustomItemStack().clone();
+                    itemToGive.setAmount(amount);
+                    player.getInventory().addItem(itemToGive);
+                } else {
+                    player.getInventory().addItem(new ItemStack(item.getMaterial(), amount));
+                }
+
+                plugin.getDynamicPriceManager().recordBuy(item, amount);
+                plugin.getMessageManager().sendMessage(player, "buy_success", placeholders);
+                plugin.getDiscordWebhookService().logBuy(player, item, amount, totalPrice);
             }
-            int neededSlots = (int) Math.ceil((double) amount / maxStack);
-
-            if (getEmptySlots(player) < neededSlots && getPartialStackSpace(player, item, amount) < amount) {
-                 plugin.getMessageManager().sendMessage(player, "inventory_full", placeholders);
-                 return;
-            }
-
-
-            if (!plugin.getCurrencyService().removeBalance(player, item.getCurrencyId(), totalPrice)) {
-                plugin.getMessageManager().sendMessage(player, "not_enough_money", placeholders);
-                return;
-            }
-
-            if (item.isCustomItem() && item.getCustomItemStack() != null) {
-                ItemStack itemToGive = item.getCustomItemStack().clone();
-                itemToGive.setAmount(amount);
-                player.getInventory().addItem(itemToGive);
-            } else {
-                player.getInventory().addItem(new ItemStack(item.getMaterial(), amount));
-            }
-
-            plugin.getDynamicPriceManager().recordBuy(item, amount);
-            plugin.getMessageManager().sendMessage(player, "buy_success", placeholders);
-            plugin.getDiscordWebhookService().logBuy(player, item, amount, totalPrice);
 
         } else {
+            
+            totalPrice = pricePerItem * amount;
+
+            Map<String, String> placeholders = new HashMap<>();
+            placeholders.put("amount", String.valueOf(amount));
+            placeholders.put("item", itemName);
+            placeholders.put("price", PriceUtil.format(totalPrice));
+            placeholders.put("currency_symbol", plugin.getCurrencyService().getCurrencySymbol(item.getCurrencyId()));
+
              int playerAmount = getAmountInInventory(player, item);
              int amountToSell = Math.min(amount, playerAmount);
 
@@ -724,7 +835,7 @@ public class GUIManager {
     }
 
 
-    private int getAmountInInventory(Player player, ShopItem shopItem) {
+    public int getAmountInInventory(Player player, ShopItem shopItem) {
         int amount = 0;
         ItemStack[] contents = player.getInventory().getStorageContents();
 
@@ -892,5 +1003,67 @@ public class GUIManager {
             iterator.remove();
         }
         openMenus.clear();
+    }
+
+    public void processSellGUIItem(Player player, ItemStack item, int slot, KJGUIData guiData) {
+        if (item == null || item.getType() == Material.AIR) {
+            return;
+        }
+
+        // Find matching shop item
+        ShopItem shopItem = plugin.getShopManager().findShopItemByItemStack(item);
+        
+        if (shopItem != null && shopItem.isAllowSell()) {
+            // Item can be sold - sell it
+            int amount = item.getAmount();
+            double pricePerItem = plugin.getDynamicPriceManager().getSellPrice(shopItem);
+            double totalPrice = pricePerItem * amount;
+
+            // Remove item from GUI
+            if (slot >= 0 && slot < guiData.getInventory().getSize()) {
+                guiData.getInventory().setItem(slot, null);
+            }
+
+            // Add money
+            if (plugin.getCurrencyService().addBalance(player, shopItem.getCurrencyId(), totalPrice)) {
+                plugin.getDynamicPriceManager().recordSell(shopItem, amount);
+                
+                String itemName = shopItem.getConfigDisplayName();
+                if (itemName == null || itemName.isBlank()) {
+                    itemName = shopItem.getMaterial().name();
+                }
+                itemName = ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', itemName));
+
+                Map<String, String> placeholders = new HashMap<>();
+                placeholders.put("amount", String.valueOf(amount));
+                placeholders.put("item", itemName);
+                placeholders.put("price", PriceUtil.format(totalPrice));
+                placeholders.put("currency_symbol", plugin.getCurrencyService().getCurrencySymbol(shopItem.getCurrencyId()));
+
+                plugin.getMessageManager().sendMessage(player, "sell_success", placeholders);
+                plugin.getDiscordWebhookService().logSell(player, shopItem, amount, totalPrice);
+            } else {
+                // Failed to add money - return item
+                returnItemToPlayer(player, item);
+            }
+        } else {
+            // Item cannot be sold - return to player
+            if (slot >= 0 && slot < guiData.getInventory().getSize()) {
+                guiData.getInventory().setItem(slot, null);
+            }
+            returnItemToPlayer(player, item);
+        }
+    }
+
+    private void returnItemToPlayer(Player player, ItemStack item) {
+        // Try to add to inventory
+        HashMap<Integer, ItemStack> leftover = player.getInventory().addItem(item);
+        
+        // Drop items that don't fit
+        if (!leftover.isEmpty()) {
+            for (ItemStack leftoverItem : leftover.values()) {
+                player.getWorld().dropItemNaturally(player.getLocation(), leftoverItem);
+            }
+        }
     }
 }

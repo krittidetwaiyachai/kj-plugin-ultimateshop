@@ -1,11 +1,14 @@
+# --- shops/blocks.yml (ฉบับ Layout 28 ช่อง - 3 หน้า) ---
 category:
   id: "blocks"
-  title: "&a&lBlocks &7({page}/{total_pages})"
+  title: "&7&lBuilding Blocks &7({page}/{total_pages})"
   size: 54
+  dynamic:
+    buy_formula: 0.02   # 2% ต่อ 1 ชิ้น (เพิ่มเร็วขึ้น)
+    sell_formula: 0.005 # 0.5% ต่อ 1 ชิ้น (ลดช้าลง)
   fill-item:
     material: WHITE_STAINED_GLASS_PANE
     displayname: " "
-
   layout:
     go-back:
       {
@@ -31,3 +34,881 @@ category:
       }
 
   items:
+    # --- หน้า 1 (1-28) ---
+    dirt:
+      {
+        slot: 10,
+        page: 1,
+        material: DIRT,
+        display: { name: "&6Dirt" },
+        currency: vault,
+        buy: 8.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    grass_block:
+      {
+        slot: 11,
+        page: 1,
+        material: GRASS_BLOCK,
+        display: { name: "&aGrass Block" },
+        currency: vault,
+        buy: 12.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    rooted_dirt:
+      {
+        slot: 12,
+        page: 1,
+        material: ROOTED_DIRT,
+        display: { name: "&6Rooted Dirt" },
+        currency: vault,
+        buy: 12.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    podzol:
+      {
+        slot: 13,
+        page: 1,
+        material: PODZOL,
+        display: { name: "&6Podzol" },
+        currency: vault,
+        buy: 12.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    mycelium:
+      {
+        slot: 14,
+        page: 1,
+        material: MYCELIUM,
+        display: { name: "&dMycelium" },
+        currency: vault,
+        buy: 12.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    sand:
+      {
+        slot: 15,
+        page: 1,
+        material: SAND,
+        display: { name: "&eSand" },
+        currency: vault,
+        buy: 8.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    red_sand:
+      {
+        slot: 16,
+        page: 1,
+        material: RED_SAND,
+        display: { name: "&cRed Sand" },
+        currency: vault,
+        buy: 8.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+
+    gravel:
+      {
+        slot: 19,
+        page: 1,
+        material: GRAVEL,
+        display: { name: "&7Gravel" },
+        currency: vault,
+        buy: 8.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    snow_block:
+      {
+        slot: 20,
+        page: 1,
+        material: SNOW_BLOCK,
+        display: { name: "&fSnow Block" },
+        currency: vault,
+        buy: 12.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    ice:
+      {
+        slot: 21,
+        page: 1,
+        material: ICE,
+        display: { name: "&bIce" },
+        currency: vault,
+        buy: 12.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    mud:
+      {
+        slot: 22,
+        page: 1,
+        material: MUD,
+        display: { name: "&8Mud" },
+        currency: vault,
+        buy: 10.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    stone:
+      {
+        slot: 23,
+        page: 1,
+        material: STONE,
+        display: { name: "&7Stone" },
+        currency: vault,
+        buy: 8.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    andesite:
+      {
+        slot: 24,
+        page: 1,
+        material: ANDESITE,
+        display: { name: "&7Andesite" },
+        currency: vault,
+        buy: 10.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    diorite:
+      {
+        slot: 25,
+        page: 1,
+        material: DIORITE,
+        display: { name: "&fDiorite" },
+        currency: vault,
+        buy: 10.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+
+    granite:
+      {
+        slot: 28,
+        page: 1,
+        material: GRANITE,
+        display: { name: "&cGranite" },
+        currency: vault,
+        buy: 10.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    basalt:
+      {
+        slot: 29,
+        page: 1,
+        material: BASALT,
+        display: { name: "&8Basalt" },
+        currency: vault,
+        buy: 12.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    tuff:
+      {
+        slot: 30,
+        page: 1,
+        material: TUFF,
+        display: { name: "&8Tuff" },
+        currency: vault,
+        buy: 10.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    calcite:
+      {
+        slot: 31,
+        page: 1,
+        material: CALCITE,
+        display: { name: "&fCalcite" },
+        currency: vault,
+        buy: 10.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+
+    bricks:
+      {
+        slot: 32,
+        page: 1,
+        material: BRICKS,
+        display: { name: "&cBricks" },
+        currency: vault,
+        buy: 10.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+
+    terracotta:
+      {
+        slot: 33,
+        page: 1,
+        material: TERRACOTTA,
+        display: { name: "&6Terracotta" },
+        currency: vault,
+        buy: 10.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    blackstone:
+      {
+        slot: 34,
+        page: 1,
+        material: BLACKSTONE,
+        display: { name: "&8Blackstone" },
+        currency: vault,
+        buy: 10.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    netherrack:
+      {
+        slot: 37,
+        page: 1,
+        material: NETHERRACK,
+        display: { name: "&cNetherrack" },
+        currency: vault,
+        buy: 8.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    deepslate:
+      {
+        slot: 38,
+        page: 1,
+        material: DEEPSLATE,
+        display: { name: "&8Deepslate" },
+        currency: vault,
+        buy: 10.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    soul_sand:
+      {
+        slot: 39,
+        page: 1,
+        material: SOUL_SAND,
+        display: { name: "&8Soul Sand" },
+        currency: vault,
+        buy: 12.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    magma_block:
+      {
+        slot: 40,
+        page: 1,
+        material: MAGMA_BLOCK,
+        display: { name: "&6Magma Block" },
+        currency: vault,
+        buy: 12.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    white_wool:
+      {
+        slot: 41,
+        page: 1,
+        material: WHITE_WOOL,
+        display: { name: "&fWhite Wool" },
+        currency: vault,
+        buy: 10.00050,
+        sell: 0.2,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+
+    # --- หน้า 2 (29-56) ---
+    black_wool:
+      {
+        slot: 10,
+        page: 2,
+        material: BLACK_WOOL,
+        display: { name: "&8Black Wool" },
+        currency: vault,
+        buy: 18.00,
+        sell: 0.2,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    blue_wool:
+      {
+        slot: 11,
+        page: 2,
+        material: BLUE_WOOL,
+        display: { name: "&1Blue Wool" },
+        currency: vault,
+        buy: 18.00,
+        sell: 0.2,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    brown_wool:
+      {
+        slot: 12,
+        page: 2,
+        material: BROWN_WOOL,
+        display: { name: "&6Brown Wool" },
+        currency: vault,
+        buy: 18.00,
+        sell: 0.2,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    cyan_wool:
+      {
+        slot: 13,
+        page: 2,
+        material: CYAN_WOOL,
+        display: { name: "&3Cyan Wool" },
+        currency: vault,
+        buy: 18.00,
+        sell: 0.2,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    gray_wool:
+      {
+        slot: 14,
+        page: 2,
+        material: GRAY_WOOL,
+        display: { name: "&7Gray Wool" },
+        currency: vault,
+        buy: 18.00,
+        sell: 0.2,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    green_wool:
+      {
+        slot: 15,
+        page: 2,
+        material: GREEN_WOOL,
+        display: { name: "&2Green Wool" },
+        currency: vault,
+        buy: 18.00,
+        sell: 0.2,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    light_blue_wool:
+      {
+        slot: 16,
+        page: 2,
+        material: LIGHT_BLUE_WOOL,
+        display: { name: "&bLight Blue Wool" },
+        currency: vault,
+        buy: 18.00,
+        sell: 0.2,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+
+    light_gray_wool:
+      {
+        slot: 19,
+        page: 2,
+        material: LIGHT_GRAY_WOOL,
+        display: { name: "&7Light Gray Wool" },
+        currency: vault,
+        buy: 18.00,
+        sell: 0.2,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    lime_wool:
+      {
+        slot: 20,
+        page: 2,
+        material: LIME_WOOL,
+        display: { name: "&aLime Wool" },
+        currency: vault,
+        buy: 18.00,
+        sell: 0.2,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    magenta_wool:
+      {
+        slot: 21,
+        page: 2,
+        material: MAGENTA_WOOL,
+        display: { name: "&dMagenta Wool" },
+        currency: vault,
+        buy: 18.00,
+        sell: 0.2,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    orange_wool:
+      {
+        slot: 22,
+        page: 2,
+        material: ORANGE_WOOL,
+        display: { name: "&6Orange Wool" },
+        currency: vault,
+        buy: 18.00,
+        sell: 0.2,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    pink_wool:
+      {
+        slot: 23,
+        page: 2,
+        material: PINK_WOOL,
+        display: { name: "&dPink Wool" },
+        currency: vault,
+        buy: 18.00,
+        sell: 0.2,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    purple_wool:
+      {
+        slot: 24,
+        page: 2,
+        material: PURPLE_WOOL,
+        display: { name: "&5Purple Wool" },
+        currency: vault,
+        buy: 18.00,
+        sell: 0.2,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    red_wool:
+      {
+        slot: 25,
+        page: 2,
+        material: RED_WOOL,
+        display: { name: "&cRed Wool" },
+        currency: vault,
+        buy: 18.00,
+        sell: 0.2,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+
+    yellow_wool:
+      {
+        slot: 28,
+        page: 2,
+        material: YELLOW_WOOL,
+        display: { name: "&eYellow Wool" },
+        currency: vault,
+        buy: 18.00,
+        sell: 0.2,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    glowstone: {
+        slot: 29,
+        page: 2,
+        material: GLOWSTONE,
+        display: { name: "&eGlowstone" },
+        currency: vault,
+        buy: 20.00,
+        sell: 0.2,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      } # (Glowstone Dust min 0.01 x 4)
+    glass:
+      {
+        slot: 30,
+        page: 2,
+        material: GLASS,
+        display: { name: "&fGlass" },
+        currency: vault,
+        buy: 12.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    white_stained_glass:
+      {
+        slot: 31,
+        page: 2,
+        material: WHITE_STAINED_GLASS,
+        display: { name: "&fWhite Stained Glass" },
+        currency: vault,
+        buy: 20.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    orange_stained_glass:
+      {
+        slot: 32,
+        page: 2,
+        material: ORANGE_STAINED_GLASS,
+        display: { name: "&6Orange Stained Glass" },
+        currency: vault,
+        buy: 20.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    magenta_stained_glass:
+      {
+        slot: 33,
+        page: 2,
+        material: MAGENTA_STAINED_GLASS,
+        display: { name: "&dMagenta Stained Glass" },
+        currency: vault,
+        buy: 20.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    light_blue_stained_glass:
+      {
+        slot: 34,
+        page: 2,
+        material: LIGHT_BLUE_STAINED_GLASS,
+        display: { name: "&bLight Blue Stained Glass" },
+        currency: vault,
+        buy: 20.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+
+    yellow_stained_glass:
+      {
+        slot: 37,
+        page: 2,
+        material: YELLOW_STAINED_GLASS,
+        display: { name: "&eYellow Stained Glass" },
+        currency: vault,
+        buy: 20.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    lime_stained_glass:
+      {
+        slot: 38,
+        page: 2,
+        material: LIME_STAINED_GLASS,
+        display: { name: "&aLime Stained Glass" },
+        currency: vault,
+        buy: 20.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    pink_stained_glass:
+      {
+        slot: 39,
+        page: 2,
+        material: PINK_STAINED_GLASS,
+        display: { name: "&dPink Stained Glass" },
+        currency: vault,
+        buy: 20.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    gray_stained_glass:
+      {
+        slot: 40,
+        page: 2,
+        material: GRAY_STAINED_GLASS,
+        display: { name: "&7Gray Stained Glass" },
+        currency: vault,
+        buy: 20.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    light_gray_stained_glass:
+      {
+        slot: 41,
+        page: 2,
+        material: LIGHT_GRAY_STAINED_GLASS,
+        display: { name: "&7Light Gray Stained Glass" },
+        currency: vault,
+        buy: 20.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    cyan_stained_glass:
+      {
+        slot: 42,
+        page: 2,
+        material: CYAN_STAINED_GLASS,
+        display: { name: "&3Cyan Stained Glass" },
+        currency: vault,
+        buy: 20.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    purple_stained_glass:
+      {
+        slot: 43,
+        page: 2,
+        material: PURPLE_STAINED_GLASS,
+        display: { name: "&5Purple Stained Glass" },
+        currency: vault,
+        buy: 20.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+
+    # --- หน้า 3 (57-74) ---
+    blue_stained_glass:
+      {
+        slot: 10,
+        page: 3,
+        material: BLUE_STAINED_GLASS,
+        display: { name: "&1Blue Stained Glass" },
+        currency: vault,
+        buy: 20.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    brown_stained_glass:
+      {
+        slot: 11,
+        page: 3,
+        material: BROWN_STAINED_GLASS,
+        display: { name: "&6Brown Stained Glass" },
+        currency: vault,
+        buy: 20.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+
+    white_concrete:
+      {
+        slot: 12,
+        page: 3,
+        material: WHITE_CONCRETE,
+        display: { name: "&fWhite Concrete" },
+        currency: vault,
+        buy: 18.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    orange_concrete:
+      {
+        slot: 13,
+        page: 3,
+        material: ORANGE_CONCRETE,
+        display: { name: "&6Orange Concrete" },
+        currency: vault,
+        buy: 18.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    magenta_concrete:
+      {
+        slot: 14,
+        page: 3,
+        material: MAGENTA_CONCRETE,
+        display: { name: "&dMagenta Concrete" },
+        currency: vault,
+        buy: 18.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    light_blue_concrete:
+      {
+        slot: 15,
+        page: 3,
+        material: LIGHT_BLUE_CONCRETE,
+        display: { name: "&bLight Blue Concrete" },
+        currency: vault,
+        buy: 18.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+
+    yellow_concrete:
+      {
+        slot: 16,
+        page: 3,
+        material: YELLOW_CONCRETE,
+        display: { name: "&eYellow Concrete" },
+        currency: vault,
+        buy: 18.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    lime_concrete:
+      {
+        slot: 19,
+        page: 3,
+        material: LIME_CONCRETE,
+        display: { name: "&aLime Concrete" },
+        currency: vault,
+        buy: 18.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    pink_concrete:
+      {
+        slot: 20,
+        page: 3,
+        material: PINK_CONCRETE,
+        display: { name: "&dPink Concrete" },
+        currency: vault,
+        buy: 18.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    gray_concrete:
+      {
+        slot: 21,
+        page: 3,
+        material: GRAY_CONCRETE,
+        display: { name: "&7Gray Concrete" },
+        currency: vault,
+        buy: 18.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    light_gray_concrete:
+      {
+        slot: 22,
+        page: 3,
+        material: LIGHT_GRAY_CONCRETE,
+        display: { name: "&7Light Gray Concrete" },
+        currency: vault,
+        buy: 18.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    cyan_concrete:
+      {
+        slot: 23,
+        page: 3,
+        material: CYAN_CONCRETE,
+        display: { name: "&3Cyan Concrete" },
+        currency: vault,
+        buy: 18.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    purple_concrete:
+      {
+        slot: 24,
+        page: 3,
+        material: PURPLE_CONCRETE,
+        display: { name: "&5Purple Concrete" },
+        currency: vault,
+        buy: 18.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+
+    blue_concrete:
+      {
+        slot: 25,
+        page: 3,
+        material: BLUE_CONCRETE,
+        display: { name: "&1Blue Concrete" },
+        currency: vault,
+        buy: 18.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    brown_concrete:
+      {
+        slot: 28,
+        page: 3,
+        material: BROWN_CONCRETE,
+        display: { name: "&6Brown Concrete" },
+        currency: vault,
+        buy: 18.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    green_concrete:
+      {
+        slot: 29,
+        page: 3,
+        material: GREEN_CONCRETE,
+        display: { name: "&2Green Concrete" },
+        currency: vault,
+        buy: 18.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    red_concrete:
+      {
+        slot: 30,
+        page: 3,
+        material: RED_CONCRETE,
+        display: { name: "&cRed Concrete" },
+        currency: vault,
+        buy: 18.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    black_concrete:
+      {
+        slot: 31,
+        page: 3,
+        material: BLACK_CONCRETE,
+        display: { name: "&8Black Concrete" },
+        currency: vault,
+        buy: 18.00,
+        sell: 0.1,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }

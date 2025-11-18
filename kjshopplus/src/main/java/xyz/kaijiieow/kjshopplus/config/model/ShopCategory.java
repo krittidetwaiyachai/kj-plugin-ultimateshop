@@ -22,12 +22,27 @@ public class ShopCategory {
     private final Map<Integer, List<ShopItem>> itemsByPage = new HashMap<>();
     private int maxPage = 1;
     
+    private final boolean defaultIsBuyMode;
+    
+    // Dynamic pricing configuration per category
+    private double categoryBuyFormula = -1; // -1 means use default from config.yml
+    private double categorySellFormula = -1;
 
     
     public ShopCategory(String categoryId, ConfigurationSection config) {
         this.id = categoryId;
         this.title = ChatColor.translateAlternateColorCodes('&', config.getString("title", "&8Category"));
         this.size = config.getInt("size", 54);
+
+        String defaultModeStr = config.getString("default_mode", "buy");
+        this.defaultIsBuyMode = !defaultModeStr.equalsIgnoreCase("sell");
+
+        // Load dynamic pricing configuration for this category
+        ConfigurationSection dynamicSection = config.getConfigurationSection("dynamic");
+        if (dynamicSection != null) {
+            this.categoryBuyFormula = dynamicSection.getDouble("buy_formula", -1);
+            this.categorySellFormula = dynamicSection.getDouble("sell_formula", -1);
+        }
 
         ConfigurationSection fillSection = config.getConfigurationSection("fill-item");
         
@@ -93,6 +108,12 @@ public class ShopCategory {
     public MenuItem getFillItem() { return fillItem; }
     public Map<String, MenuItem> getLayoutItems() { return layoutItems; }
     public String getId() { return id; }
+    public boolean isDefaultBuyMode() { return defaultIsBuyMode; }
+    public double getBuyFormula() { return categoryBuyFormula; }
+    public double getSellFormula() { return categorySellFormula; }
+    public boolean hasCustomDynamicFormulas() { 
+        return categoryBuyFormula >= 0 && categorySellFormula >= 0; 
+    }
 
     
     

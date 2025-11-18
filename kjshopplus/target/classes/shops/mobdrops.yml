@@ -1,38 +1,363 @@
+# --- shops/mobdrops.yml (ฉบับแก้ไข Dynamic Price กันเงินเฟ้อ) ---
 category:
   id: "mobdrops"
-  title: "&2&lMob Drops &7({page}/{total_pages})"
-  size: 54
+  title: "&c&lMob Drops &7({page}/{total_pages})"
+  size: 54 # เพิ่มเป็น 2 หน้า (54 ช่อง)
+  dynamic:
+    buy_formula: 0.02 # 2% ต่อ 1 ชิ้น (เพิ่มเร็วขึ้น)
+    sell_formula: 0.005 # 0.5% ต่อ 1 ชิ้น (ลดช้าลง)
   fill-item:
     material: WHITE_STAINED_GLASS_PANE
     displayname: " "
-
   layout:
-    go-back: { slot: 49, material: BARRIER, displayname: "&cGo Back", action: "OPEN_CATEGORY", value: "main" }
-    page-prev: { slot: 48, material: ARROW, displayname: "&aPrevious Page", action: "PAGE_PREV" }
-    page-next: { slot: 50, material: ARROW, displayname: "&aNext Page", action: "PAGE_NEXT" }
+    go-back:
+      {
+        slot: 49,
+        material: BARRIER,
+        displayname: "&cGo Back",
+        action: "OPEN_CATEGORY",
+        value: "main",
+      }
+    page-prev:
+      {
+        slot: 48,
+        material: ARROW,
+        displayname: "&aPrevious Page",
+        action: "PAGE_PREV",
+      }
+    page-next:
+      {
+        slot: 50,
+        material: ARROW,
+        displayname: "&aNext Page",
+        action: "PAGE_NEXT",
+      }
 
   items:
-    rotten_flesh: { slot: 10, page: 1, material: ROTTEN_FLESH, display: { name: "&7Rotten Flesh", lore: ["&7ของเหลือจากซอมบี้","&eคลิกเพื่อซื้อหรือขาย"] }, currency: vault, buy: 2.00, sell: 1.00, trade: { allow_buy: true, allow_sell: true }, dynamic: { enabled: true, buy_step_percent: 0.7, sell_step_percent: 0.6, max_price: 8.00, min_price: 0.50 } }
-    bone: { slot: 11, page: 1, material: BONE, display: { name: "&fBone", lore: ["&7ดรอปจากสเกลตัน/หมา","&eคลิกเพื่อซื้อหรือขาย"] }, currency: vault, buy: 4.00, sell: 2.00, trade: { allow_buy: true, allow_sell: true }, dynamic: { enabled: true, buy_step_percent: 0.8, sell_step_percent: 0.6, max_price: 16.00, min_price: 1.00 } }
-    string: { slot: 12, page: 1, material: STRING, display: { name: "&fString", lore: ["&7ใยแมงมุม เอนกประสงค์","&eคลิกเพื่อซื้อหรือขาย"] }, currency: vault, buy: 4.00, sell: 2.00, trade: { allow_buy: true, allow_sell: true }, dynamic: { enabled: true, buy_step_percent: 0.85, sell_step_percent: 0.7, max_price: 16.00, min_price: 1.00 } }
-    spider_eye: { slot: 13, page: 1, material: SPIDER_EYE, display: { name: "&2Spider Eye", lore: ["&7ต้มยา/พิษนิดหน่อย","&eคลิกเพื่อซื้อหรือขาย"] }, currency: vault, buy: 6.00, sell: 3.00, trade: { allow_buy: true, allow_sell: true }, dynamic: { enabled: true, buy_step_percent: 0.9, sell_step_percent: 0.75, max_price: 24.00, min_price: 1.50 } }
-    gunpowder: { slot: 14, page: 1, material: GUNPOWDER, display: { name: "&7Gunpowder", lore: ["&7หัวใจจรวด/ทีเอ็นที","&eคลิกเพื่อซื้อหรือขาย"] }, currency: vault, buy: 10.00, sell: 5.00, trade: { allow_buy: true, allow_sell: true }, dynamic: { enabled: true, buy_step_percent: 0.95, sell_step_percent: 0.8, max_price: 40.00, min_price: 3.00 } }
-    ender_pearl: { slot: 15, page: 1, material: ENDER_PEARL, display: { name: "&5Ender Pearl", lore: ["&7ไข่มุกเทเลพอร์ตของเอนเดอร์แมน","&eคลิกเพื่อซื้อหรือขาย"] }, currency: vault, buy: 22.00, sell: 11.00, trade: { allow_buy: true, allow_sell: true }, dynamic: { enabled: true, buy_step_percent: 1.0, sell_step_percent: 0.85, max_price: 88.00, min_price: 6.00 } }
-    blaze_rod: { slot: 16, page: 1, material: BLAZE_ROD, display: { name: "&6Blaze Rod", lore: ["&7หัวใจการต้มยา/ผงไฟ","&eคลิกเพื่อซื้อหรือขาย"] }, currency: vault, buy: 24.00, sell: 12.00, trade: { allow_buy: true, allow_sell: true }, dynamic: { enabled: true, buy_step_percent: 1.0, sell_step_percent: 0.85, max_price: 96.00, min_price: 7.00 } }
+    # --- หน้า 1: ของฟาร์มง่าย (ราคาตกเร็ว) ---
+    rotten_flesh:
+      {
+        slot: 10,
+        page: 1,
+        material: ROTTEN_FLESH,
+        display: { name: "&cRotten Flesh" },
+        currency: vault,
+        sell: 0.03,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    bone:
+      {
+        slot: 11,
+        page: 1,
+        material: BONE,
+        display: { name: "&fBone" },
+        currency: vault,
+        sell: 0.05,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    arrow:
+      {
+        slot: 12,
+        page: 1,
+        material: ARROW,
+        display: { name: "&fArrow" },
+        currency: vault,
+        sell: 0.04,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    string:
+      {
+        slot: 13,
+        page: 1,
+        material: STRING,
+        display: { name: "&fString" },
+        currency: vault,
+        sell: 0.05,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    spider_eye:
+      {
+        slot: 14,
+        page: 1,
+        material: SPIDER_EYE,
+        display: { name: "&cSpider Eye" },
+        currency: vault,
+        sell: 0.04,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    gunpowder:
+      {
+        slot: 15,
+        page: 1,
+        material: GUNPOWDER,
+        display: { name: "&7Gunpowder" },
+        currency: vault,
+        sell: 0.08,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    ender_pearl:
+      {
+        slot: 16,
+        page: 1,
+        material: ENDER_PEARL,
+        display: { name: "&aEnder Pearl" },
+        currency: vault,
+        sell: 0.6,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      }
 
-    ghast_tear: { slot: 19, page: 1, material: GHAST_TEAR, display: { name: "&fGhast Tear", lore: ["&7น้ำตาผีจากเนเธอร์","&eคลิกเพื่อซื้อหรือขาย"] }, currency: vault, buy: 36.00, sell: 18.00, trade: { allow_buy: true, allow_sell: true }, dynamic: { enabled: true, buy_step_percent: 1.05, sell_step_percent: 0.9, max_price: 144.00, min_price: 10.00 } }
-    slime_ball: { slot: 20, page: 1, material: SLIME_BALL, display: { name: "&aSlime Ball", lore: ["&7กาวเขียวจากสไลม์","&eคลิกเพื่อซื้อหรือขาย"] }, currency: vault, buy: 8.00, sell: 4.00, trade: { allow_buy: true, allow_sell: true }, dynamic: { enabled: true, buy_step_percent: 0.9, sell_step_percent: 0.75, max_price: 32.00, min_price: 2.00 } }
-    magma_cream: { slot: 21, page: 1, material: MAGMA_CREAM, display: { name: "&6Magma Cream", lore: ["&7ครีมไฟจากแม็กมาคิวบ์","&eคลิกเพื่อซื้อหรือขาย"] }, currency: vault, buy: 14.00, sell: 7.00, trade: { allow_buy: true, allow_sell: true }, dynamic: { enabled: true, buy_step_percent: 0.95, sell_step_percent: 0.8, max_price: 56.00, min_price: 4.00 } }
-    phantom_membrane: { slot: 22, page: 1, material: PHANTOM_MEMBRANE, display: { name: "&fPhantom Membrane", lore: ["&7ซ่อมปีก/ต้มยา","&eคลิกเพื่อซื้อหรือขาย"] }, currency: vault, buy: 20.00, sell: 10.00, trade: { allow_buy: true, allow_sell: true }, dynamic: { enabled: true, buy_step_percent: 1.0, sell_step_percent: 0.85, max_price: 80.00, min_price: 6.00 } }
-    shulker_shell: { slot: 23, page: 1, material: SHULKER_SHELL, display: { name: "&dShulker Shell", lore: ["&7ทำกล่องชัลเกอร์","&eคลิกเพื่อซื้อหรือขาย"] }, currency: vault, buy: 28.00, sell: 14.00, trade: { allow_buy: true, allow_sell: true }, dynamic: { enabled: true, buy_step_percent: 1.05, sell_step_percent: 0.9, max_price: 112.00, min_price: 8.00 } }
-    wither_skeleton_skull: { slot: 24, page: 1, material: WITHER_SKELETON_SKULL, display: { name: "&8Wither Skeleton Skull", lore: ["&7ดรอปหายาก จุดไฟเรียกวิธเธอร์","&eคลิกเพื่อซื้อหรือขาย"] }, currency: vault, buy: 260.00, sell: 130.00, trade: { allow_buy: true, allow_sell: true }, dynamic: { enabled: true, buy_step_percent: 1.2, sell_step_percent: 0.9, max_price: 1040.00, min_price: 90.00 } }
-    nether_star: { slot: 25, page: 1, material: NETHER_STAR, display: { name: "&fNether Star", lore: ["&7ของสูงสุดจากวิธเธอร์","&eคลิกเพื่อซื้อหรือขาย"] }, currency: vault, buy: 1200.00, sell: 600.00, trade: { allow_buy: true, allow_sell: true }, dynamic: { enabled: true, buy_step_percent: 1.25, sell_step_percent: 0.9, max_price: 4800.00, min_price: 450.00 } }
+    slime_ball:
+      {
+        slot: 19,
+        page: 1,
+        material: SLIME_BALL,
+        display: { name: "&aSlimeball" },
+        currency: vault,
+        sell: 0.3,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    feather:
+      {
+        slot: 20,
+        page: 1,
+        material: FEATHER,
+        display: { name: "&fFeather" },
+        currency: vault,
+        sell: 0.04,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    leather:
+      {
+        slot: 21,
+        page: 1,
+        material: LEATHER,
+        display: { name: "&fLeather" },
+        currency: vault,
+        sell: 0.4,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    rabbit_hide:
+      {
+        slot: 22,
+        page: 1,
+        material: RABBIT_HIDE,
+        display: { name: "&fRabbit Hide" },
+        currency: vault,
+        sell: 0.05,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    rabbit_foot:
+      {
+        slot: 23,
+        page: 1,
+        material: RABBIT_FOOT,
+        display: { name: "&aRabbit's Foot" },
+        currency: vault,
+        sell: 0.25,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    egg:
+      {
+        slot: 24,
+        page: 1,
+        material: EGG,
+        display: { name: "&fEgg" },
+        currency: vault,
+        sell: 0.4,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    # BROWN_EGG, BLUE_EGG ไม่ใช่ Vanilla - ถ้านายมีปลั๊กอินก็ใช้โครงสร้างเดียวกับ EGG
 
-    prismarine_shard: { slot: 28, page: 1, material: PRISMARINE_SHARD, display: { name: "&bPrismarine Shard", lore: ["&7การ์เดียนดรอป ใช้คราฟปะการังหิน","&eคลิกเพื่อซื้อหรือขาย"] }, currency: vault, buy: 10.00, sell: 5.00, trade: { allow_buy: true, allow_sell: true }, dynamic: { enabled: true, buy_step_percent: 0.95, sell_step_percent: 0.8, max_price: 40.00, min_price: 3.00 } }
-    prismarine_crystals: { slot: 29, page: 1, material: PRISMARINE_CRYSTALS, display: { name: "&bPrismarine Crystals", lore: ["&7ของหายากกว่าเล็กน้อย","&eคลิกเพื่อซื้อหรือขาย"] }, currency: vault, buy: 14.00, sell: 7.00, trade: { allow_buy: true, allow_sell: true }, dynamic: { enabled: true, buy_step_percent: 1.0, sell_step_percent: 0.85, max_price: 56.00, min_price: 4.00 } }
-    nautilus_shell: { slot: 30, page: 1, material: NAUTILUS_SHELL, display: { name: "&fNautilus Shell", lore: ["&7ดราวน์ดรอป/ตกปลา ใช้ทำ Conduit","&eคลิกเพื่อซื้อหรือขาย"] }, currency: vault, buy: 28.00, sell: 14.00, trade: { allow_buy: true, allow_sell: true }, dynamic: { enabled: true, buy_step_percent: 1.05, sell_step_percent: 0.9, max_price: 112.00, min_price: 8.00 } }
-    ink_sac: { slot: 31, page: 1, material: INK_SAC, display: { name: "&0Ink Sac", lore: ["&7จากหมึก/การ์เดียนบางที","&eคลิกเพื่อซื้อหรือขาย"] }, currency: vault, buy: 5.00, sell: 2.50, trade: { allow_buy: true, allow_sell: true }, dynamic: { enabled: true, buy_step_percent: 0.9, sell_step_percent: 0.75, max_price: 20.00, min_price: 1.50 } }
-    glow_ink_sac: { slot: 32, page: 1, material: GLOW_INK_SAC, display: { name: "&eGlow Ink Sac", lore: ["&7จากโกลว์สควิด","&eคลิกเพื่อซื้อหรือขาย"] }, currency: vault, buy: 8.00, sell: 4.00, trade: { allow_buy: true, allow_sell: true }, dynamic: { enabled: true, buy_step_percent: 0.95, sell_step_percent: 0.8, max_price: 32.00, min_price: 2.00 } }
-    leather: { slot: 33, page: 1, material: LEATHER, display: { name: "&6Leather", lore: ["&7จากวัว/ลามะ/ม้า","&eคลิกเพื่อซื้อหรือขาย"] }, currency: vault, buy: 6.00, sell: 3.00, trade: { allow_buy: true, allow_sell: true }, dynamic: { enabled: true, buy_step_percent: 0.9, sell_step_percent: 0.75, max_price: 24.00, min_price: 1.50 } }
-    feather: { slot: 34, page: 1, material: FEATHER, display: { name: "&fFeather", lore: ["&7ชิคเคนดรอป คราฟลูกธนู","&eคลิกเพื่อซื้อหรือขาย"] }, currency: vault, buy: 4.00, sell: 2.00, trade: { allow_buy: true, allow_sell: true }, dynamic: { enabled: true, buy_step_percent: 0.85, sell_step_percent: 0.7, max_price: 16.00, min_price: 1.00 } }
-  
+    # --- หน้า 2: ของ Nether/End/ฟาร์มยาก ---
+    blaze_rod:
+      {
+        slot: 10,
+        page: 2,
+        material: BLAZE_ROD,
+        display: { name: "&eBlaze Rod" },
+        currency: vault,
+        sell: 1.2,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    blaze_powder:
+      {
+        slot: 11,
+        page: 2,
+        material: BLAZE_POWDER,
+        display: { name: "&eBlaze Powder" },
+        currency: vault,
+        sell: 0.6,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    ghast_tear:
+      {
+        slot: 12,
+        page: 2,
+        material: GHAST_TEAR,
+        display: { name: "&fGhast Tear" },
+        currency: vault,
+        sell: 1.5,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    magma_cream:
+      {
+        slot: 13,
+        page: 2,
+        material: MAGMA_CREAM,
+        display: { name: "&6Magma Cream" },
+        currency: vault,
+        sell: 0.4,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    phantom_membrane:
+      {
+        slot: 14,
+        page: 2,
+        material: PHANTOM_MEMBRANE,
+        display: { name: "&fPhantom Membrane" },
+        currency: vault,
+        sell: 0.7,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    shulker_shell:
+      {
+        slot: 15,
+        page: 2,
+        material: SHULKER_SHELL,
+        display: { name: "&dShulker Shell" },
+        currency: vault,
+        sell: 0.0002,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+
+    prismarine_shard:
+      {
+        slot: 19,
+        page: 2,
+        material: PRISMARINE_SHARD,
+        display: { name: "&bPrismarine Shard" },
+        currency: vault,
+        sell: 0.4,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    prismarine_crystals:
+      {
+        slot: 20,
+        page: 2,
+        material: PRISMARINE_CRYSTALS,
+        display: { name: "&bPrismarine Crystals" },
+        currency: vault,
+        sell: 0.4,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    nautilus_shell:
+      {
+        slot: 21,
+        page: 2,
+        material: NAUTILUS_SHELL,
+        display: { name: "&fNautilus Shell" },
+        currency: vault,
+        sell: 3.0,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    turtle_egg:
+      {
+        slot: 22,
+        page: 2,
+        material: TURTLE_EGG,
+        display: { name: "&aTurtle Egg" },
+        currency: vault,
+        sell: 2.0,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    turtle_scute:
+      {
+        slot: 23,
+        page: 2,
+        material: TURTLE_SCUTE,
+        display: { name: "&aTurtle Scute" },
+        currency: vault,
+        sell: 0.4,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+
+    # --- หน้า 3: ของใหม่ / หายากมาก ---
+    breeze_rod:
+      {
+        slot: 10,
+        page: 3,
+        material: BREEZE_ROD,
+        display: { name: "&bBreeze Rod" },
+        currency: vault,
+        sell: 2.0,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    wind_charge:
+      {
+        slot: 11,
+        page: 3,
+        material: WIND_CHARGE,
+        display: { name: "&bWind Charge" },
+        currency: vault,
+        sell: 0.4,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    armadillo_scute:
+      {
+        slot: 12,
+        page: 3,
+        material: ARMADILLO_SCUTE,
+        display: { name: "&eArmadillo Scute" },
+        currency: vault,
+        sell: 1.2,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    sniffer_egg:
+      {
+        slot: 13,
+        page: 3,
+        material: SNIFFER_EGG,
+        display: { name: "&cSniffer Egg" },
+        currency: vault,
+        sell: 8.0,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    echo_shard:
+      {
+        slot: 14,
+        page: 3,
+        material: ECHO_SHARD,
+        display: { name: "&1Echo Shard" },
+        currency: vault,
+        sell: 0.4,
+        trade: { allow_buy: false, allow_sell: true },
+        dynamic: { enabled: true },
+      }

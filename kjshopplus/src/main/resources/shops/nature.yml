@@ -1,0 +1,520 @@
+# --- shops/nature.yml (ฉบับ Layout 28 ช่อง - 2 หน้า) ---
+category:
+  id: "nature"
+  title: "&a&lNature &7({page}/{total_pages})"
+  size: 54
+  dynamic:
+    buy_formula: 0.02 # 2% ต่อ 1 ชิ้น (เพิ่มเร็วขึ้น)
+    sell_formula: 0.005 # 0.5% ต่อ 1 ชิ้น (ลดช้าลง)
+  fill-item:
+    material: WHITE_STAINED_GLASS_PANE
+    displayname: " "
+  layout:
+    go-back:
+      {
+        slot: 49,
+        material: BARRIER,
+        displayname: "&cGo Back",
+        action: "OPEN_CATEGORY",
+        value: "main",
+      }
+    page-prev:
+      {
+        slot: 48,
+        material: ARROW,
+        displayname: "&aPrevious Page",
+        action: "PAGE_PREV",
+      }
+    page-next:
+      {
+        slot: 50,
+        material: ARROW,
+        displayname: "&aNext Page",
+        action: "PAGE_NEXT",
+      }
+
+  items:
+    # --- หน้า 1: ไม้ (Logs - Faucet) & ดอกไม้ (Flowers - Sink) ---
+
+    # Logs (Buy/Sell Dynamic)
+    oak_log:
+      {
+        slot: 10,
+        page: 1,
+        material: OAK_LOG,
+        display: { name: "&6Oak Log" },
+        currency: vault,
+        buy: 10.00,
+        sell: 0.2,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    spruce_log:
+      {
+        slot: 11,
+        page: 1,
+        material: SPRUCE_LOG,
+        display: { name: "&6Spruce Log" },
+        currency: vault,
+        buy: 10.00,
+        sell: 0.2,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    birch_log:
+      {
+        slot: 12,
+        page: 1,
+        material: BIRCH_LOG,
+        display: { name: "&fBirch Log" },
+        currency: vault,
+        buy: 10.00,
+        sell: 0.2,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    jungle_log:
+      {
+        slot: 13,
+        page: 1,
+        material: JUNGLE_LOG,
+        display: { name: "&6Jungle Log" },
+        currency: vault,
+        buy: 10.00,
+        sell: 0.2,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    acacia_log:
+      {
+        slot: 14,
+        page: 1,
+        material: ACACIA_LOG,
+        display: { name: "&6Acacia Log" },
+        currency: vault,
+        buy: 10.00,
+        sell: 0.2,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    dark_oak_log:
+      {
+        slot: 15,
+        page: 1,
+        material: DARK_OAK_LOG,
+        display: { name: "&6Dark Oak Log" },
+        currency: vault,
+        buy: 10.00,
+        sell: 0.2,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    mangrove_log:
+      {
+        slot: 16,
+        page: 1,
+        material: MANGROVE_LOG,
+        display: { name: "&6Mangrove Log" },
+        currency: vault,
+        buy: 10.00,
+        sell: 0.2,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+
+    cherry_log:
+      {
+        slot: 19,
+        page: 1,
+        material: CHERRY_LOG,
+        display: { name: "&dCherry Log" },
+        currency: vault,
+        buy: 10.00,
+        sell: 0.2,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    crimson_stem:
+      {
+        slot: 20,
+        page: 1,
+        material: CRIMSON_STEM,
+        display: { name: "&cCrimson Stem" },
+        currency: vault,
+        buy: 10.00,
+        sell: 0.2,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+    warped_stem:
+      {
+        slot: 21,
+        page: 1,
+        material: WARPED_STEM,
+        display: { name: "&bWarped Stem" },
+        currency: vault,
+        buy: 10.00,
+        sell: 0.2,
+        trade: { allow_buy: true, allow_sell: true },
+        dynamic: { enabled: true },
+      }
+
+    # Flowers (Buy Only - Money Sink)
+    dandelion:
+      {
+        slot: 22,
+        page: 1,
+        material: DANDELION,
+        display: { name: "&eDandelion (Buy Only)" },
+        currency: vault,
+        buy: 10.00,
+        trade: { allow_buy: true, allow_sell: false },
+      }
+    poppy:
+      {
+        slot: 23,
+        page: 1,
+        material: POPPY,
+        display: { name: "&cPoppy (Buy Only)" },
+        currency: vault,
+        buy: 10.00,
+        trade: { allow_buy: true, allow_sell: false },
+      }
+    blue_orchid:
+      {
+        slot: 24,
+        page: 1,
+        material: BLUE_ORCHID,
+        display: { name: "&bBlue Orchid (Buy Only)" },
+        currency: vault,
+        buy: 10.00,
+        trade: { allow_buy: true, allow_sell: false },
+      }
+    allium:
+      {
+        slot: 25,
+        page: 1,
+        material: ALLIUM,
+        display: { name: "&dAllium (Buy Only)" },
+        currency: vault,
+        buy: 10.00,
+        trade: { allow_buy: true, allow_sell: false },
+      }
+
+    azure_bluet:
+      {
+        slot: 28,
+        page: 1,
+        material: AZURE_BLUET,
+        display: { name: "&fAzure Bluet (Buy Only)" },
+        currency: vault,
+        buy: 10.00,
+        trade: { allow_buy: true, allow_sell: false },
+      }
+    red_tulip:
+      {
+        slot: 29,
+        page: 1,
+        material: RED_TULIP,
+        display: { name: "&cRed Tulip (Buy Only)" },
+        currency: vault,
+        buy: 10.00,
+        trade: { allow_buy: true, allow_sell: false },
+      }
+    orange_tulip:
+      {
+        slot: 30,
+        page: 1,
+        material: ORANGE_TULIP,
+        display: { name: "&6Orange Tulip (Buy Only)" },
+        currency: vault,
+        buy: 10.00,
+        trade: { allow_buy: true, allow_sell: false },
+      }
+    white_tulip:
+      {
+        slot: 31,
+        page: 1,
+        material: WHITE_TULIP,
+        display: { name: "&fWhite Tulip (Buy Only)" },
+        currency: vault,
+        buy: 10.00,
+        trade: { allow_buy: true, allow_sell: false },
+      }
+    pink_tulip:
+      {
+        slot: 32,
+        page: 1,
+        material: PINK_TULIP,
+        display: { name: "&dPink Tulip (Buy Only)" },
+        currency: vault,
+        buy: 10.00,
+        trade: { allow_buy: true, allow_sell: false },
+      }
+    oxeye_daisy:
+      {
+        slot: 33,
+        page: 1,
+        material: OXEYE_DAISY,
+        display: { name: "&fOxeye Daisy (Buy Only)" },
+        currency: vault,
+        buy: 10.00,
+        trade: { allow_buy: true, allow_sell: false },
+      }
+    cornflower:
+      {
+        slot: 34,
+        page: 1,
+        material: CORNFLOWER,
+        display: { name: "&1Cornflower (Buy Only)" },
+        currency: vault,
+        buy: 10.00,
+        trade: { allow_buy: true, allow_sell: false },
+      }
+
+    lily_of_the_valley:
+      {
+        slot: 37,
+        page: 1,
+        material: LILY_OF_THE_VALLEY,
+        display: { name: "&fLily of the Valley (Buy Only)" },
+        currency: vault,
+        buy: 10.00,
+        trade: { allow_buy: true, allow_sell: false },
+      }
+    sunflower:
+      {
+        slot: 38,
+        page: 1,
+        material: SUNFLOWER,
+        display: { name: "&eSunflower (Buy Only)" },
+        currency: vault,
+        buy: 10.00,
+        trade: { allow_buy: true, allow_sell: false },
+      }
+    lilac:
+      {
+        slot: 39,
+        page: 1,
+        material: LILAC,
+        display: { name: "&dLilac (Buy Only)" },
+        currency: vault,
+        buy: 10.00,
+        trade: { allow_buy: true, allow_sell: false },
+      }
+    rose_bush:
+      {
+        slot: 40,
+        page: 1,
+        material: ROSE_BUSH,
+        display: { name: "&cRose Bush (Buy Only)" },
+        currency: vault,
+        buy: 10.00,
+        trade: { allow_buy: true, allow_sell: false },
+      }
+    peony:
+      {
+        slot: 41,
+        page: 1,
+        material: PEONY,
+        display: { name: "&dPeony (Buy Only)" },
+        currency: vault,
+        buy: 10.00,
+        trade: { allow_buy: true, allow_sell: false },
+      }
+    wither_rose:
+      {
+        slot: 42,
+        page: 1,
+        material: WITHER_ROSE,
+        display: { name: "&8Wither Rose (Buy Only)" },
+        currency: vault,
+        buy: 50.00,
+        trade: { allow_buy: true, allow_sell: false },
+      }
+    torchflower:
+      {
+        slot: 43,
+        page: 1,
+        material: TORCHFLOWER,
+        display: { name: "&eTorchflower (Buy Only)" },
+        currency: vault,
+        buy: 10.00,
+        trade: { allow_buy: true, allow_sell: false },
+      }
+
+    # --- หน้า 2: ดอกไม้ (ต่อ) & สี (Dyes) ---
+    pitcher_plant:
+      {
+        slot: 10,
+        page: 2,
+        material: PITCHER_PLANT,
+        display: { name: "&aPitcher Plant (Buy Only)" },
+        currency: vault,
+        buy: 10.00,
+        trade: { allow_buy: true, allow_sell: false },
+      }
+
+    # Dyes (Buy Only - Money Sink)
+    white_dye:
+      {
+        slot: 11,
+        page: 2,
+        material: WHITE_DYE,
+        display: { name: "&fWhite Dye (Buy Only)" },
+        currency: vault,
+        buy: 10.00,
+        trade: { allow_buy: true, allow_sell: false },
+      }
+    light_gray_dye:
+      {
+        slot: 12,
+        page: 2,
+        material: LIGHT_GRAY_DYE,
+        display: { name: "&7Light Gray Dye (Buy Only)" },
+        currency: vault,
+        buy: 10.00,
+        trade: { allow_buy: true, allow_sell: false },
+      }
+    gray_dye:
+      {
+        slot: 13,
+        page: 2,
+        material: GRAY_DYE,
+        display: { name: "&7Gray Dye (Buy Only)" },
+        currency: vault,
+        buy: 10.00,
+        trade: { allow_buy: true, allow_sell: false },
+      }
+    black_dye:
+      {
+        slot: 14,
+        page: 2,
+        material: BLACK_DYE,
+        display: { name: "&8Black Dye (Buy Only)" },
+        currency: vault,
+        buy: 10.00,
+        trade: { allow_buy: true, allow_sell: false },
+      }
+    brown_dye:
+      {
+        slot: 15,
+        page: 2,
+        material: BROWN_DYE,
+        display: { name: "&6Brown Dye (Buy Only)" },
+        currency: vault,
+        buy: 10.00,
+        trade: { allow_buy: true, allow_sell: false },
+      }
+    red_dye:
+      {
+        slot: 16,
+        page: 2,
+        material: RED_DYE,
+        display: { name: "&cRed Dye (Buy Only)" },
+        currency: vault,
+        buy: 10.00,
+        trade: { allow_buy: true, allow_sell: false },
+      }
+
+    orange_dye:
+      {
+        slot: 19,
+        page: 2,
+        material: ORANGE_DYE,
+        display: { name: "&6Orange Dye (Buy Only)" },
+        currency: vault,
+        buy: 10.00,
+        trade: { allow_buy: true, allow_sell: false },
+      }
+    yellow_dye:
+      {
+        slot: 20,
+        page: 2,
+        material: YELLOW_DYE,
+        display: { name: "&eYellow Dye (Buy Only)" },
+        currency: vault,
+        buy: 10.00,
+        trade: { allow_buy: true, allow_sell: false },
+      }
+    lime_dye:
+      {
+        slot: 21,
+        page: 2,
+        material: LIME_DYE,
+        display: { name: "&aLime Dye (Buy Only)" },
+        currency: vault,
+        buy: 10.00,
+        trade: { allow_buy: true, allow_sell: false },
+      }
+    green_dye:
+      {
+        slot: 22,
+        page: 2,
+        material: GREEN_DYE,
+        display: { name: "&2Green Dye (Buy Only)" },
+        currency: vault,
+        buy: 10.00,
+        trade: { allow_buy: true, allow_sell: false },
+      }
+    cyan_dye:
+      {
+        slot: 23,
+        page: 2,
+        material: CYAN_DYE,
+        display: { name: "&3Cyan Dye (Buy Only)" },
+        currency: vault,
+        buy: 10.00,
+        trade: { allow_buy: true, allow_sell: false },
+      }
+    light_blue_dye:
+      {
+        slot: 24,
+        page: 2,
+        material: LIGHT_BLUE_DYE,
+        display: { name: "&bLight Blue Dye (Buy Only)" },
+        currency: vault,
+        buy: 10.00,
+        trade: { allow_buy: true, allow_sell: false },
+      }
+    blue_dye:
+      {
+        slot: 25,
+        page: 2,
+        material: BLUE_DYE,
+        display: { name: "&1Blue Dye (Buy Only)" },
+        currency: vault,
+        buy: 10.00,
+        trade: { allow_buy: true, allow_sell: false },
+      }
+
+    purple_dye:
+      {
+        slot: 28,
+        page: 2,
+        material: PURPLE_DYE,
+        display: { name: "&5Purple Dye (Buy Only)" },
+        currency: vault,
+        buy: 10.00,
+        trade: { allow_buy: true, allow_sell: false },
+      }
+    magenta_dye:
+      {
+        slot: 29,
+        page: 2,
+        material: MAGENTA_DYE,
+        display: { name: "&dMagenta Dye (Buy Only)" },
+        currency: vault,
+        buy: 10.00,
+        trade: { allow_buy: true, allow_sell: false },
+      }
+    pink_dye:
+      {
+        slot: 30,
+        page: 2,
+        material: PINK_DYE,
+        display: { name: "&dPink Dye (Buy Only)" },
+        currency: vault,
+        buy: 10.00,
+        trade: { allow_buy: true, allow_sell: false },
+      }
